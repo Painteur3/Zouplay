@@ -49,26 +49,32 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
-  // --- Inscription ---
-  document.getElementById("signup").addEventListener("click", () => {
-    const email = document.getElementById("signup-email").value;
-    const password = document.getElementById("signup-password").value;
-    const messageEl = document.getElementById("signup-message");
+// --- Inscription ---
+document.getElementById("signup").addEventListener("click", () => {
+  const pseudo = document.getElementById("signup-pseudo").value; // nouveau
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+  const messageEl = document.getElementById("signup-message");
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(userCredential => {
-        messageEl.textContent = `Compte créé : ${userCredential.user.email}`;
-        messageEl.style.color = "green";
-        setTimeout(() => closeModal(signupModal), 1500);
-      })
-      .catch(error => {
-        messageEl.textContent = error.message;
-        messageEl.style.color = "red";
-      });
-  });
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      // Mettre à jour le displayName
+      return updateProfile(userCredential.user, { displayName: pseudo })
+        .then(() => {
+          messageEl.textContent = `Compte créé : ${pseudo} (${userCredential.user.email})`;
+          messageEl.style.color = "green";
+          setTimeout(() => closeModal(signupModal), 1500);
+        });
+    })
+    .catch(error => {
+      messageEl.textContent = error.message;
+      messageEl.style.color = "red";
+    });
+});
 
   // --- Connexion ---
   document.getElementById("login").addEventListener("click", () => {
+    const pseudo = document.getElementById("signup-pseudo").value;
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
     const messageEl = document.getElementById("login-message");
@@ -96,5 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
 
 
