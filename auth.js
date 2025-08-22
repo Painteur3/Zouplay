@@ -22,14 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
   overlay.classList.add("modal-overlay");
   document.body.appendChild(overlay);
 
-  // liens / boutons
   const loginLink = document.getElementById("open-login");
   const signupLink = document.getElementById("open-signup");
   const userInfo = document.getElementById("user-info");
   const userPseudo = document.getElementById("user-pseudo");
   const logoutBtn = document.getElementById("logout");
 
-  // --- Modales ---
   function openModal(modal) {
     overlay.style.display = "block";
     modal.style.display = "block";
@@ -55,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
-  // --- Inscription ---
   document.getElementById("signup").addEventListener("click", () => {
     const pseudo = document.getElementById("signup-pseudo").value.trim();
     const email = document.getElementById("signup-email").value.trim();
@@ -81,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // --- Connexion ---
   document.getElementById("login").addEventListener("click", () => {
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
@@ -106,15 +102,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // --- Déconnexion ---
   logoutBtn.addEventListener("click", () => signOut(auth));
 
-  // --- Suivi utilisateur ---
   onAuthStateChanged(auth, user => {
     if(user){
       loginLink.style.display = "none";
       signupLink.style.display = "none";
-      userInfo.style.display = "inline-block";
+      userInfo.style.display = "inline-flex";
       userPseudo.textContent = user.displayName || user.email;
     } else {
       loginLink.style.display = "inline-block";
@@ -123,5 +117,4 @@ document.addEventListener("DOMContentLoaded", () => {
       userPseudo.textContent = "";
     }
   });
-
 });
