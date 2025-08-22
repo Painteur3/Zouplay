@@ -3,16 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon2.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon2.png">
-  <link rel="icon" type="image/png" sizes="64x64" href="images/favicon2.png">
-
   <title>Quiz – Le Masque de l’Anime</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Script global AdSense 
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2912587106364560"
-     crossorigin="anonymous"></script> -->
 </head>
 <body>
 
@@ -35,18 +27,12 @@
 </header>
 
 <div class="container">
-  <!-- Colonne pub gauche -->
   <aside class="pub">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-2912587106364560"
-         data-ad-slot="1111111111"
-         data-ad-format="auto"></ins>
+    <!-- Pub gauche -->
   </aside>
 
-  <!-- Zone principale -->
   <main>
-    <!-- Accueil -->
+    <!-- Accueil / Choix catégorie -->
     <section id="accueil">
       <h2>Prépare ton aventure</h2>
       <form id="categories-form">
@@ -76,41 +62,28 @@
       <p id="result"></p>
     </section>
 
+    <!-- Leaderboard -->
     <section id="leaderboard-section">
-  <h2>🏆 Top 25 – Classement des joueurs</h2>
-  <ul id="leaderboard-list" class="leaderboard-list">
-    <!-- Les scores seront injectés ici -->
-  </ul>
-</section>
+      <h2>🏆 Top 25 – Classement des joueurs</h2>
+      <ul id="leaderboard-list" class="leaderboard-list"></ul>
+    </section>
 
     <canvas id="confetti"></canvas>
   </main>
 
-  <!-- Colonne pub droite -->
   <aside class="pub">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-2912587106364560"
-         data-ad-slot="2222222222"
-         data-ad-format="auto"></ins>
+    <!-- Pub droite -->
   </aside>
 </div>
 
-<!-- Barre d’info défilante -->
 <div class="info-bar">
   <div class="info-content">
     🚀 Nouveaux quiz disponibles ! &nbsp;&nbsp; | &nbsp;&nbsp; 🎉 Création de compte ajouté ! &nbsp;&nbsp; | &nbsp;&nbsp; 🌟 Création du classement en cours !
   </div>
 </div>
 
-<!-- Script pour initialiser les blocs AdSense -->
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({});
-  (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
-<!-- Modal Connexion -->
-<div id="login-modal" class="modal" style="display:none;">
+<!-- Modales -->
+<div id="login-modal" class="modal">
   <h2>Connexion</h2>
   <input type="email" id="login-email" placeholder="Email">
   <input type="password" id="login-password" placeholder="Mot de passe">
@@ -119,8 +92,7 @@
   <button id="close-login" class="btn">Fermer</button>
 </div>
 
-<!-- Modal Inscription -->
-<div id="signup-modal" class="modal" style="display:none;">
+<div id="signup-modal" class="modal">
   <h2>Inscription</h2>
   <input type="text" id="signup-pseudo" placeholder="Pseudo">
   <input type="email" id="signup-email" placeholder="Email">
@@ -130,8 +102,11 @@
   <button id="close-signup" class="btn">Fermer</button>
 </div>
 
-<script src="script.js"></script>
+<div class="modal-overlay"></div>
+
+<!-- Scripts -->
 <script type="module" src="auth.js"></script>
+<script type="module" src="quiz.js"></script>
 
 </body>
 </html>
