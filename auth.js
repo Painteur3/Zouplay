@@ -25,30 +25,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Overlay ---
   const overlay = document.createElement("div");
-  overlay.id = "modal-overlay";
   overlay.classList.add("modal-overlay");
   document.body.appendChild(overlay);
 
-  // Fonction pour ouvrir modale
+  // Ouvrir modale
   function openModal(modal) {
     overlay.style.display = "block";
-    setTimeout(() => overlay.classList.add("show"), 10);
-
     modal.style.display = "block";
-    setTimeout(() => modal.classList.add("show"), 10);
+
+    // Force le repaint pour permettre l'animation
+    requestAnimationFrame(() => {
+      overlay.classList.add("show");
+      modal.classList.add("show");
+    });
   }
 
-  // Fonction pour fermer modale
+  // Fermer modale
   function closeModal(modal) {
     modal.classList.remove("show");
     overlay.classList.remove("show");
+
     setTimeout(() => {
       modal.style.display = "none";
       overlay.style.display = "none";
-    }, 300);
+    }, 300); // correspond à la transition CSS
   }
 
-  // Ouvrir modales
+  // --- Événements ouverture ---
   document.getElementById("open-login").addEventListener("click", e => {
     e.preventDefault();
     openModal(loginModal);
@@ -59,9 +62,13 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal(signupModal);
   });
 
-  // Fermer modales
+  // --- Événements fermeture ---
   document.getElementById("close-login").addEventListener("click", () => closeModal(loginModal));
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
+  overlay.addEventListener("click", () => {
+    closeModal(loginModal);
+    closeModal(signupModal);
+  });
 
   // --- Inscription ---
   document.getElementById("signup").addEventListener("click", () => {
