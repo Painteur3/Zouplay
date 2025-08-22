@@ -865,4 +865,18 @@ header {
   transform: scale(1.05);
 }
 
+/* Style Déconnexion */
+.btn-logout {
+  background-color: #ff4444;  /* rouge vif */
+  color: white;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.btn-logout:hover {
+  background-color: #cc0000;  /* rouge foncé au hover */
+  transform: scale(1.05);
+}
 
