@@ -1,4 +1,3 @@
-// auth.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -15,99 +14,85 @@ document.addEventListener("DOMContentLoaded", () => {
     appId: "1:1234567890:web:abcd1234"
   };
 
-  // Init Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // --- Modales ---
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
-
-  // --- Overlay ---
   const overlay = document.createElement("div");
   overlay.classList.add("modal-overlay");
   document.body.appendChild(overlay);
 
-  // Ouvrir modale
   function openModal(modal) {
     overlay.style.display = "block";
     modal.style.display = "block";
-
-    // Force le repaint pour permettre l'animation
     requestAnimationFrame(() => {
       overlay.classList.add("show");
       modal.classList.add("show");
     });
   }
 
-  // Fermer modale
   function closeModal(modal) {
     modal.classList.remove("show");
     overlay.classList.remove("show");
-
     setTimeout(() => {
       modal.style.display = "none";
       overlay.style.display = "none";
-    }, 300); // correspond à la transition CSS
+      modal.querySelector(".modal-message").textContent = ""; // clear message
+    }, 300);
   }
 
-  // --- Événements ouverture ---
-  document.getElementById("open-login").addEventListener("click", e => {
-    e.preventDefault();
-    openModal(loginModal);
-  });
-
-  document.getElementById("open-signup").addEventListener("click", e => {
-    e.preventDefault();
-    openModal(signupModal);
-  });
-
-  // --- Événements fermeture ---
+  // Ouverture/fermeture modales
+  document.getElementById("open-login").addEventListener("click", e => { e.preventDefault(); openModal(loginModal); });
+  document.getElementById("open-signup").addEventListener("click", e => { e.preventDefault(); openModal(signupModal); });
   document.getElementById("close-login").addEventListener("click", () => closeModal(loginModal));
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
-  overlay.addEventListener("click", () => {
-    closeModal(loginModal);
-    closeModal(signupModal);
-  });
+  overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
   // --- Inscription ---
   document.getElementById("signup").addEventListener("click", () => {
     const email = document.getElementById("signup-email").value;
     const password = document.getElementById("signup-password").value;
+    const messageEl = document.getElementById("signup-message");
 
     createUserWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
-        alert("Compte créé : " + userCredential.user.email);
-        closeModal(signupModal);
+        messageEl.textContent = `Compte créé : ${userCredential.user.email}`;
+        messageEl.style.color = "green";
+        setTimeout(() => closeModal(signupModal), 1500);
       })
-      .catch(error => alert("Erreur : " + error.message));
+      .catch(error => {
+        messageEl.textContent = error.message;
+        messageEl.style.color = "red";
+      });
   });
 
   // --- Connexion ---
   document.getElementById("login").addEventListener("click", () => {
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
+    const messageEl = document.getElementById("login-message");
 
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
-        alert("Connecté : " + userCredential.user.email);
-        closeModal(loginModal);
+        messageEl.textContent = `Connecté : ${userCredential.user.email}`;
+        messageEl.style.color = "green";
+        setTimeout(() => closeModal(loginModal), 1500);
       })
-      .catch(error => alert("Erreur : " + error.message));
+      .catch(error => {
+        messageEl.textContent = error.message;
+        messageEl.style.color = "red";
+      });
   });
 
   // --- Déconnexion ---
   document.getElementById("logout").addEventListener("click", () => {
-    signOut(auth).then(() => alert("Déconnecté !"));
+    signOut(auth);
   });
 
   // --- Suivi utilisateur ---
   onAuthStateChanged(auth, user => {
-    if (user) {
-      document.getElementById("logout").style.display = "inline-block";
-    } else {
-      document.getElementById("logout").style.display = "none";
-    }
+    document.getElementById("logout").style.display = user ? "inline-block" : "none";
   });
 
 });
