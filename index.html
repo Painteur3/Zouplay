@@ -4,99 +4,124 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon2.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon2.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="images/favicon2.png">
+
   <title>Quiz – Le Masque de l’Anime</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Script global AdSense 
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2912587106364560"
+     crossorigin="anonymous"></script> -->
 </head>
 <body>
 
 <header>
-  <div class="header-left"></div> <!-- juste pour équilibrer le flex -->
-
   <div class="header-center">
     <h1>Le Masque de l’Anime</h1>
     <p>Test ta mémoire sur tes animés préférés !</p>
   </div>
 
-  <div class="header-right">
-    <nav id="auth-links">
-      <ul>
-        <li><a href="#" id="open-login">Se connecter <span class="dev-badge">Dév</span></a></li>
-        <li><a href="#" id="open-signup">S'inscrire <span class="dev-badge">Dév</span></a></li>
-      </ul>
-    </nav>
-
-    <div id="user-info" class="user-info" style="display:none;">
-      <span id="user-pseudo" class="user-pseudo"></span>
-      <button id="logout" class="btn btn-logout">Déconnexion</button>
-    </div>
-  </div>
+  <nav class="header-right">
+    <ul>
+      <li><a href="#" id="open-login">Se connecter <span class="dev-badge">Dév</span></a></li>
+      <li><a href="#" id="open-signup">S'inscrire <span class="dev-badge">Dév</span></a></li>
+    </ul>
+  </nav>
+  
+  <!-- Déconnexion visible après connexion -->
+  <button id="logout" style="display:none;">Déconnexion</button>
+  
 </header>
 
-
-
 <div class="container">
+  <!-- Colonne pub gauche -->
   <aside class="pub">
-    <!-- Publicité gauche -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2912587106364560"
+         data-ad-slot="1111111111"
+         data-ad-format="auto"></ins>
   </aside>
 
+  <!-- Zone principale -->
   <main>
+    <!-- Accueil -->
     <section id="accueil">
       <h2>Prépare ton aventure</h2>
-      <form id="categories-form"><div id="categories-container"></div></form>
+      <form id="categories-form">
+        <div id="categories-container"></div>
+      </form>
       <button id="start-quiz" class="btn btn-start">Commencer le quiz</button>
     </section>
 
+    <!-- Quiz -->
     <section id="quiz" class="hidden">
       <div id="score-container">
         <span id="best-score">Record : 0</span>
-        <div id="score-lives">Score: <span id="score">0</span> | Life: <span id="lives">3</span></div>
+        <div id="score-lives">
+          Score: <span id="score">0</span> | Life: <span id="lives">3</span>
+        </div>
       </div>
+
       <div class="personnage-container">
         <img id="personnage-image" src="" alt="Personnage">
       </div>
+
       <div class="answer-container">
         <input type="text" id="answer" placeholder="Tape le nom...">
         <button id="validate" class="btn btn-validate">Valider</button>
       </div>
+
       <p id="result"></p>
     </section>
 
     <canvas id="confetti"></canvas>
   </main>
 
+  <!-- Colonne pub droite -->
   <aside class="pub">
-    <!-- Publicité droite -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2912587106364560"
+         data-ad-slot="2222222222"
+         data-ad-format="auto"></ins>
   </aside>
 </div>
 
+<!-- Barre d’info défilante -->
 <div class="info-bar">
   <div class="info-content">
     🚀 Nouveaux quiz disponibles ! &nbsp;&nbsp; | &nbsp;&nbsp; 🎉 Record de série ajouté ! &nbsp;&nbsp; | &nbsp;&nbsp; 🌟 Création du classement en cours !
   </div>
 </div>
 
-<!-- Modal Connexion -->
-<div id="login-modal" class="modal">
-  <h2>Connexion</h2>
-  <input type="email" id="login-email" placeholder="Email">
-  <input type="password" id="login-password" placeholder="Mot de passe">
-  <button id="login">Se connecter</button>
-  <button id="close-login">Fermer</button>
-  <p id="login-message" class="modal-message"></p>
-</div>
+<!-- Script pour initialiser les blocs AdSense -->
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
-<!-- Modal Inscription -->
-<div id="signup-modal" class="modal">
-  <h2>Inscription</h2>
-  <input type="text" id="signup-pseudo" placeholder="Pseudo">
-  <input type="email" id="signup-email" placeholder="Email">
-  <input type="password" id="signup-password" placeholder="Mot de passe">
-  <button id="signup">Créer un compte</button>
-  <button id="close-signup">Fermer</button>
-  <p id="signup-message" class="modal-message"></p>
-</div>
-
+  <!-- Modal Connexion -->
+  <div id="login-modal" class="modal" style="display:none;">
+    <h2>Connexion</h2>
+    <input type="email" id="login-email" placeholder="Email">
+    <input type="password" id="login-password" placeholder="Mot de passe">
+    <button id="login">Se connecter</button>
+    <button id="close-login">Fermer</button>
+  </div>
+  
+  <!-- Modal Inscription -->
+  <div id="signup-modal" class="modal" style="display:none;">
+    <h2>Inscription</h2>
+    <input type="email" id="signup-email" placeholder="Email">
+    <input type="password" id="signup-password" placeholder="Mot de passe">
+    <button id="signup">Créer un compte</button>
+    <button id="close-signup">Fermer</button>
+  </div>
+  
 <script src="script.js"></script>
 <script type="module" src="auth.js"></script>
+
 </body>
 </html>
