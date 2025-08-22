@@ -21,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
   overlay.classList.add("modal-overlay");
   document.body.appendChild(overlay);
 
+  const headerCenter = document.querySelector(".header-center");
+
   function openModal(modal) {
     overlay.style.display = "block";
     modal.style.display = "block";
@@ -64,38 +66,4 @@ document.addEventListener("DOMContentLoaded", () => {
           });
       })
       .catch(error => {
-        messageEl.textContent = error.message;
-        messageEl.style.color = "red";
-      });
-  });
-
-  // --- Connexion ---
-  document.getElementById("login").addEventListener("click", () => {
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
-    const messageEl = document.getElementById("login-message");
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then(userCredential => {
-        const pseudo = userCredential.user.displayName; // récupère le pseudo
-        messageEl.textContent = `Connecté : ${pseudo} (${userCredential.user.email})`;
-        messageEl.style.color = "green";
-        setTimeout(() => closeModal(loginModal), 1500);
-      })
-      .catch(error => {
-        messageEl.textContent = error.message;
-        messageEl.style.color = "red";
-      });
-  });
-
-  // --- Déconnexion ---
-  document.getElementById("logout").addEventListener("click", () => {
-    signOut(auth);
-  });
-
-  // --- Suivi utilisateur ---
-  onAuthStateChanged(auth, user => {
-    document.getElementById("logout").style.display = user ? "inline-block" : "none";
-  });
-
-});
+        messageEl.textContent = error.messa
