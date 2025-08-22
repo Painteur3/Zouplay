@@ -861,21 +861,4 @@ header {
   transform: scale(1);
 }
 
-/* Overlay pour modale */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* noir semi-transparent */
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 9999; /* derrière la modale mais devant le contenu */
-  display: none;
-}
 
-.modal-overlay.show {
-  display: block;
-  opacity: 1;
-}
