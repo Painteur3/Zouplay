@@ -880,3 +880,32 @@ header {
   transform: scale(1.05);
 }
 
+/* Conteneur pseudo + bouton */
+.user-info {
+  display: flex;               /* alignement horizontal */
+  align-items: center;         /* centré verticalement */
+  gap: 10px;                   /* espace entre pseudo et bouton */
+}
+
+/* Pseudo utilisateur */
+.user-pseudo {
+  font-weight: bold;
+  color: #333;
+  font-size: 1em;
+}
+
+/* Bouton Déconnexion */
+.btn-logout {
+  background-color: #ff4444;
+  color: white;
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.btn-logout:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}
