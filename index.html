@@ -9,7 +9,8 @@
 
   <title>Quiz – Le Masque de l’Anime</title>
   <link rel="stylesheet" href="style.css">
-    <!-- Script global AdSense -->
+
+  <!-- Script global AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 </head>
 
@@ -22,18 +23,14 @@
 
   <nav class="header-right">
     <ul>
-      <li>
-        <a href="#">Se connecter <span class="dev-badge">Dév</span></a>
-      </li>
-      <li>
-        <a href="#">S'inscrire <span class="dev-badge">Dév</span></a>
-      </li>
+      <li><a href="#">Se connecter <span class="dev-badge">Dév</span></a></li>
+      <li><a href="#">S'inscrire <span class="dev-badge">Dév</span></a></li>
     </ul>
   </nav>
 </header>
 
-  <div class="container">
-    <!-- Colonne pub gauche -->
+<div class="container">
+  <!-- Colonne pub gauche -->
   <aside class="pub">
     <ins class="adsbygoogle"
          style="display:block"
@@ -42,46 +39,42 @@
          data-ad-format="auto"></ins>
   </aside>
 
-    <!-- Zone principale -->
-    <main>
-      <!-- Accueil -->
-<section id="accueil">
-  <h2>Prépare ton aventure</h2>
-  <form id="categories-form">
-    <div id="categories-container"></div>
-  </form>
-  <button id="start-quiz" class="btn btn-start">Commencer le quiz</button>
-</section>
+  <!-- Zone principale -->
+  <main>
+    <!-- Accueil -->
+    <section id="accueil">
+      <h2>Prépare ton aventure</h2>
+      <form id="categories-form">
+        <div id="categories-container"></div>
+      </form>
+      <button id="start-quiz" class="btn btn-start">Commencer le quiz</button>
+    </section>
 
-<!-- Quiz -->
-<section id="quiz" class="hidden">
-<div id="score-container">
-  <span id="best-score">Record : 0</span>
-  <div id="score-lives">
-    Score: <span id="score">0</span> | Life: <span id="lives">3</span>
-  </div>
-</div>
+    <!-- Quiz -->
+    <section id="quiz" class="hidden">
+      <div id="score-container">
+        <span id="best-score">Record : 0</span>
+        <div id="score-lives">
+          Score: <span id="score">0</span> | Life: <span id="lives">3</span>
+        </div>
+      </div>
 
+      <div class="personnage-container">
+        <img id="personnage-image" src="" alt="Personnage">
+      </div>
 
-  <!-- Image du personnage -->
-  <div class="personnage-container">
-    <img id="personnage-image" src="" alt="Personnage">
-  </div>
+      <div class="answer-container">
+        <input type="text" id="answer" placeholder="Tape le nom...">
+        <button id="validate" class="btn btn-validate">Valider</button>
+      </div>
 
-  <!-- Zone réponse + bouton centré -->
-  <div class="answer-container">
-    <input type="text" id="answer" placeholder="Tape le nom...">
-    <button id="validate" class="btn btn-validate">Valider</button>
-  </div>
+      <p id="result"></p>
+    </section>
 
-  <p id="result"></p>
-</section>
-      
-      <!-- Confettis -->
-      <canvas id="confetti"></canvas>
-    </main>
+    <canvas id="confetti"></canvas>
+  </main>
 
-    <!-- Colonne pub droite -->
+  <!-- Colonne pub droite -->
   <aside class="pub">
     <ins class="adsbygoogle"
          style="display:block"
@@ -89,14 +82,21 @@
          data-ad-slot="2222222222"
          data-ad-format="auto"></ins>
   </aside>
-  </div>
+</div>
 
-  <div class="info-bar">
+<!-- Barre d’info défilante -->
+<div class="info-bar">
   <div class="info-content">
     🚀 Nouveaux quiz disponibles ! &nbsp;&nbsp; | &nbsp;&nbsp; 🎉 Record de série ajouté ! &nbsp;&nbsp; | &nbsp;&nbsp; 🌟 Création du classement en cours !
   </div>
 </div>
 
-  <script src="script.js"></script>
+<!-- Script pour initialiser les blocs AdSense -->
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<script src="script.js"></script>
 </body>
 </html>
