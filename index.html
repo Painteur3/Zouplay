@@ -10,12 +10,12 @@
   <title>Quiz – Le Masque de l’Anime</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- Script global AdSense -->
+  <!-- Script global AdSense 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2912587106364560"
-     crossorigin="anonymous"></script>
+     crossorigin="anonymous"></script> -->
 </head>
-
 <body>
+
 <header>
   <div class="header-center">
     <h1>Le Masque de l’Anime</h1>
@@ -24,10 +24,14 @@
 
   <nav class="header-right">
     <ul>
-      <li><a href="#">Se connecter <span class="dev-badge">Dév</span></a></li>
-      <li><a href="#">S'inscrire <span class="dev-badge">Dév</span></a></li>
+      <li><a href="#" id="open-login">Se connecter <span class="dev-badge">Dév</span></a></li>
+      <li><a href="#" id="open-signup">S'inscrire <span class="dev-badge">Dév</span></a></li>
     </ul>
   </nav>
+  
+  <!-- Déconnexion visible après connexion -->
+  <button id="logout" style="display:none;">Déconnexion</button>
+  
 </header>
 
 <div class="container">
@@ -98,6 +102,26 @@
   (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 
+  <!-- Modal Connexion -->
+  <div id="login-modal" class="modal" style="display:none;">
+    <h2>Connexion</h2>
+    <input type="email" id="login-email" placeholder="Email">
+    <input type="password" id="login-password" placeholder="Mot de passe">
+    <button id="login">Se connecter</button>
+    <button id="close-login">Fermer</button>
+  </div>
+  
+  <!-- Modal Inscription -->
+  <div id="signup-modal" class="modal" style="display:none;">
+    <h2>Inscription</h2>
+    <input type="email" id="signup-email" placeholder="Email">
+    <input type="password" id="signup-password" placeholder="Mot de passe">
+    <button id="signup">Créer un compte</button>
+    <button id="close-signup">Fermer</button>
+  </div>
+  
 <script src="script.js"></script>
+<script type="module" src="auth.js"></script>
+
 </body>
 </html>
