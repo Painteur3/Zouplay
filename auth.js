@@ -3,6 +3,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const firebaseConfig = {
     apiKey: "AIzaSyCxGh9xsAFoqNhtNwPuqsE8oi9hdcbo9Zk",
     authDomain: "quiz-anime-3c4e7.firebaseapp.com",
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   overlay.classList.add("modal-overlay");
   document.body.appendChild(overlay);
 
+  // liens / boutons
   const loginLink = document.getElementById("open-login");
   const signupLink = document.getElementById("open-signup");
   const userInfo = document.getElementById("user-info");
@@ -36,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       modal.classList.add("show");
     });
   }
+
   function closeModal(modal) {
     modal.classList.remove("show");
     overlay.classList.remove("show");
@@ -54,10 +57,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Inscription ---
   document.getElementById("signup").addEventListener("click", () => {
-    const pseudo = document.getElementById("signup-pseudo").value;
-    const email = document.getElementById("signup-email").value;
+    const pseudo = document.getElementById("signup-pseudo").value.trim();
+    const email = document.getElementById("signup-email").value.trim();
     const password = document.getElementById("signup-password").value;
     const messageEl = document.getElementById("signup-message");
+
+    if(!pseudo || !email || !password){
+      messageEl.textContent = "Tous les champs sont obligatoires.";
+      messageEl.style.color = "red";
+      return;
+    }
 
     createUserWithEmailAndPassword(auth, email, password)
       .then(userCredential => updateProfile(userCredential.user, { displayName: pseudo }))
@@ -74,9 +83,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Connexion ---
   document.getElementById("login").addEventListener("click", () => {
-    const email = document.getElementById("login-email").value;
+    const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
     const messageEl = document.getElementById("login-message");
+
+    if(!email || !password){
+      messageEl.textContent = "Email et mot de passe requis.";
+      messageEl.style.color = "red";
+      return;
+    }
 
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
