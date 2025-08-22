@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -15,18 +15,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const db = getFirestore(app);
 
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
-  const overlay = document.querySelector(".modal-overlay");
+  const overlay = document.createElement("div");
+  overlay.classList.add("modal-overlay");
+  document.body.appendChild(overlay);
 
   const loginLink = document.getElementById("open-login");
   const signupLink = document.getElementById("open-signup");
   const userInfo = document.getElementById("user-info");
   const userPseudo = document.getElementById("user-pseudo");
   const logoutBtn = document.getElementById("logout");
-  const bestScoreEl = document.getElementById("best-score");
 
   function openModal(modal) {
     overlay.style.display = "block";
@@ -43,8 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       modal.style.display = "none";
       overlay.style.display = "none";
-      const msg = modal.querySelector(".modal-message");
-      if(msg) msg.textContent = "";
+      modal.querySelector(".modal-message").textContent = "";
     }, 300);
   }
 
@@ -54,56 +53,68 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
-  // --- Auth / Firestore ---
-  async function updateBestScore(userId, score) {
-    const userDoc = doc(db, "users", userId);
-    const docSnap = await getDoc(userDoc);
-    if (!docSnap.exists() || score > (docSnap.data().bestScore || 0)) {
-      await setDoc(userDoc, { bestScore: score }, { merge: true });
-      if(userInfo.style.display !== "none") bestScoreEl.textContent = "Record : " + score;
-    }
-  }
-
-  document.getElementById("signup").addEventListener("click", async () => {
-    const email = document.getElementById("signup-email").value;
+  document.getElementById("signup").addEventListener("click", () => {
+    const pseudo = document.getElementById("signup-pseudo").value.trim();
+    const email = document.getElementById("signup-email").value.trim();
     const password = document.getElementById("signup-password").value;
-    const pseudo = document.getElementById("signup-pseudo").value;
-    const msg = document.getElementById("signup-message");
+    const messageEl = document.getElementById("signup-message");
 
-    try {
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCred.user, { displayName: pseudo });
-      await setDoc(doc(db, "users", userCred.user.uid), { bestScore: 0, pseudo });
-      msg.textContent = "Compte créé !";
-      setTimeout(() => closeModal(signupModal), 1000);
-    } catch(e) { msg.textContent = e.message; }
+    if(!pseudo || !email || !password){
+      messageEl.textContent = "Tous les champs sont obligatoires.";
+      messageEl.style.color = "red";
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(userCredential => updateProfile(userCredential.user, { displayName: pseudo }))
+      .then(() => {
+        messageEl.textContent = `Compte créé : ${pseudo}`;
+        messageEl.style.color = "green";
+        setTimeout(() => closeModal(signupModal), 1500);
+      })
+      .catch(error => {
+        messageEl.textContent = error.message;
+        messageEl.style.color = "red";
+      });
   });
 
-  document.getElementById("login").addEventListener("click", async () => {
-    const email = document.getElementById("login-email").value;
+  document.getElementById("login").addEventListener("click", () => {
+    const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
-    const msg = document.getElementById("login-message");
+    const messageEl = document.getElementById("login-message");
 
-    try {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
-      msg.textContent = "Connecté !";
-      setTimeout(() => closeModal(loginModal), 500);
-    } catch(e) { msg.textContent = e.message; }
+    if(!email || !password){
+      messageEl.textContent = "Email et mot de passe requis.";
+      messageEl.style.color = "red";
+      return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        const pseudo = userCredential.user.displayName || userCredential.user.email;
+        messageEl.textContent = `Connecté : ${pseudo}`;
+        messageEl.style.color = "green";
+        setTimeout(() => closeModal(loginModal), 1500);
+      })
+      .catch(error => {
+        messageEl.textContent = error.message;
+        messageEl.style.color = "red";
+      });
   });
 
   logoutBtn.addEventListener("click", () => signOut(auth));
 
-  onAuthStateChanged(auth, async user => {
-    if(user) {
-      userInfo.style.display = "block";
+  onAuthStateChanged(auth, user => {
+    if(user){
+      loginLink.style.display = "none";
+      signupLink.style.display = "none";
+      userInfo.style.display = "inline-flex";
       userPseudo.textContent = user.displayName || user.email;
-      const docSnap = await getDoc(doc(db, "users", user.uid));
-      bestScoreEl.textContent = "Record : " + ((docSnap.data()?.bestScore) || 0);
     } else {
+      loginLink.style.display = "inline-block";
+      signupLink.style.display = "inline-block";
       userInfo.style.display = "none";
-      bestScoreEl.textContent = "Record : 0";
+      userPseudo.textContent = "";
     }
   });
-
-  window.updateBestScore = updateBestScore; // exposé pour quiz.js
 });
