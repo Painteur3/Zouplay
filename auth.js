@@ -2,6 +2,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+// --- AJOUT FIRESTORE ---
+import { getFirestore, collection, query, orderBy, limit, getDocs, doc, setDoc, updateDoc, serverTimestamp } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const firebaseConfig = {
@@ -15,6 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+
+  // --- INITIALISATION FIRESTORE ---
+  const db = getFirestore(app);
 
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
@@ -53,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
+  // --- INSCRIPTION ---
   document.getElementById("signup").addEventListener("click", () => {
     const pseudo = document.getElementById("signup-pseudo").value.trim();
     const email = document.getElementById("signup-email").value.trim();
@@ -78,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
+  // --- CONNEXION ---
   document.getElementById("login").addEventListener("click", () => {
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
@@ -117,4 +126,55 @@ document.addEventListener("DOMContentLoaded", () => {
       userPseudo.textContent = "";
     }
   });
+
+  // ---------------------------
+  // --- GESTION SCORES & TOP 25 ---
+  // ---------------------------
+
+  // Mettre à jour le score d'un utilisateur
+  async function updateScore(userId, newScore, displayName) {
+    const userRef = doc(db, "users", userId);
+    try {
+      await updateDoc(userRef, {
+        score: newScore,
+        lastUpdate: serverTimestamp()
+      });
+    } catch {
+      await setDoc(userRef, {
+        displayName: displayName,
+        score: newScore,
+        lastUpdate: serverTimestamp()
+      });
+    }
+  }
+
+  // Afficher le Top 25
+  async function displayLeaderboard() {
+    const leaderboardList = document.getElementById("leaderboard-list");
+    if(!leaderboardList) return;
+
+    leaderboardList.innerHTML = '';
+
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, orderBy("score", "desc"), limit(25));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc, index) => {
+      const data = doc.data();
+      const li = document.createElement("li");
+      li.textContent = `${index + 1}. ${data.displayName || "Anonyme"} - ${data.score || 0}`;
+      leaderboardList.appendChild(li);
+    });
+  }
+
+  // Afficher le Top 25 dès le chargement
+  displayLeaderboard();
+
+  // --- OPTIONNEL : Mettre à jour le score à la fin du quiz ---
+  // Exemple : 
+  // if(auth.currentUser){
+  //   updateScore(auth.currentUser.uid, currentScore, auth.currentUser.displayName);
+  //   displayLeaderboard(); // rafraîchit le classement
+  // }
+
 });
