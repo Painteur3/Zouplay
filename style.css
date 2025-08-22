@@ -873,10 +873,33 @@ header {
   display: none;
   z-index: 9999;
   transition: opacity 0.3s ease;
+  display: flex;           /* utiliser flex pour centrer */
+  align-items: center;     /* centre verticalement */
+  justify-content: center; /* centre horizontalement */
 }
 
+/* Affichage de l'overlay */
 .modal-overlay.show {
-  display: block;
+  opacity: 1;
+}
+
+/* Modale */
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  max-width: 400px;
+  width: 90%;
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 10000;
+}
+
+/* Animation lors de l'ouverture */
+.modal.show {
+  transform: scale(1);
   opacity: 1;
 }
 
