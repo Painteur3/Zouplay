@@ -37,12 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   document.getElementById("close-login").addEventListener("click", () => {
-    loginModal.style.display = "none";
-  });
+    loginModal.classList.remove("show");
+    setTimeout(() => loginModal.style.display = "none", 300);
+});
 
-  document.getElementById("close-signup").addEventListener("click", () => {
-    signupModal.style.display = "none";
-  });
+document.getElementById("close-signup").addEventListener("click", () => {
+    signupModal.classList.remove("show");
+    setTimeout(() => signupModal.style.display = "none", 300);
+});
+
 
   // --- Inscription ---
   document.getElementById("signup").addEventListener("click", () => {
@@ -85,4 +88,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
 
