@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// --- AJOUT FIRESTORE ---
+// --- FIRESTORE ---
 import { getFirestore, collection, query, orderBy, limit, getDocs, doc, setDoc, updateDoc, serverTimestamp } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -19,8 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-
-  // --- INITIALISATION FIRESTORE ---
   const db = getFirestore(app);
 
   const loginModal = document.getElementById("login-modal");
@@ -128,27 +126,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ---------------------------
-  // --- GESTION SCORES & TOP 25 ---
+  // --- SCORES ET TOP 25 ---
   // ---------------------------
 
-  // Mettre à jour le score d'un utilisateur
   async function updateScore(userId, newScore, displayName) {
     const userRef = doc(db, "users", userId);
     try {
-      await updateDoc(userRef, {
-        score: newScore,
-        lastUpdate: serverTimestamp()
-      });
+      await updateDoc(userRef, { score: newScore, lastUpdate: serverTimestamp() });
     } catch {
-      await setDoc(userRef, {
-        displayName: displayName,
-        score: newScore,
-        lastUpdate: serverTimestamp()
-      });
+      await setDoc(userRef, { displayName, score: newScore, lastUpdate: serverTimestamp() });
     }
   }
 
-  // Afficher le Top 25
   async function displayLeaderboard() {
     const leaderboardList = document.getElementById("leaderboard-list");
     if(!leaderboardList) return;
@@ -167,15 +156,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
- // Afficher le Top 25 dès le chargement
-displayLeaderboard();
+  // --- AFFICHAGE INITIAL ---
+  displayLeaderboard();
 
-// Mettre à jour le score à la fin du quiz
-if(auth.currentUser){
-  const currentScore = parseInt(document.getElementById("score").textContent) || 0;
-  updateScore(auth.currentUser.uid, currentScore, auth.currentUser.displayName)
-    .then(() => displayLeaderboard()); // rafraîchit automatiquement le Top 25
-}
+  // --- RAFRAÎCHISSEMENT AUTOMATIQUE via interval ---
+  let lastScore = 0;
+  setInterval(() => {
+    if(auth.currentUser){
+      const currentScore = parseInt(document.getElementById("score").textContent) || 0;
+      if(currentScore !== lastScore){
+        lastScore = currentScore;
+        updateScore(auth.currentUser.uid, currentScore, auth.currentUser.displayName)
+          .then(() => displayLeaderboard());
+      }
+    }
+  }, 2000); // toutes les 2 secondes
 
 });
-
