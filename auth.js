@@ -1,9 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // --- Config Firebase ---
   const firebaseConfig = {
     apiKey: "AIzaSyCxGh9xsAFoqNhtNwPuqsE8oi9hdcbo9Zk",
     authDomain: "quiz-anime-3c4e7.firebaseapp.com",
@@ -15,7 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
 
+  // --- Modales ---
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
   const overlay = document.createElement("div");
@@ -27,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const userInfo = document.getElementById("user-info");
   const userPseudo = document.getElementById("user-pseudo");
   const logoutBtn = document.getElementById("logout");
+  const bestScoreEl = document.getElementById("best-score");
 
   function openModal(modal) {
     overlay.style.display = "block";
@@ -43,7 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       modal.style.display = "none";
       overlay.style.display = "none";
-      modal.querySelector(".modal-message").textContent = "";
+      const msg = modal.querySelector(".modal-message");
+      if(msg) msg.textContent = "";
     }, 300);
   }
 
@@ -53,7 +59,25 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
-  document.getElementById("signup").addEventListener("click", () => {
+  // --- Firestore: fonctions meilleur score ---
+  async function updateBestScore(userId, score) {
+    const userDoc = doc(db, "users", userId);
+    const docSnap = await getDoc(userDoc);
+
+    if (!docSnap.exists() || score > (docSnap.data().bestScore || 0)) {
+      await setDoc(userDoc, { bestScore: score }, { merge: true });
+      if(userInfo.style.display !== "none") bestScoreEl.textContent = `Record : ${score}`;
+    }
+  }
+
+  async function getBestScore(userId) {
+    const userDoc = doc(db, "users", userId);
+    const docSnap = await getDoc(userDoc);
+    return docSnap.exists() ? docSnap.data().bestScore || 0 : 0;
+  }
+
+  // --- Inscription ---
+  document.getElementById("signup").addEventListener("click", async () => {
     const pseudo = document.getElementById("signup-pseudo").value.trim();
     const email = document.getElementById("signup-email").value.trim();
     const password = document.getElementById("signup-password").value;
@@ -65,20 +89,22 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(userCredential => updateProfile(userCredential.user, { displayName: pseudo }))
-      .then(() => {
-        messageEl.textContent = `Compte créé : ${pseudo}`;
-        messageEl.style.color = "green";
-        setTimeout(() => closeModal(signupModal), 1500);
-      })
-      .catch(error => {
-        messageEl.textContent = error.message;
-        messageEl.style.color = "red";
-      });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: pseudo });
+      // Créer un document Firestore pour le nouvel utilisateur
+      await setDoc(doc(db, "users", userCredential.user.uid), { bestScore: 0 });
+      messageEl.textContent = `Compte créé : ${pseudo}`;
+      messageEl.style.color = "green";
+      setTimeout(() => closeModal(signupModal), 1500);
+    } catch(error) {
+      messageEl.textContent = error.message;
+      messageEl.style.color = "red";
+    }
   });
 
-  document.getElementById("login").addEventListener("click", () => {
+  // --- Connexion ---
+  document.getElementById("login").addEventListener("click", async () => {
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
     const messageEl = document.getElementById("login-message");
@@ -89,32 +115,48 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then(userCredential => {
-        const pseudo = userCredential.user.displayName || userCredential.user.email;
-        messageEl.textContent = `Connecté : ${pseudo}`;
-        messageEl.style.color = "green";
-        setTimeout(() => closeModal(loginModal), 1500);
-      })
-      .catch(error => {
-        messageEl.textContent = error.message;
-        messageEl.style.color = "red";
-      });
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const pseudo = userCredential.user.displayName || userCredential.user.email;
+      messageEl.textContent = `Connecté : ${pseudo}`;
+      messageEl.style.color = "green";
+
+      // Afficher le meilleur score
+      const bestScore = await getBestScore(userCredential.user.uid);
+      bestScoreEl.textContent = `Record : ${bestScore}`;
+
+      setTimeout(() => closeModal(loginModal), 1500);
+    } catch(error) {
+      messageEl.textContent = error.message;
+      messageEl.style.color = "red";
+    }
   });
 
+  // --- Déconnexion ---
   logoutBtn.addEventListener("click", () => signOut(auth));
 
-  onAuthStateChanged(auth, user => {
+  // --- État utilisateur ---
+  onAuthStateChanged(auth, async user => {
     if(user){
       loginLink.style.display = "none";
       signupLink.style.display = "none";
       userInfo.style.display = "inline-flex";
       userPseudo.textContent = user.displayName || user.email;
+
+      // Mettre à jour l'affichage du meilleur score au login
+      const bestScore = await getBestScore(user.uid);
+      bestScoreEl.textContent = `Record : ${bestScore}`;
     } else {
       loginLink.style.display = "inline-block";
       signupLink.style.display = "inline-block";
       userInfo.style.display = "none";
       userPseudo.textContent = "";
+      bestScoreEl.textContent = "Record : 0";
     }
   });
+
+  // --- Exemple d'utilisation pendant le quiz ---
+  // Appelle cette fonction quand le joueur finit une partie
+  // updateBestScore(auth.currentUser.uid, scoreObtenu);
+
 });
