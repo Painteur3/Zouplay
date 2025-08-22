@@ -23,29 +23,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
 
+  // --- Overlay ---
+  const overlay = document.createElement("div");
+  overlay.id = "modal-overlay";
+  overlay.classList.add("modal-overlay");
+  document.body.appendChild(overlay);
+
+  // Fonction pour ouvrir modale
+  function openModal(modal) {
+    overlay.style.display = "block";
+    setTimeout(() => overlay.classList.add("show"), 10);
+
+    modal.style.display = "block";
+    setTimeout(() => modal.classList.add("show"), 10);
+  }
+
+  // Fonction pour fermer modale
+  function closeModal(modal) {
+    modal.classList.remove("show");
+    overlay.classList.remove("show");
+    setTimeout(() => {
+      modal.style.display = "none";
+      overlay.style.display = "none";
+    }, 300);
+  }
+
+  // Ouvrir modales
   document.getElementById("open-login").addEventListener("click", e => {
     e.preventDefault();
-    loginModal.style.display = "block";
-    setTimeout(() => loginModal.classList.add("show"), 10);
-});
+    openModal(loginModal);
+  });
 
   document.getElementById("open-signup").addEventListener("click", e => {
     e.preventDefault();
-    signupModal.style.display = "block";
-    setTimeout(() => signupModal.classList.add("show"), 10);
-});
+    openModal(signupModal);
+  });
 
-
-  document.getElementById("close-login").addEventListener("click", () => {
-    loginModal.classList.remove("show");
-    setTimeout(() => loginModal.style.display = "none", 300);
-});
-
-document.getElementById("close-signup").addEventListener("click", () => {
-    signupModal.classList.remove("show");
-    setTimeout(() => signupModal.style.display = "none", 300);
-});
-
+  // Fermer modales
+  document.getElementById("close-login").addEventListener("click", () => closeModal(loginModal));
+  document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
 
   // --- Inscription ---
   document.getElementById("signup").addEventListener("click", () => {
@@ -55,7 +71,7 @@ document.getElementById("close-signup").addEventListener("click", () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
         alert("Compte créé : " + userCredential.user.email);
-        signupModal.style.display = "none";
+        closeModal(signupModal);
       })
       .catch(error => alert("Erreur : " + error.message));
   });
@@ -68,7 +84,7 @@ document.getElementById("close-signup").addEventListener("click", () => {
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
         alert("Connecté : " + userCredential.user.email);
-        loginModal.style.display = "none";
+        closeModal(loginModal);
       })
       .catch(error => alert("Erreur : " + error.message));
   });
@@ -88,5 +104,3 @@ document.getElementById("close-signup").addEventListener("click", () => {
   });
 
 });
-
-
