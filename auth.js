@@ -21,8 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
   overlay.classList.add("modal-overlay");
   document.body.appendChild(overlay);
 
-  const headerCenter = document.querySelector(".header-center");
+  const loginLink = document.getElementById("open-login");
+  const signupLink = document.getElementById("open-signup");
+  const userInfo = document.getElementById("user-info");
+  const userPseudo = document.getElementById("user-pseudo");
+  const logoutBtn = document.getElementById("logout");
 
+  // --- Modales ---
   function openModal(modal) {
     overlay.style.display = "block";
     modal.style.display = "block";
@@ -31,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
       modal.classList.add("show");
     });
   }
-
   function closeModal(modal) {
     modal.classList.remove("show");
     overlay.classList.remove("show");
@@ -42,9 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 300);
   }
 
-  // Ouverture/fermeture modales
-  document.getElementById("open-login").addEventListener("click", e => { e.preventDefault(); openModal(loginModal); });
-  document.getElementById("open-signup").addEventListener("click", e => { e.preventDefault(); openModal(signupModal); });
+  loginLink.addEventListener("click", e => { e.preventDefault(); openModal(loginModal); });
+  signupLink.addEventListener("click", e => { e.preventDefault(); openModal(signupModal); });
   document.getElementById("close-login").addEventListener("click", () => closeModal(loginModal));
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
@@ -57,13 +60,53 @@ document.addEventListener("DOMContentLoaded", () => {
     const messageEl = document.getElementById("signup-message");
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then(userCredential => {
-        return updateProfile(userCredential.user, { displayName: pseudo })
-          .then(() => {
-            messageEl.textContent = `Compte créé : ${pseudo} (${userCredential.user.email})`;
-            messageEl.style.color = "green";
-            setTimeout(() => closeModal(signupModal), 1500);
-          });
+      .then(userCredential => updateProfile(userCredential.user, { displayName: pseudo }))
+      .then(() => {
+        messageEl.textContent = `Compte créé : ${pseudo}`;
+        messageEl.style.color = "green";
+        setTimeout(() => closeModal(signupModal), 1500);
       })
       .catch(error => {
-        messageEl.textContent = error.messa
+        messageEl.textContent = error.message;
+        messageEl.style.color = "red";
+      });
+  });
+
+  // --- Connexion ---
+  document.getElementById("login").addEventListener("click", () => {
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    const messageEl = document.getElementById("login-message");
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        const pseudo = userCredential.user.displayName || userCredential.user.email;
+        messageEl.textContent = `Connecté : ${pseudo}`;
+        messageEl.style.color = "green";
+        setTimeout(() => closeModal(loginModal), 1500);
+      })
+      .catch(error => {
+        messageEl.textContent = error.message;
+        messageEl.style.color = "red";
+      });
+  });
+
+  // --- Déconnexion ---
+  logoutBtn.addEventListener("click", () => signOut(auth));
+
+  // --- Suivi utilisateur ---
+  onAuthStateChanged(auth, user => {
+    if(user){
+      loginLink.style.display = "none";
+      signupLink.style.display = "none";
+      userInfo.style.display = "inline-block";
+      userPseudo.textContent = user.displayName || user.email;
+    } else {
+      loginLink.style.display = "inline-block";
+      signupLink.style.display = "inline-block";
+      userInfo.style.display = "none";
+      userPseudo.textContent = "";
+    }
+  });
+
+});
