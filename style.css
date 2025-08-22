@@ -876,5 +876,52 @@ header {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+#leaderboard-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #1e1e2f;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+#leaderboard-section h2 {
+  text-align: center;
+  color: #ff6600;
+  margin-bottom: 1rem;
+}
+
+.leaderboard-list {
+  list-style: none;
+  padding: 0;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.leaderboard-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #444;
+  font-weight: bold;
+}
+
+.leaderboard-list li:nth-child(odd) {
+  background: #2a2a3c;
+}
+
+.leaderboard-list li:nth-child(1) {
+  color: gold;
+  font-size: 1.1rem;
+}
+
+.leaderboard-list li:nth-child(2) {
+  color: silver;
+}
+
+.leaderboard-list li:nth-child(3) {
+  color: #cd7f32; /* bronze */
+}
+
 
 
