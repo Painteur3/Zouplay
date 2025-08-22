@@ -3,11 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon2.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon2.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="images/favicon2.png">
+
   <title>Quiz – Le Masque de l’Anime</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
 
+  <!-- 
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+ -->
+
+<body>
 <header>
   <div class="header-center">
     <h1>Le Masque de l’Anime</h1>
@@ -16,97 +27,81 @@
 
   <nav class="header-right">
     <ul>
-      <li><a href="#" id="open-login">Se connecter <span class="dev-badge">Dév</span></a></li>
-      <li><a href="#" id="open-signup">S'inscrire <span class="dev-badge">Dév</span></a></li>
+      <li>
+        <a href="#">Se connecter <span class="dev-badge">Dév</span></a>
+      </li>
+      <li>
+        <a href="#">S'inscrire <span class="dev-badge">Dév</span></a>
+      </li>
     </ul>
-    <div id="user-info" style="display:none;">
-      <span id="user-pseudo"></span>
-      <button id="logout" class="btn">Déconnexion</button>
-    </div>
   </nav>
 </header>
 
-<div class="container">
-  <aside class="pub">
-    <!-- Pub gauche -->
-  </aside>
+  <div class="container">
+    <!-- Colonne pub gauche -->
+<aside class="pub">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+       data-ad-slot="1111111111"
+       data-ad-format="auto"></ins>
+</aside>
 
-  <main>
-    <!-- Accueil / Choix catégorie -->
-    <section id="accueil">
-      <h2>Prépare ton aventure</h2>
-      <form id="categories-form">
-        <div id="categories-container"></div>
-      </form>
-      <button id="start-quiz" class="btn btn-start">Commencer le quiz</button>
-    </section>
+    <!-- Zone principale -->
+    <main>
+      <!-- Accueil -->
+<section id="accueil">
+  <h2>Prépare ton aventure</h2>
+  <form id="categories-form">
+    <div id="categories-container"></div>
+  </form>
+  <button id="start-quiz" class="btn btn-start">Commencer le quiz</button>
+</section>
 
-    <!-- Quiz -->
-    <section id="quiz" class="hidden">
-      <div id="score-container">
-        <span id="best-score">Record : 0</span>
-        <div id="score-lives">
-          Score: <span id="score">0</span> | Life: <span id="lives">3</span>
-        </div>
-      </div>
-
-      <div class="personnage-container">
-        <img id="personnage-image" src="" alt="Personnage">
-      </div>
-
-      <div class="answer-container">
-        <input type="text" id="answer" placeholder="Tape le nom...">
-        <button id="validate" class="btn btn-validate">Valider</button>
-      </div>
-
-      <p id="result"></p>
-    </section>
-
-    <!-- Leaderboard -->
-    <section id="leaderboard-section">
-      <h2>🏆 Top 25 – Classement des joueurs</h2>
-      <ul id="leaderboard-list" class="leaderboard-list"></ul>
-    </section>
-
-    <canvas id="confetti"></canvas>
-  </main>
-
-  <aside class="pub">
-    <!-- Pub droite -->
-  </aside>
-</div>
-
-<div class="info-bar">
-  <div class="info-content">
-    🚀 Nouveaux quiz disponibles ! &nbsp;&nbsp; | &nbsp;&nbsp; 🎉 Création de compte ajouté ! &nbsp;&nbsp; | &nbsp;&nbsp; 🌟 Création du classement en cours !
+<!-- Quiz -->
+<section id="quiz" class="hidden">
+<div id="score-container">
+  <span id="best-score">Record : 0</span>
+  <div id="score-lives">
+    Score: <span id="score">0</span> | Life: <span id="lives">3</span>
   </div>
 </div>
 
-<!-- Modales -->
-<div id="login-modal" class="modal">
-  <h2>Connexion</h2>
-  <input type="email" id="login-email" placeholder="Email">
-  <input type="password" id="login-password" placeholder="Mot de passe">
-  <div id="login-message" class="modal-message"></div>
-  <button id="login" class="btn btn-validate">Se connecter</button>
-  <button id="close-login" class="btn">Fermer</button>
+
+  <!-- Image du personnage -->
+  <div class="personnage-container">
+    <img id="personnage-image" src="" alt="Personnage">
+  </div>
+
+  <!-- Zone réponse + bouton centré -->
+  <div class="answer-container">
+    <input type="text" id="answer" placeholder="Tape le nom...">
+    <button id="validate" class="btn btn-validate">Valider</button>
+  </div>
+
+  <p id="result"></p>
+</section>
+      
+      <!-- Confettis -->
+      <canvas id="confetti"></canvas>
+    </main>
+
+    <!-- Colonne pub droite -->
+<aside class="pub">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+       data-ad-slot="2222222222"
+       data-ad-format="auto"></ins>
+</aside>
+  </div>
+
+  <div class="info-bar">
+  <div class="info-content">
+    🚀 Nouveaux quiz disponibles ! &nbsp;&nbsp; | &nbsp;&nbsp; 🎉 Record de série ajouté ! &nbsp;&nbsp; | &nbsp;&nbsp; 🌟 Création du classement en cours !
+  </div>
 </div>
 
-<div id="signup-modal" class="modal">
-  <h2>Inscription</h2>
-  <input type="text" id="signup-pseudo" placeholder="Pseudo">
-  <input type="email" id="signup-email" placeholder="Email">
-  <input type="password" id="signup-password" placeholder="Mot de passe">
-  <div id="signup-message" class="modal-message"></div>
-  <button id="signup" class="btn btn-validate">Créer un compte</button>
-  <button id="close-signup" class="btn">Fermer</button>
-</div>
-
-<div class="modal-overlay"></div>
-
-<!-- Scripts -->
-<script type="module" src="auth.js"></script>
-<script type="module" src="quiz.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
