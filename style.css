@@ -792,18 +792,18 @@ header {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.4);
-  z-index: 1020; /* au-dessus de tout sauf les modales */
+  z-index: 1020;
   display: none;
 }
 
-/* Modales */
+/* Modale centrée */
 .modal {
   display: none;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  z-index: 1030; /* plus haut que overlay et header */
+  z-index: 1030;
   background: linear-gradient(135deg, #fff6e6, #ffd699);
   padding: 25px 30px;
   border-radius: 20px;
@@ -816,7 +816,9 @@ header {
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+/* Affichage */
 .modal.show {
+  display: block; /* indispensable si display:none avant */
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
