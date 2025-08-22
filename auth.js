@@ -26,12 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("open-login").addEventListener("click", e => {
     e.preventDefault();
     loginModal.style.display = "block";
-  });
+    setTimeout(() => loginModal.classList.add("show"), 10);
+});
 
   document.getElementById("open-signup").addEventListener("click", e => {
     e.preventDefault();
     signupModal.style.display = "block";
-  });
+    setTimeout(() => signupModal.classList.add("show"), 10);
+});
+
 
   document.getElementById("close-login").addEventListener("click", () => {
     loginModal.style.display = "none";
@@ -82,3 +85,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
