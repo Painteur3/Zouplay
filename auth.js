@@ -195,3 +195,65 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
+import { collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Récupérer le top 25 depuis Firestore
+async function getLeaderboard(top = 25) {
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, orderBy("bestScore", "desc"), limit(top));
+  const querySnapshot = await getDocs(q);
+
+  const leaderboard = [];
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+    leaderboard.push({
+      pseudo: data.displayName || "Anonyme",
+      score: data.bestScore || 0
+    });
+  });
+
+  return leaderboard;
+}
+
+// Afficher le classement dans le DOM
+async function displayLeaderboard() {
+  const leaderboardList = document.getElementById("leaderboard-list");
+  if(!leaderboardList) return;
+  leaderboardList.innerHTML = "";
+
+  const leaderboard = await getLeaderboard(25);
+  leaderboard.forEach((user, index) => {
+    const li = document.createElement("li");
+    li.textContent = `${index + 1}. ${user.pseudo} - ${user.score} pts`;
+    leaderboardList.appendChild(li);
+  });
+}
+
+// Afficher le classement au chargement de la page
+displayLeaderboard();
+
+// Mettre à jour le classement après chaque partie
+async function finishQuiz() {
+  const score = parseInt(scoreEl.textContent);
+  const user = auth.currentUser;
+
+  if(user){
+    await updateBestScore(user.uid, score);
+    const bestScore = await getBestScore(user.uid);
+    bestScoreEl.textContent = `Record : ${bestScore}`;
+    showMessage(`Quiz terminé ! Votre score : ${score}. Record actuel : ${bestScore} 🎉`);
+  } else {
+    showMessage(`Quiz terminé ! Votre score : ${score}. Connecte-toi pour sauvegarder ton record.`);
+  }
+
+  scoreEl.textContent = "0";
+  livesEl.textContent = "3";
+  quizSection.classList.add("hidden");
+  accueilSection.classList.remove("hidden");
+
+  // Actualiser le classement
+  await displayLeaderboard();
+}
+
+
