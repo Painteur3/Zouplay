@@ -551,69 +551,91 @@ header::after {
 header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 15px 30px;
-  background: linear-gradient(270deg, #ffcc80, #ff9966, #ffcc80);
-  background-size: 400% 400%;
-  animation: gradientHeader 30s ease infinite;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-  position: relative;
-  overflow: hidden;
-  z-index: 1000;
-}
-
-/* Header principal */
-header {
-  display: flex;
-  align-items: center;
   justify-content: center; /* titre centré */
-  padding: 20px 30px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 15px 40px;
   background: linear-gradient(270deg, #ffcc80, #ff9966, #ffcc80);
   background-size: 400% 400%;
   animation: gradientHeader 30s ease infinite;
   border-radius: 0 0 12px 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
   position: relative;
-  z-index: 1000;
+  box-sizing: border-box;
 }
 
-/* Titre */
-.header-center h1 {
-  font-size: 2.5em;
-  font-weight: bold;
-  background: linear-gradient(90deg, #0f0f0e, #835021, #111110);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientText 6s ease infinite, floatSlow 10s ease-in-out infinite;
-  margin: 0;
+/* Partie centrale : titre */
+.header-center {
   text-align: center;
+  flex: 1; /* prend tout l’espace central */
+  z-index: 1; /* pour rester au-dessus si besoin */
 }
 
-/* Animation du gradient du header */
+.header-center h1 {
+  margin: 0;
+  font-size: 2em;
+  color: #ff6600;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.header-center p {
+  margin: 5px 0 0 0;
+  font-size: 1em;
+  color: #555;
+}
+
+/* Menu à droite */
+.header-right {
+  position: absolute; /* pour rester à droite sans décaler le titre */
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.header-right ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.header-right a {
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  padding: 5px 10px;
+  transition: color 0.2s;
+}
+
+.header-right a:hover {
+  color: #ff6600;
+}
+
+/* Animations */
 @keyframes gradientHeader {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
 }
 
-/* Animation gradient texte */
-@keyframes gradientText {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Flottement du titre */
-@keyframes floatSlow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
-}
-
-/* Responsive */
+/* Responsive mobile */
 @media screen and (max-width: 768px) {
-  header { flex-direction: column; padding: 15px 20px; }
-  .header-center h1 { font-size: 2em; }
+  header {
+    flex-direction: column;
+    justify-content: center;
+    padding: 15px 20px;
+  }
+
+  .header-right {
+    position: static;
+    transform: none;
+    margin-top: 10px;
+    justify-content: center;
+    gap: 10px;
+  }
 }
 
 
