@@ -839,6 +839,40 @@ header {
 }
 
 /* Messages d'erreur/succès */
-.mo
+.modal-message {
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  min-height: 18px;
+}
+
+#user-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+}
+
+#user-pseudo {
+  background: linear-gradient(135deg, #f5be48, #f7a600);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+#user-info button {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #ffb347, #ff6600);
+  color: white;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#user-info button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
 
 
