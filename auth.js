@@ -167,14 +167,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Afficher le Top 25 dès le chargement
-  displayLeaderboard();
+ // Afficher le Top 25 dès le chargement
+displayLeaderboard();
 
-  // --- OPTIONNEL : Mettre à jour le score à la fin du quiz ---
-  // Exemple : 
-  // if(auth.currentUser){
-  //   updateScore(auth.currentUser.uid, currentScore, auth.currentUser.displayName);
-  //   displayLeaderboard(); // rafraîchit le classement
-  // }
+// Mettre à jour le score à la fin du quiz
+if(auth.currentUser){
+  const currentScore = parseInt(document.getElementById("score").textContent) || 0;
+  updateScore(auth.currentUser.uid, currentScore, auth.currentUser.displayName)
+    .then(() => displayLeaderboard()); // rafraîchit automatiquement le Top 25
+}
 
 });
+
