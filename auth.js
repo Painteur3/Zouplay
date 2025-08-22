@@ -92,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: pseudo });
-      // Créer un document Firestore pour le nouvel utilisateur
       await setDoc(doc(db, "users", userCredential.user.uid), { bestScore: 0 });
       messageEl.textContent = `Compte créé : ${pseudo}`;
       messageEl.style.color = "green";
@@ -121,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
       messageEl.textContent = `Connecté : ${pseudo}`;
       messageEl.style.color = "green";
 
-      // Afficher le meilleur score
       const bestScore = await getBestScore(userCredential.user.uid);
       bestScoreEl.textContent = `Record : ${bestScore}`;
 
@@ -143,7 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
       userInfo.style.display = "inline-flex";
       userPseudo.textContent = user.displayName || user.email;
 
-      // Mettre à jour l'affichage du meilleur score au login
       const bestScore = await getBestScore(user.uid);
       bestScoreEl.textContent = `Record : ${bestScore}`;
     } else {
@@ -155,8 +152,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Exemple d'utilisation pendant le quiz ---
-  // Appelle cette fonction quand le joueur finit une partie
-  // updateBestScore(auth.currentUser.uid, scoreObtenu);
+  // --- Quiz ---
+  const scoreEl = document.getElementById("score");
+  const livesEl = document.getElementById("lives");
+  const quizSection = document.getElementById("quiz");
+  const accueilSection = document.getElementById("accueil");
+
+  async function finishQuiz() {
+    const score = parseInt(scoreEl.textContent);
+    const user = auth.currentUser;
+
+    if(user){
+      await updateBestScore(user.uid, score);
+      const bestScore = await getBestScore(user.uid);
+      bestScoreEl.textContent = `Record : ${bestScore}`;
+      showMessage(`Quiz terminé ! Votre score : ${score}. Record actuel : ${bestScore} 🎉`);
+    } else {
+      showMessage(`Quiz terminé ! Votre score : ${score}. Connecte-toi pour sauvegarder ton record.`);
+    }
+
+    scoreEl.textContent = "0";
+    livesEl.textContent = "3";
+    quizSection.classList.add("hidden");
+    accueilSection.classList.remove("hidden");
+  }
+
+  function showMessage(msg) {
+    const resultEl = document.getElementById("result");
+    resultEl.textContent = msg;
+    resultEl.style.color = "#ff6600";
+  }
+
+  function checkGameOver() {
+    if(parseInt(livesEl.textContent) <= 0){
+      finishQuiz();
+    }
+  }
+
+  document.getElementById("validate").addEventListener("click", () => {
+    // ici tu peux ajouter ton code de validation de réponse
+    checkGameOver();
+  });
 
 });
