@@ -27,11 +27,11 @@
       <li><a href="#" id="open-login">Se connecter <span class="dev-badge">Dév</span></a></li>
       <li><a href="#" id="open-signup">S'inscrire <span class="dev-badge">Dév</span></a></li>
     </ul>
+    <div id="user-info" style="display:none;">
+      <span id="user-pseudo"></span>
+      <button id="logout" class="btn">Déconnexion</button>
+    </div>
   </nav>
-  
-  <!-- Déconnexion visible après connexion -->
-  <button id="logout" style="display:none;">Déconnexion</button>
-  
 </header>
 
 <div class="container">
@@ -102,24 +102,27 @@
   (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 
-  <!-- Modal Connexion -->
-  <div id="login-modal" class="modal" style="display:none;">
-    <h2>Connexion</h2>
-    <input type="email" id="login-email" placeholder="Email">
-    <input type="password" id="login-password" placeholder="Mot de passe">
-    <button id="login">Se connecter</button>
-    <button id="close-login">Fermer</button>
-  </div>
-  
-  <!-- Modal Inscription -->
-  <div id="signup-modal" class="modal" style="display:none;">
-    <h2>Inscription</h2>
-    <input type="email" id="signup-email" placeholder="Email">
-    <input type="password" id="signup-password" placeholder="Mot de passe">
-    <button id="signup">Créer un compte</button>
-    <button id="close-signup">Fermer</button>
-  </div>
-  
+<!-- Modal Connexion -->
+<div id="login-modal" class="modal" style="display:none;">
+  <h2>Connexion</h2>
+  <input type="email" id="login-email" placeholder="Email">
+  <input type="password" id="login-password" placeholder="Mot de passe">
+  <div id="login-message" class="modal-message"></div>
+  <button id="login" class="btn btn-validate">Se connecter</button>
+  <button id="close-login" class="btn">Fermer</button>
+</div>
+
+<!-- Modal Inscription -->
+<div id="signup-modal" class="modal" style="display:none;">
+  <h2>Inscription</h2>
+  <input type="text" id="signup-pseudo" placeholder="Pseudo">
+  <input type="email" id="signup-email" placeholder="Email">
+  <input type="password" id="signup-password" placeholder="Mot de passe">
+  <div id="signup-message" class="modal-message"></div>
+  <button id="signup" class="btn btn-validate">Créer un compte</button>
+  <button id="close-signup" class="btn">Fermer</button>
+</div>
+
 <script src="script.js"></script>
 <script type="module" src="auth.js"></script>
 
