@@ -773,3 +773,72 @@ header {
   z-index: 10002; /* liens au-dessus du header */
 }
 
+/* Modales */
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  z-index: 1030;
+  background: linear-gradient(135deg, #fff6e6, #ffd699);
+  padding: 25px 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  width: 350px;
+  max-width: 90%;
+  text-align: center;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal.show {
+  display: block;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.modal h2 {
+  margin-bottom: 15px;
+  color: #ff6600;
+  font-size: 1.6em;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.modal input {
+  width: 85%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 2px solid #ffb347;
+  border-radius: 12px;
+  font-size: 1em;
+  outline: none;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.modal input:focus {
+  border-color: #ff6600;
+  box-shadow: 0 0 8px rgba(255,102,0,0.3);
+}
+
+.modal button {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ffb347, #ff6600);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 5px 0;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.modal button:hover {
+  background: linear-gradient(135deg, #ff9900, #ff3300);
+  transform: scale(1.05);
+}
+
+/* Messages d'erreur/succès */
+.mo
+
+
