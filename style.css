@@ -563,105 +563,59 @@ header {
   z-index: 1000;
 }
 
-/* Partie centrale : titre */
-.header-center {
-  text-align: center;
-  flex: 1;
-  z-index: 1;
+/* Header principal */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* titre centré */
+  padding: 20px 30px;
+  background: linear-gradient(270deg, #ffcc80, #ff9966, #ffcc80);
+  background-size: 400% 400%;
+  animation: gradientHeader 30s ease infinite;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1000;
 }
 
+/* Titre */
 .header-center h1 {
-  margin: 0;
   font-size: 2.5em;
   font-weight: bold;
   background: linear-gradient(90deg, #0f0f0e, #835021, #111110);
-  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 2px rgba(255,102,0,0.4), 0 0 4px rgba(255,204,51,0.4);
-  animation: gradientText 6s ease infinite,
-             floatSlow 10s ease-in-out infinite,
-             glowBreathe 4s ease-in-out infinite;
+  animation: gradientText 6s ease infinite, floatSlow 10s ease-in-out infinite;
+  margin: 0;
+  text-align: center;
 }
 
-/* Texte secondaire (optionnel) */
-.header-center p {
-  margin: 5px 0 0 0;
-  font-size: 1em;
-  color: #555;
-}
-
-/* Menu / boutons à droite */
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  z-index: 2;
-}
-
-/* Liens / boutons */
-.header-right a {
-  text-decoration: none;
-  color: #555;
-  font-weight: 500;
-  padding: 5px 10px;
-  transition: color 0.2s;
-}
-
-.header-right a:hover {
-  color: #ff6600;
-}
-
-/* Animations */
+/* Animation du gradient du header */
 @keyframes gradientHeader {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
+/* Animation gradient texte */
 @keyframes gradientText {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
+/* Flottement du titre */
 @keyframes floatSlow {
-  0%   { transform: translate(0, 0); }
-  10%  { transform: translate(0.5px, -1px); }
-  20%  { transform: translate(-0.5px, 0.5px); }
-  30%  { transform: translate(1px, -0.5px); }
-  40%  { transform: translate(-1px, 1px); }
-  50%  { transform: translate(0.5px, -0.5px); }
-  60%  { transform: translate(-0.5px, 0.5px); }
-  70%  { transform: translate(1px, 0); }
-  80%  { transform: translate(-1px, -0.5px); }
-  90%  { transform: translate(0.5px, 1px); }
-  100% { transform: translate(0, 0); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
 }
 
-@keyframes glowBreathe {
-  0%   { text-shadow: 0 0 2px rgba(255,102,0,0.4), 0 0 4px rgba(255,204,51,0.4); }
-  50%  { text-shadow: 0 0 4px rgba(255,102,0,0.6), 0 0 8px rgba(255,204,51,0.6); }
-  100% { text-shadow: 0 0 2px rgba(255,102,0,0.4), 0 0 4px rgba(255,204,51,0.4); }
-}
-
-/* Responsive : header mobile */
+/* Responsive */
 @media screen and (max-width: 768px) {
-  header {
-    flex-direction: column;
-    justify-content: center;
-    padding: 15px 20px;
-  }
-
-  .header-right {
-    justify-content: center;
-    margin-top: 10px;
-  }
-
-  .header-center h1 {
-    font-size: 2em;
-  }
+  header { flex-direction: column; padding: 15px 20px; }
+  .header-center h1 { font-size: 2em; }
 }
+
 
 
 /* Badge “en développement” */
