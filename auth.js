@@ -152,51 +152,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Quiz ---
-  const scoreEl = document.getElementById("score");
-  const livesEl = document.getElementById("lives");
-  const quizSection = document.getElementById("quiz");
-  const accueilSection = document.getElementById("accueil");
-
-  async function finishQuiz() {
-    const score = parseInt(scoreEl.textContent);
-    const user = auth.currentUser;
-
-    if(user){
-      await updateBestScore(user.uid, score);
-      const bestScore = await getBestScore(user.uid);
-      bestScoreEl.textContent = `Record : ${bestScore}`;
-      showMessage(`Quiz terminé ! Votre score : ${score}. Record actuel : ${bestScore} 🎉`);
-    } else {
-      showMessage(`Quiz terminé ! Votre score : ${score}. Connecte-toi pour sauvegarder ton record.`);
-    }
-
-    scoreEl.textContent = "0";
-    livesEl.textContent = "3";
-    quizSection.classList.add("hidden");
-    accueilSection.classList.remove("hidden");
-  }
-
-  function showMessage(msg) {
-    const resultEl = document.getElementById("result");
-    resultEl.textContent = msg;
-    resultEl.style.color = "#ff6600";
-  }
-
-  function checkGameOver() {
-    if(parseInt(livesEl.textContent) <= 0){
-      finishQuiz();
-    }
-  }
-
-  document.getElementById("validate").addEventListener("click", () => {
-    // ici tu peux ajouter ton code de validation de réponse
-    checkGameOver();
-  });
-
-});
-
-import { collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// --- Quiz ---
+const scoreEl = document.getElementById("score");
+const livesEl = document.getElementById("lives");
+const quizSection = document.getElementById("quiz");
+const accueilSection = document.getElementById("accueil");
 
 // Récupérer le top 25 depuis Firestore
 async function getLeaderboard(top = 25) {
@@ -230,10 +190,7 @@ async function displayLeaderboard() {
   });
 }
 
-// Afficher le classement au chargement de la page
-displayLeaderboard();
-
-// Mettre à jour le classement après chaque partie
+// Fonction à appeler à la fin d’une partie
 async function finishQuiz() {
   const score = parseInt(scoreEl.textContent);
   const user = auth.currentUser;
@@ -247,6 +204,7 @@ async function finishQuiz() {
     showMessage(`Quiz terminé ! Votre score : ${score}. Connecte-toi pour sauvegarder ton record.`);
   }
 
+  // Réinitialiser le quiz
   scoreEl.textContent = "0";
   livesEl.textContent = "3";
   quizSection.classList.add("hidden");
@@ -255,5 +213,21 @@ async function finishQuiz() {
   // Actualiser le classement
   await displayLeaderboard();
 }
+
+// Afficher le leaderboard au chargement
+displayLeaderboard();
+
+// Vérifier la fin de partie
+function checkGameOver() {
+  if(parseInt(livesEl.textContent) <= 0){
+    finishQuiz();
+  }
+}
+
+document.getElementById("validate").addEventListener("click", () => {
+  // ici ton code de validation
+  checkGameOver();
+});
+
 
 
