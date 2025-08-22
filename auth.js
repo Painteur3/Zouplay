@@ -4,14 +4,14 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ⚡ Config Firebase
+// 🔹 Config Firebase (récupérée depuis ta console)
   const firebaseConfig = {
-    apiKey: "TA_CLE_API",
-    authDomain: "ton-projet.firebaseapp.com",
-    projectId: "ton-projet",
-    storageBucket: "ton-projet.appspot.com",
-    messagingSenderId: "1234567890",
-    appId: "1:1234567890:web:abcd1234"
+    apiKey: "AIzaSyCxGh9xsAFoqNhtNwPuqsE8oi9hdcbo9Zk",
+    authDomain: "quiz-anime-3c4e7.firebaseapp.com",
+    projectId: "quiz-anime-3c4e7",
+    storageBucket: "quiz-anime-3c4e7.appspot.com",
+    messagingSenderId: "469629091409",
+    appId: "1:469629091409:web:790357c7bed5cfac6dc270"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -96,3 +96,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
