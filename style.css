@@ -865,33 +865,42 @@ header {
   transform: scale(1.05);
 }
 
-/* Style Déconnexion */
-.btn-logout {
-  background-color: #ff4444;  /* rouge vif */
-  color: white;
-  border-radius: 12px;
-  padding: 8px 16px;
-  font-weight: bold;
-  transition: background 0.3s, transform 0.2s;
+/* Header global en flex */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background: linear-gradient(135deg, #ffb347, #ff9900);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  position: relative;
 }
 
-.btn-logout:hover {
-  background-color: #cc0000;  /* rouge foncé au hover */
-  transform: scale(1.05);
+/* Partie centrale : titre */
+.header-center {
+  text-align: center;
+  flex: 1;
+}
+
+/* Menu + user-info à droite */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 /* Conteneur pseudo + bouton */
 .user-info {
-  display: flex;               /* alignement horizontal */
-  align-items: center;         /* centré verticalement */
-  gap: 10px;                   /* espace entre pseudo et bouton */
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* Pseudo utilisateur */
+/* Pseudo */
 .user-pseudo {
   font-weight: bold;
   color: #333;
-  font-size: 1em;
 }
 
 /* Bouton Déconnexion */
@@ -909,3 +918,4 @@ header {
   background-color: #cc0000;
   transform: scale(1.05);
 }
+
