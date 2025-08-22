@@ -3,8 +3,6 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-
-// 🔹 Config Firebase (récupérée depuis ta console)
   const firebaseConfig = {
     apiKey: "AIzaSyCxGh9xsAFoqNhtNwPuqsE8oi9hdcbo9Zk",
     authDomain: "quiz-anime-3c4e7.firebaseapp.com",
@@ -38,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       modal.style.display = "none";
       overlay.style.display = "none";
-      modal.querySelector(".modal-message").textContent = ""; // clear message
+      modal.querySelector(".modal-message").textContent = "";
     }, 300);
   }
 
@@ -49,39 +47,38 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
-// --- Inscription ---
-document.getElementById("signup").addEventListener("click", () => {
-  const pseudo = document.getElementById("signup-pseudo").value; // nouveau
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
-  const messageEl = document.getElementById("signup-message");
+  // --- Inscription ---
+  document.getElementById("signup").addEventListener("click", () => {
+    const pseudo = document.getElementById("signup-pseudo").value;
+    const email = document.getElementById("signup-email").value;
+    const password = document.getElementById("signup-password").value;
+    const messageEl = document.getElementById("signup-message");
 
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
-      // Mettre à jour le displayName
-      return updateProfile(userCredential.user, { displayName: pseudo })
-        .then(() => {
-          messageEl.textContent = `Compte créé : ${pseudo} (${userCredential.user.email})`;
-          messageEl.style.color = "green";
-          setTimeout(() => closeModal(signupModal), 1500);
-        });
-    })
-    .catch(error => {
-      messageEl.textContent = error.message;
-      messageEl.style.color = "red";
-    });
-});
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        return updateProfile(userCredential.user, { displayName: pseudo })
+          .then(() => {
+            messageEl.textContent = `Compte créé : ${pseudo} (${userCredential.user.email})`;
+            messageEl.style.color = "green";
+            setTimeout(() => closeModal(signupModal), 1500);
+          });
+      })
+      .catch(error => {
+        messageEl.textContent = error.message;
+        messageEl.style.color = "red";
+      });
+  });
 
   // --- Connexion ---
   document.getElementById("login").addEventListener("click", () => {
-    const pseudo = document.getElementById("signup-pseudo").value;
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
     const messageEl = document.getElementById("login-message");
 
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
-        messageEl.textContent = `Connecté : ${userCredential.user.email}`;
+        const pseudo = userCredential.user.displayName; // récupère le pseudo
+        messageEl.textContent = `Connecté : ${pseudo} (${userCredential.user.email})`;
         messageEl.style.color = "green";
         setTimeout(() => closeModal(loginModal), 1500);
       })
@@ -102,6 +99,3 @@ document.getElementById("signup").addEventListener("click", () => {
   });
 
 });
-
-
-
