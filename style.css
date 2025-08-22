@@ -853,12 +853,13 @@ header {
 }
 
 #user-pseudo {
-  background: linear-gradient(135deg, #f5be48, #f7a600);
-  color: #fff;
+  background: linear-gradient(135deg, #f5e8cd, #f5d391);
+  color: rgb(0, 0, 0);
   padding: 5px 10px;
   border-radius: 12px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
+
 #user-info button {
   padding: 6px 12px;
   background: linear-gradient(135deg, #ffb347, #ff6600);
