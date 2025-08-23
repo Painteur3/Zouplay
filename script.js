@@ -20,17 +20,29 @@ let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
-const categoriesContainer = document.getElementById("categories-container");
+const imgPerso = document.getElementById("personnage-image");
+const answerInput = document.getElementById("answer");
+const resultText = document.getElementById("result");
+const validateBtn = document.getElementById("validate");
+const scoreSpan = document.getElementById("score");
+const livesSpan = document.getElementById("lives");
+const bestScoreSpan = document.getElementById("best-score");
 const leaderboardContainer = document.getElementById("leaderboard-container");
+const categoriesContainer = document.getElementById("categories-container");
 
-// Afficher catégories dynamiquement
+// Afficher scores initiaux
+scoreSpan.textContent = score;
+livesSpan.textContent = lives;
+bestScoreSpan.textContent = "Record : " + bestScore;
+
+// Générer catégories dynamiquement
 for (let cat in categories) {
   const label = document.createElement("label");
   label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
   categoriesContainer.appendChild(label);
 }
 
-// 🔹 Fonctions d'affichage
+// 🔹 Fonctions cacher / afficher accueil
 function hideCategorySelection() {
   accueil.querySelector("h2").style.display = "none";
   document.getElementById("categories-form").style.display = "none";
@@ -49,18 +61,14 @@ function showCategorySelection() {
 function afficherPerso() {
   if (personnages.length === 0) return;
   currentPerso = personnages[Math.floor(Math.random() * personnages.length)];
-  document.getElementById("personnage-image").src = currentPerso.img;
-  document.getElementById("answer").value = "";
-  document.getElementById("result").textContent = "";
-  document.getElementById("score").textContent = score;
-  document.getElementById("lives").textContent = lives;
-  document.getElementById("best-score").textContent = "Record : " + bestScore;
+  imgPerso.src = currentPerso.img;
+  answerInput.value = "";
+  answerInput.focus();
 }
 
 // 🔹 Vérifier réponse
 function verifierReponse() {
   if (!currentPerso) return;
-  const answerInput = document.getElementById("answer");
   const reponse = answerInput.value.trim().toLowerCase();
   let lastResult = "";
 
@@ -72,16 +80,15 @@ function verifierReponse() {
     lastResult = `❌ Mauvaise réponse. C'était ${currentPerso.nom}`;
   }
 
-  document.getElementById("score").textContent = score;
-  document.getElementById("lives").textContent = lives;
+  scoreSpan.textContent = score;
+  livesSpan.textContent = lives;
 
   personnages = personnages.filter(p => p !== currentPerso);
 
   if (lives <= 0 || personnages.length === 0) {
     terminerQuiz(lastResult);
   } else {
-    document.getElementById("result").textContent = lastResult;
-    afficherPerso();
+    resultText.textContent = lastResult;
   }
 }
 
@@ -90,55 +97,44 @@ function terminerQuiz(lastResult = "") {
   if (score > bestScore) {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
-    // lancerConfettis(); // si tu as la fonction confettis
+    // lancerConfettis(); // si tu as une fonction confetti
   }
 
-  quiz.innerHTML = `
-    <div class="quiz-end-card">
-      <h2>Fin d'aventure</h2>
-      ${lastResult ? `<p class="result-text">${lastResult}</p>` : ""}
-      <p class="score-text">🎯 Score : <span>${score}</span></p>
-      <p class="best-text">🏆 Record : <span>${bestScore}</span></p>
-      <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
-    </div>
-  `;
+  resultText.textContent = lastResult;
+  document.getElementById("score").textContent = score;
+  document.getElementById("best-score").textContent = "Record : " + bestScore;
 
-  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
+  // Masquer quiz et accueil
+  quiz.classList.add("hidden");
+  accueil.classList.remove("hidden");
+  showCategorySelection();
 
+  // Mettre à jour leaderboard si connecté
   if (window.currentUser) updateLeaderboard(score);
 }
 
-// 🔹 Fonction Rejouer
+// 🔹 Réinitialiser quiz (bouton Rejouer)
 function rejouerQuiz() {
   // Reset variables
   score = 0;
   lives = 3;
   currentPerso = null;
   personnages = [];
-  
-  // Reset input et décocher catégories
-  const checkboxes = document.querySelectorAll("#categories-container input[type='checkbox']");
-  checkboxes.forEach(cb => cb.checked = false);
 
-  // Réafficher accueil
+  // Réinitialiser UI
+  scoreSpan.textContent = score;
+  livesSpan.textContent = lives;
+  bestScoreSpan.textContent = "Record : " + bestScore;
+  resultText.textContent = "";
+  imgPerso.src = "";
+
+  // Décocher toutes les catégories
+  document.querySelectorAll("#categories-container input[type='checkbox']").forEach(cb => cb.checked = false);
+
+  // Afficher accueil, masquer quiz
   accueil.classList.remove("hidden");
   quiz.classList.add("hidden");
-
-  // Restaurer contenu initial du quiz
-  quiz.innerHTML = `
-    <div id="score-container">
-      <span id="best-score">Record : ${bestScore}</span>
-      <div id="score-lives">Score: <span id="score">0</span> | Life: <span id="lives">3</span></div>
-    </div>
-    <div class="personnage-container">
-      <img id="personnage-image" src="" alt="Personnage">
-    </div>
-    <div class="answer-container">
-      <input type="text" id="answer" placeholder="Tape le nom...">
-      <button id="validate" class="btn btn-validate">Valider</button>
-    </div>
-    <p id="result"></p>
-  `;
+  showCategorySelection();
 }
 
 // 🔹 Démarrer quiz
@@ -152,31 +148,42 @@ startBtn.addEventListener("click", () => {
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
 
-  personnages = selected.flatMap(cat => categories[cat] || []);
-  if (personnages.length === 0) personnages = Object.values(categories).flat();
+  personnages = selected.flatMap(cat => categories[cat]);
+  if (personnages.length === 0) {
+    personnages = Object.values(categories).flat();
+  }
 
   quiz.classList.remove("hidden");
-  accueil.classList.add("hidden");
+  imgPerso.src = "";
+  answerInput.value = "";
+  resultText.textContent = "";
+  scoreSpan.textContent = score;
+  livesSpan.textContent = lives;
+  bestScoreSpan.textContent = "Record : " + bestScore;
 
   afficherPerso();
+});
 
-  // Réattacher listeners
-  const validateBtn = document.getElementById("validate");
-  const answerInput = document.getElementById("answer");
+// 🔹 Bouton valider
+validateBtn.addEventListener("click", () => {
+  verifierReponse();
+  if (personnages.length > 0 && lives > 0) afficherPerso();
+});
 
-  validateBtn.addEventListener("click", verifierReponse);
-
-  answerInput.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      validateBtn.click();
-    }
-  });
+// 🔹 Entrée clavier Enter
+answerInput.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    validateBtn.classList.add('click-effect');
+    setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
+    validateBtn.click();
+  }
 });
 
 // 🔹 Leaderboard
 function updateLeaderboard(score){
   if(!leaderboardContainer) return;
+
   let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
   scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
   scores.sort((a,b)=> b.score - a.score);
@@ -193,10 +200,17 @@ function updateLeaderboard(score){
   });
 }
 
-// Charger leaderboard au départ
+// 🔹 Initialisation
 document.addEventListener("DOMContentLoaded", () => {
   if (leaderboardContainer) {
     leaderboardContainer.style.display = "block";
     updateLeaderboard(0);
   }
+
+  // Bouton Rejouer
+  document.body.addEventListener("click", e => {
+    if(e.target && e.target.id === "rejouer") {
+      rejouerQuiz();
+    }
+  });
 });
