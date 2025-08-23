@@ -50,19 +50,15 @@ for (let cat in categories) {
 
 // 🔹 Fonctions cacher / afficher catégories
 function hideCategorySelection() {
-  const adventureTitle = accueil.querySelector("h2");
-  const categoriesForm = document.getElementById("categories-form");
-  if (adventureTitle) adventureTitle.style.display = "none";
-  if (categoriesForm) categoriesForm.style.display = "none";
-  if (startBtn) startBtn.style.display = "none";
+  accueil.querySelector("h2")?.style.display = "none";
+  document.getElementById("categories-form")?.style.display = "none";
+  startBtn.style.display = "none";
 }
 
 function showCategorySelection() {
-  const adventureTitle = accueil.querySelector("h2");
-  const categoriesForm = document.getElementById("categories-form");
-  if (adventureTitle) adventureTitle.style.display = "block";
-  if (categoriesForm) categoriesForm.style.display = "block";
-  if (startBtn) startBtn.style.display = "inline-block";
+  accueil.querySelector("h2")?.style.display = "block";
+  document.getElementById("categories-form")?.style.display = "block";
+  startBtn.style.display = "inline-block";
 }
 
 // 🔹 Afficher personnage
@@ -71,6 +67,7 @@ function afficherPerso() {
   currentPerso = personnages[Math.floor(Math.random() * personnages.length)];
   imgPerso.src = currentPerso.img;
   answerInput.value = "";
+  answerInput.focus();
 }
 
 // 🔹 Vérifier réponse
@@ -100,18 +97,17 @@ function verifierReponse() {
 }
 
 // 🔹 Canvas particules de fond
-const canvas = document.getElementById('confetti');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+const bgCanvas = document.getElementById('confetti-background');
+const bgCtx = bgCanvas.getContext('2d');
+bgCanvas.width = window.innerWidth;
+bgCanvas.height = window.innerHeight;
 
-const particles = [];
-const particleCount = 60;
-
-for (let i = 0; i < particleCount; i++) {
-    particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+const bgParticles = [];
+const bgParticleCount = 60;
+for (let i = 0; i < bgParticleCount; i++) {
+    bgParticles.push({
+        x: Math.random() * bgCanvas.width,
+        y: Math.random() * bgCanvas.height,
         radius: Math.random() * 4 + 2,
         speedY: Math.random() * 1 + 0.3,
         speedX: (Math.random() - 0.5) * 0.5,
@@ -119,36 +115,35 @@ for (let i = 0; i < particleCount; i++) {
     });
 }
 
-function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
-        ctx.fill();
+function animateBgParticles() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    bgParticles.forEach(p => {
+        bgCtx.beginPath();
+        bgCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        bgCtx.fillStyle = `rgba(245,190,72,${p.alpha})`;
+        bgCtx.fill();
 
         p.y -= p.speedY;
         p.x += p.speedX;
-        if (p.y + p.radius < 0) p.y = canvas.height + p.radius;
+        if (p.y + p.radius < 0) p.y = bgCanvas.height + p.radius;
     });
-    requestAnimationFrame(animateParticles);
+    requestAnimationFrame(animateBgParticles);
 }
-animateParticles();
-
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
+animateBgParticles();
 
 // 🔹 Animation confetti record
+const recordCanvas = document.getElementById('confetti-record');
+const recordCtx = recordCanvas.getContext('2d');
+recordCanvas.width = window.innerWidth;
+recordCanvas.height = window.innerHeight;
+
 function lancerAnimationRecord() {
     const recordParticles = [];
     const particleCount = 80;
-
     for (let i = 0; i < particleCount; i++) {
         recordParticles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
+            x: Math.random() * recordCanvas.width,
+            y: Math.random() * recordCanvas.height,
             radius: Math.random() * 6 + 2,
             speedY: Math.random() * 2 + 1,
             speedX: (Math.random() - 0.5) * 2,
@@ -158,17 +153,18 @@ function lancerAnimationRecord() {
 
     let frames = 0;
     function animateRecord() {
+        recordCtx.clearRect(0, 0, recordCanvas.width, recordCanvas.height);
         recordParticles.forEach(p => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,215,0,${p.alpha})`;
-            ctx.fill();
+            recordCtx.beginPath();
+            recordCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            recordCtx.fillStyle = `rgba(255,215,0,${p.alpha})`;
+            recordCtx.fill();
             p.y -= p.speedY;
             p.x += p.speedX;
-            if (p.y + p.radius < 0) p.y = canvas.height + p.radius;
+            if (p.y + p.radius < 0) p.y = recordCanvas.height + p.radius;
         });
         frames++;
-        if (frames < 120) requestAnimationFrame(animateRecord); // ~2 sec
+        if (frames < 120) requestAnimationFrame(animateRecord);
     }
     animateRecord();
 }
@@ -181,7 +177,7 @@ function terminerQuiz(lastResult = "") {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
     bestScoreSpan.textContent = "Record : " + bestScore;
-    lancerAnimationRecord(); // <-- confetti record
+    lancerAnimationRecord();
   }
 
   let finQuiz = document.getElementById("fin-quiz");
@@ -251,7 +247,6 @@ startBtn.addEventListener("click", () => {
   bestScoreSpan.textContent = "Record : " + bestScore;
 
   afficherPerso();
-  answerInput.focus();
 });
 
 // 🔹 Bouton valider
@@ -268,4 +263,12 @@ answerInput.addEventListener('keydown', function(event) {
     setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
     validateBtn.click();
   }
+});
+
+// 🔹 Redimension canvas
+window.addEventListener('resize', () => {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+    recordCanvas.width = window.innerWidth;
+    recordCanvas.height = window.innerHeight;
 });
