@@ -1,25 +1,31 @@
+// ----------------------
+// IMPORTS
+// ----------------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCxGh9xsAFoqNhtNwPuqsE8oi9hdcbo9Zk",
-    authDomain: "quiz-anime-3c4e7.firebaseapp.com",
-    projectId: "quiz-anime-3c4e7",
-    storageBucket: "quiz-anime-3c4e7.appspot.com",
-    messagingSenderId: "469629091409",
-    appId: "1:469629091409:web:790357c7bed5cfac6dc270"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const db = getFirestore(app);
+// ----------------------
+// INITIALISATION FIREBASE
+// ----------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyCxGh9xsAFoqNhtNwPuqsE8oi9hdcbo9Zk",
+  authDomain: "quiz-anime-3c4e7.firebaseapp.com",
+  projectId: "quiz-anime-3c4e7",
+  storageBucket: "quiz-anime-3c4e7.appspot.com",
+  messagingSenderId: "469629091409",
+  appId: "1:469629091409:web:790357c7bed5cfac6dc270"
+};
 
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
+// ----------------------
+// DOM & MODALS
+// ----------------------
+document.addEventListener("DOMContentLoaded", () => {
 
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
@@ -58,6 +64,9 @@ const db = getFirestore(app);
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
+  // ----------------------
+  // SIGNUP
+  // ----------------------
   document.getElementById("signup").addEventListener("click", () => {
     const pseudo = document.getElementById("signup-pseudo").value.trim();
     const email = document.getElementById("signup-email").value.trim();
@@ -83,6 +92,9 @@ const db = getFirestore(app);
       });
   });
 
+  // ----------------------
+  // LOGIN
+  // ----------------------
   document.getElementById("login").addEventListener("click", () => {
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
@@ -107,8 +119,14 @@ const db = getFirestore(app);
       });
   });
 
+  // ----------------------
+  // LOGOUT
+  // ----------------------
   logoutBtn.addEventListener("click", () => signOut(auth));
 
+  // ----------------------
+  // État de connexion
+  // ----------------------
   onAuthStateChanged(auth, user => {
     if(user){
       loginLink.style.display = "none";
@@ -122,5 +140,5 @@ const db = getFirestore(app);
       userPseudo.textContent = "";
     }
   });
-});
 
+});
