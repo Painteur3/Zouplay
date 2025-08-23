@@ -50,18 +50,19 @@ for (let cat in categories) {
 
 // 🔹 Fonctions pour cacher / afficher UI
 function hideUI() {
-  if(header) header.style.display = "none";
-  if(leaderboardContainer) leaderboardContainer.classList.add('hidden');
+  if (header) header.style.setProperty("display", "none", "important");
+  if (leaderboardContainer) leaderboardContainer.classList.add('hidden');
 }
 
 function showUI() {
-  if(header) header.style.display = "flex";
-  if(leaderboardContainer) leaderboardContainer.classList.remove('hidden');
+  if (header) header.style.setProperty("display", "flex", "important");
+  if (leaderboardContainer) leaderboardContainer.classList.remove('hidden');
 }
 
 // 🔹 Fonction confettis
 function lancerConfettis() {
   const canvas = document.getElementById("confetti");
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
   canvas.width = canvas.offsetWidth;
   canvas.height = canvas.offsetHeight;
@@ -259,7 +260,7 @@ answerInput.addEventListener('keydown', function(event) {
   }
 });
 
-// 🔹 Leaderboard (exemple statique)
+// 🔹 Leaderboard
 function updateLeaderboard(score){
   const div = leaderboardContainer;
   if(!div) return;
