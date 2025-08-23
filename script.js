@@ -2203,6 +2203,83 @@ let categories = {
 
 };
 
+// ----------------------
+// Firebase Firestore (scores)
+// ----------------------
+import { collection, addDoc, query, orderBy, limit, where, getDocs } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { onAuthStateChanged } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// Sauvegarder un score
+async function saveScore(user, score) {
+  if (!user) return;
+  try {
+    await addDoc(collection(window.db, "scores"), {
+      uid: user.uid,
+      pseudo: user.displayName || "Anonyme",
+      score: score,
+      createdAt: new Date()
+    });
+    console.log("✅ Score enregistré !");
+  } catch (e) {
+    console.error("❌ Erreur enregistrement score: ", e);
+  }
+}
+
+// Récupérer leaderboard
+async function getLeaderboard(period = "total") {
+  let dateLimit;
+  const now = new Date();
+
+  if (period === "day") {
+    dateLimit = new Date();
+    dateLimit.setDate(now.getDate() - 1);
+  } else if (period === "week") {
+    dateLimit = new Date();
+    dateLimit.setDate(now.getDate() - 7);
+  } else if (period === "month") {
+    dateLimit = new Date();
+    dateLimit.setMonth(now.getMonth() - 1);
+  }
+
+  let q;
+  if (period === "total") {
+    q = query(collection(window.db, "scores"), orderBy("score", "desc"), limit(25));
+  } else {
+    q = query(
+      collection(window.db, "scores"),
+      where("createdAt", ">=", dateLimit),
+      orderBy("score", "desc"),
+      limit(25)
+    );
+  }
+
+  const querySnapshot = await getDocs(q);
+  const results = [];
+  querySnapshot.forEach(doc => results.push(doc.data()));
+  return results;
+}
+
+// Afficher leaderboard
+async function showLeaderboard(period = "total") {
+  const scores = await getLeaderboard(period);
+  const container = document.getElementById("leaderboard");
+  container.innerHTML = "";
+
+  if (scores.length === 0) {
+    container.textContent = "Aucun score pour l’instant.";
+    return;
+  }
+
+  scores.forEach((entry, index) => {
+    const div = document.createElement("div");
+    div.textContent = `${index + 1}. ${entry.pseudo} — ${entry.score}`;
+    container.appendChild(div);
+  });
+}
+
+
 
 let personnages = [];
 let currentPerso = null;
