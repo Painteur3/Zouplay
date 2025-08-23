@@ -964,4 +964,10 @@ header {
   }
 }
 
+#accueil h2 small {
+    font-size: 0.6em;   /* réduit la taille */
+    vertical-align: super; /* le place un peu en haut */
+    margin-left: 0.3em;    /* espace à droite du H2 */
+    color: #666;           /* couleur plus discrète */
+}
 
