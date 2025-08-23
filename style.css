@@ -634,18 +634,17 @@ header {
 
 /* Badge “en développement” */
 .dev-badge {
-  display: inline-block;
-  margin-left: 5px;
-  padding: 2px 6px;
-  font-size: 0.7em;
-  font-weight: bold;
-  color: #fff;
-  background-color: #ff6600;
-  border-radius: 8px;
-  text-transform: uppercase;
-
-  /* animation pulsante simple */
-  animation: pulse 3s infinite alternate;
+    display: inline-block;
+    margin-left: 5px;
+    padding: 1px 4px;       /* réduit un peu le padding */
+    font-size: 0.6em;       /* plus petit que 0.7em */
+    font-weight: bold;
+    color: #fff;
+    background-color: #ff6600;
+    border-radius: 6px;     /* un peu plus petit pour coller à la taille */
+    text-transform: uppercase;
+    vertical-align: middle; /* aligne bien avec le texte du H3 */
+    animation: pulse 3s infinite alternate;
 }
 
 /* Animation pulsante */
