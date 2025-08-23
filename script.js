@@ -4,34 +4,6 @@ const categories = {
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
-  "Akame ga KillA": [
-    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-  ],
-  "Akame ga KilZl": [
-    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-  ],
-  "Akame ga KilZ": [
-    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-  ],
-  "Akame ga KilEl": [
-    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-  ],
-  "Akame ga KiRll": [
-    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-  ],
-  "Akame ga KiFll": [
-    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-  ],
-  "Akame ga KiDll": [
-    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-  ],
   "Black Clover": [
     { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
     { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
@@ -45,7 +17,7 @@ let lives = 3;
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 let confettiAnimation;
 
-// DOM
+// 🔹 DOM
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
@@ -71,7 +43,7 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
-// 🔹 Fonctions pour cacher / afficher titre + catégories + bouton + leaderboard
+// 🔹 Fonctions pour cacher / afficher accueil
 function hideCategorySelection() {
   const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
@@ -128,6 +100,35 @@ function verifierReponse() {
   }
 }
 
+// 🔹 Confetti (exemple simple)
+function lancerConfettis() {
+  if (!confettiAnimation) {
+    // Utiliser la librairie confetti ou ton canvas ici
+    console.log("🎉 Confettis !");
+  }
+}
+
+// 🔹 Leaderboard
+function updateLeaderboard(score){
+  const div = leaderboardContainer;
+  if(!div) return;
+
+  let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+  scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
+  scores.sort((a,b)=> b.score - a.score);
+  scores = scores.slice(0,25);
+  localStorage.setItem("leaderboard", JSON.stringify(scores));
+
+  const tbody = div.querySelector('tbody');
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  scores.forEach((s,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i+1}</td><td>${s.user}</td><td>${s.score}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
   const newBest = score > bestScore;
@@ -148,25 +149,37 @@ function terminerQuiz(lastResult = "") {
   `;
 
   document.getElementById("rejouer").addEventListener("click", () => {
-    // Reset complet du quiz sans recharger la page
-    score = 0;
-    lives = 3;
-    currentPerso = null;
-    scoreSpan.textContent = score;
-    livesSpan.textContent = lives;
-    bestScoreSpan.textContent = "Record : " + bestScore;
-    resultText.textContent = "";
-    imgPerso.src = "";
-    quiz.classList.add("hidden");
-    accueil.classList.remove("hidden");
-    showCategorySelection();
+    rejouerQuiz();
   });
 
   if (window.currentUser) updateLeaderboard(score);
 }
 
+// 🔹 Rejouer quiz
+function rejouerQuiz() {
+  // Réinitialiser variables
+  score = 0;
+  lives = 3;
+  currentPerso = null;
+  personnages = [];
 
+  // Réinitialiser affichage
+  scoreSpan.textContent = score;
+  livesSpan.textContent = lives;
+  bestScoreSpan.textContent = "Record : " + bestScore;
+  answerInput.value = "";
+  resultText.textContent = "";
+  imgPerso.src = "";
 
+  // Décocher toutes les catégories
+  const checkboxes = document.querySelectorAll("#categories-container input[type='checkbox']");
+  checkboxes.forEach(cb => cb.checked = false);
+
+  // Afficher accueil, masquer quiz
+  quiz.classList.add("hidden");
+  accueil.classList.remove("hidden");
+  showCategorySelection();
+}
 
 // 🔹 Démarrer quiz
 startBtn.addEventListener("click", () => {
@@ -179,7 +192,7 @@ startBtn.addEventListener("click", () => {
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
 
-  personnages = selected.flatMap(cat => categories[cat]);
+  personnages = selected.flatMap(cat => categories[cat] || []);
   if (personnages.length === 0) {
     personnages = Object.values(categories).flat();
   }
@@ -213,31 +226,10 @@ answerInput.addEventListener('keydown', function(event) {
   }
 });
 
-// 🔹 Leaderboard
-function updateLeaderboard(score){
-  const div = leaderboardContainer;
-  if(!div) return;
-
-  let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-  scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
-  scores.sort((a,b)=> b.score - a.score);
-  scores = scores.slice(0,25);
-  localStorage.setItem("leaderboard", JSON.stringify(scores));
-
-  const tbody = div.querySelector('tbody');
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  scores.forEach((s,i)=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${i+1}</td><td>${s.user}</td><td>${s.score}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// Affiche le leaderboard dès le chargement si l'élément existe
+// 🔹 Afficher leaderboard dès le chargement
 document.addEventListener("DOMContentLoaded", () => {
   if (leaderboardContainer) {
-    leaderboardContainer.style.display = "block"; // affiche
-    updateLeaderboard(0); // charge les scores depuis le localStorage
+    leaderboardContainer.style.display = "block"; 
+    updateLeaderboard(0); 
   }
 });
