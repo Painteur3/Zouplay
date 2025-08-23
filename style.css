@@ -987,4 +987,23 @@ header {
   border-bottom: none;
 }
 
+#leaderboard h3 {
+  text-align: center; /* centre le titre */
+  margin-bottom: 20px;
+  font-size: 1.8em;
+  color: #ff6600;
+}
+
+.leaderboard-col ul li {
+  padding: 8px 10px;
+  margin: 5px 0;
+  border: 2px solid #f5be48;  /* contour doré */
+  border-radius: 12px;
+  background-color: #fff7e6;
+  text-align: center;          /* centre pseudo + score */
+  font-weight: bold;
+  color: #333;
+}
+
+
 
