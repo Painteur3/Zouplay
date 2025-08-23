@@ -1,8 +1,9 @@
-// Variables globales
-let categories = {
+// script.js
+
+// 🔹 Variables globales
+const categories = { // const pour éviter le problème de scope
   "Akame ga Kill": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
   "Black Clover": [
@@ -22,6 +23,7 @@ let confettiAnimation;
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
+
 const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
 const resultText = document.getElementById("result");
@@ -30,12 +32,16 @@ const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
 
+const leaderboardContainer = document.createElement("div");
+leaderboardContainer.id = "leaderboard";
+accueil.appendChild(leaderboardContainer);
+
 // Afficher scores initiaux
 scoreSpan.textContent = score;
 livesSpan.textContent = lives;
 bestScoreSpan.textContent = "Record : " + bestScore;
 
-// Générer les catégories dynamiquement
+// Générer catégories dynamiquement
 const categoriesContainer = document.getElementById("categories-container");
 for (let cat in categories) {
   const label = document.createElement("label");
@@ -43,11 +49,99 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
-// Fonction confettis (ton code original)
-function lancerConfettis() { /* ... */ }
-function hexToRgb(hex) { /* ... */ }
+// 🔹 Fonction confettis
+function lancerConfettis() {
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
 
-// Afficher personnage
+  const confettis = [];
+  const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#43aa8b","#577590","#bdb2ff","#ff6d00"];
+  const gravity = 0.3;
+  const windMax = 1;
+
+  for (let i = 0; i < 300; i++) {
+    confettis.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 4 + 2,
+      d: Math.random() * 10 + 10,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      tilt: Math.random() * 10 - 5,
+      tiltAngle: 0,
+      tiltSpeed: Math.random() * 0.07 + 0.05,
+      speedY: Math.random() * 2 + 2,
+      speedX: (Math.random() * windMax * 2) - windMax,
+      alpha: 1,
+      fadeSpeed: 0.02,
+      bounce: Math.random() * 0.7 + 0.3,
+      rotation: Math.random() * 360,
+      rotationSpeed: Math.random() * 5 + 2,
+      landed: false
+    });
+  }
+
+  let startTime = Date.now();
+
+  function draw() {
+    const elapsed = Date.now() - startTime;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    confettis.forEach(c => {
+      if (c.alpha <= 0) return;
+      ctx.save();
+      ctx.translate(c.x + c.tilt, c.y);
+      ctx.rotate((c.rotation * Math.PI) / 180);
+      ctx.beginPath();
+      ctx.lineWidth = c.r / 2;
+      ctx.strokeStyle = `rgba(${hexToRgb(c.color)},${c.alpha})`;
+      ctx.moveTo(-c.r / 2, 0);
+      ctx.lineTo(c.r / 2, c.d);
+      ctx.stroke();
+      ctx.restore();
+
+      c.tiltAngle += c.tiltSpeed;
+      c.tilt = Math.sin(c.tiltAngle) * 10;
+      c.rotation += c.rotationSpeed;
+
+      if (!c.landed) {
+        c.speedY += gravity;
+        c.x += c.speedX;
+        c.y += c.speedY;
+
+        if (c.y + c.d > canvas.height) {
+          c.y = canvas.height - c.d;
+          c.speedY *= -c.bounce;
+          c.speedX *= 0.8;
+          if (Math.abs(c.speedY) < 0.5) c.landed = true;
+        }
+        if (c.x < 0 || c.x > canvas.width) c.speedX *= -1;
+      }
+
+      if (elapsed > 5000 || c.landed) c.alpha -= c.fadeSpeed;
+    });
+
+    if (confettis.some(c => c.alpha > 0)) {
+      confettiAnimation = requestAnimationFrame(draw);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  draw();
+}
+
+// Convertir hex en rgb
+function hexToRgb(hex) {
+  const bigint = parseInt(hex.replace("#", ""), 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `${r},${g},${b}`;
+}
+
+// 🔹 Afficher personnage
 function afficherPerso() {
   if (personnages.length === 0) return;
   currentPerso = personnages[Math.floor(Math.random() * personnages.length)];
@@ -55,7 +149,7 @@ function afficherPerso() {
   answerInput.value = "";
 }
 
-// Vérifier réponse
+// 🔹 Vérifier réponse
 function verifierReponse() {
   if (!currentPerso) return;
   const reponse = answerInput.value.trim().toLowerCase();
@@ -71,6 +165,7 @@ function verifierReponse() {
 
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
+
   personnages = personnages.filter(p => p !== currentPerso);
 
   if (lives <= 0 || personnages.length === 0) {
@@ -80,7 +175,7 @@ function verifierReponse() {
   }
 }
 
-// Terminer quiz
+// 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
   const newBest = score > bestScore;
   if (newBest) {
@@ -88,6 +183,7 @@ function terminerQuiz(lastResult = "") {
     localStorage.setItem("bestScore", bestScore);
     lancerConfettis();
   }
+
   quiz.innerHTML = `
     <div class="quiz-end-card">
       <h2>Fin d'aventure</h2>
@@ -97,30 +193,32 @@ function terminerQuiz(lastResult = "") {
       <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
     </div>
   `;
-  document.getElementById("rejouer").addEventListener("click", () => {
-    location.reload();
-  });
+
+  document.getElementById("rejouer").addEventListener("click", () => location.reload());
+
+  // 🔹 Mettre à jour leaderboard si connecté
+  if (window.currentUser) {
+    updateLeaderboard(score);
+  }
 }
 
-// Démarrer quiz
+// 🔹 Démarrer quiz
 startBtn.addEventListener("click", () => {
   score = 0;
   lives = 3;
   currentPerso = null;
 
-  // Récupérer catégories cochées, sinon prendre toutes
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
 
-  personnages = selected.length
-    ? selected.flatMap(cat => categories[cat])
-    : Object.values(categories).flat();
+  personnages = selected.flatMap(cat => categories[cat]);
+  if (personnages.length === 0) {
+    personnages = Object.values(categories).flat();
+  }
 
-  // Masquer accueil, afficher quiz
   accueil.classList.add("hidden");
   quiz.classList.remove("hidden");
 
-  // Reset affichage
   imgPerso.src = "";
   answerInput.value = "";
   resultText.textContent = "";
@@ -129,20 +227,20 @@ startBtn.addEventListener("click", () => {
   bestScoreSpan.textContent = "Meilleur score : " + bestScore;
 
   afficherPerso();
+  answerInput.focus();
 });
 
-// Bouton valider
+// 🔹 Bouton valider
 validateBtn.addEventListener("click", () => {
   verifierReponse();
-  if (personnages.length > 0 && lives > 0) {
-    afficherPerso();
-  }
+  if (personnages.length > 0 && lives > 0) afficherPerso();
 });
 
-// Entrée clavier Enter
+// 🔹 Entrée clavier Enter
 document.addEventListener('DOMContentLoaded', () => {
   const answerInput = document.getElementById('answer');
   const validateButton = document.getElementById('validate');
+
   if (answerInput && validateButton) {
     answerInput.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
@@ -155,41 +253,57 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Canvas particules confettis/bulles
+// 🔹 Particules d’ambiance dorées
 const canvas = document.getElementById('confetti');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
 const particles = [];
 const particleCount = 60;
-
-for(let i=0;i<particleCount;i++){
+for(let i=0; i<particleCount; i++){
   particles.push({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height,
-    radius: Math.random()*4+2,
-    speedY: Math.random()*1+0.3,
-    speedX: (Math.random()-0.5)*0.5,
-    alpha: Math.random()*0.5+0.3
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    radius: Math.random() * 4 + 2,
+    speedY: Math.random() * 1 + 0.3,
+    speedX: (Math.random() - 0.5) * 0.5,
+    alpha: Math.random() * 0.5 + 0.3
   });
 }
 
 function animateParticles(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p=>{
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
     ctx.beginPath();
-    ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-    ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(255, 215, 0, ${p.alpha})`;
     ctx.fill();
-    p.y -= p.speedY;
     p.x += p.speedX;
-    if(p.y+p.radius<0){ p.y=canvas.height+p.radius; p.x=Math.random()*canvas.width; }
+    p.y += p.speedY;
+    if(p.y > canvas.height) p.y = 0;
+    if(p.x > canvas.width) p.x = 0;
+    if(p.x < 0) p.x = canvas.width;
   });
   requestAnimationFrame(animateParticles);
 }
 animateParticles();
 
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+// 🔹 Leaderboard (exemple statique, à relier à Firestore si voulu)
+function updateLeaderboard(score){
+  const div = document.getElementById("leaderboard");
+  if(!div) return;
+
+  let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+  scores.push({user: window.currentUser.displayName || "Invité", score, date: Date.now()});
+  scores.sort((a,b)=> b.score - a.score);
+  scores = scores.slice(0,25);
+  localStorage.setItem("leaderboard", JSON.stringify(scores));
+
+  div.innerHTML = "<h3>🏆 Leaderboard Top 25</h3>";
+  scores.forEach(s=>{
+    const p = document.createElement("p");
+    p.textContent = `${s.user} : ${s.score}`;
+    div.appendChild(p);
+  });
+}
