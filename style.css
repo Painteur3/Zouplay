@@ -934,5 +934,57 @@ header {
   background: #f9f9f9;
 }
 
+/* Leaderboard */
+#leaderboard {
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#leaderboard h3 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: #ff6600;
+}
+
+.leaderboard-columns {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.leaderboard-col {
+  flex: 1 1 22%;
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 120px;
+}
+
+.leaderboard-col h4 {
+  margin-bottom: 10px;
+  color: #f5be48;
+}
+
+.leaderboard-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.leaderboard-col ul li {
+  padding: 5px 0;
+  font-weight: 500;
+  border-bottom: 1px dashed #ccc;
+  color: #333;
+}
+
+.leaderboard-col ul li:last-child {
+  border-bottom: none;
+}
 
 
