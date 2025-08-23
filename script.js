@@ -212,52 +212,42 @@ answerInput.addEventListener('keydown', function(event) {
   }
 });
 
+// 🔹 Canvas pour particules
 const canvas = document.getElementById('confetti');
 const ctx = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// 🔹 Création des particules
 const particles = [];
-const particleCount = 80; // plus de particules pour plus d'effet
+const particleCount = 60; // nombre de bulles/particules
 
 for (let i = 0; i < particleCount; i++) {
     particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 6 + 2, // tailles variées
-        speedY: Math.random() * 1.2 + 0.2,
-        speedX: (Math.random() - 0.5) * 0.8,
-        alpha: Math.random() * 0.5 + 0.3,
-        offset: Math.random() * 1000, // pour oscillation et scintillement
-        shape: Math.random() < 0.8 ? 'circle' : 'square', // 80% ronds, 20% carrés
-        depth: Math.random() * 1.5 + 0.5 // pour effet parallax
+        radius: Math.random() * 4 + 2,
+        speedY: Math.random() * 1 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.5,
+        alpha: Math.random() * 0.5 + 0.3
     });
 }
 
+// 🔹 Animation des particules
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     particles.forEach(p => {
-        // oscillation horizontale
-        p.x += Math.sin(Date.now() * 0.002 + p.offset) * 0.5 * p.depth;
-        p.y -= p.speedY * p.depth;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`; // couleur dorée
+        ctx.fill();
 
-        // scintillement
-        const alpha = p.alpha * (0.5 + 0.5 * Math.sin(Date.now() * 0.005 + p.offset));
+        p.y -= p.speedY; // monte doucement
+        p.x += p.speedX; // léger mouvement horizontal
 
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = `rgba(245,190,72,${alpha})`;
-
-        if (p.shape === 'circle') {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fill();
-        } else {
-            ctx.fillRect(p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
-        }
-
-        // remettre en bas si la particule sort en haut
+        // Si la particule sort de l'écran, on la replace en bas
         if (p.y + p.radius < 0) {
             p.y = canvas.height + p.radius;
             p.x = Math.random() * canvas.width;
@@ -269,8 +259,9 @@ function animateParticles() {
 
 animateParticles();
 
-// Ajuster le canvas au resize
+// 🔹 Ajustement du canvas au resize
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 });
+
