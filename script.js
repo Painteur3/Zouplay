@@ -147,28 +147,24 @@ function terminerQuiz(lastResult = "") {
     </div>
   `;
 
-document.getElementById("rejouer").addEventListener("click", () => {
-  // 1️⃣ Cacher le quiz et montrer l'accueil
-  quiz.classList.add("hidden");
-  accueil.classList.remove("hidden");
+  document.getElementById("rejouer").addEventListener("click", () => {
+    // Reset complet du quiz sans recharger la page
+    score = 0;
+    lives = 3;
+    currentPerso = null;
+    scoreSpan.textContent = score;
+    livesSpan.textContent = lives;
+    bestScoreSpan.textContent = "Record : " + bestScore;
+    resultText.textContent = "";
+    imgPerso.src = "";
+    quiz.classList.add("hidden");
+    accueil.classList.remove("hidden");
+    showCategorySelection();
+  });
 
-  // 2️⃣ Afficher correctement le formulaire de catégories et le leaderboard
-  showCategorySelection();
+  if (window.currentUser) updateLeaderboard(score);
+}
 
-  // 3️⃣ Réinitialiser le texte et l'image du quiz
-  resultText.textContent = "";
-  imgPerso.src = "";
-
-  // 4️⃣ Réinitialiser score et vies (mais ne touche pas bestScore)
-  score = 0;
-  lives = 3;
-  currentPerso = null;
-
-  // 5️⃣ Mettre à jour l'affichage des scores
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
-  bestScoreSpan.textContent = "Record : " + bestScore;
-});
 
 
 // 🔹 Démarrer quiz
