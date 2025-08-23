@@ -9,7 +9,7 @@ const categories = {
     { nom: "Krillin", img: "images/Dragon Ball/Kuririn.jpg" },
     { nom: "Suppaman", img: "images/Dragon Ball/Suppaman.jpg" },
     { nom: "Yajirobe", img: "images/Dragon Ball/Yajirobe.jpg" },
-    { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" },
+    { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" }
   ],
   "Black Clover": [
     { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
@@ -96,7 +96,7 @@ function verifierReponse() {
   }
 }
 
-// 🔹 Canvas particules de fond
+// 🔹 Canvas particules de fond (boules flottantes)
 const bgCanvas = document.getElementById('confetti-background');
 const bgCtx = bgCanvas.getContext('2d');
 bgCanvas.width = window.innerWidth;
@@ -131,7 +131,7 @@ function animateBgParticles() {
 }
 animateBgParticles();
 
-// 🔹 Animation confetti record
+// 🔹 Canvas confetti record
 const recordCanvas = document.getElementById('confetti-record');
 const recordCtx = recordCanvas.getContext('2d');
 recordCanvas.width = window.innerWidth;
@@ -216,8 +216,7 @@ function rejouerQuiz() {
   livesSpan.textContent = lives;
   resultText.textContent = "";
   imgPerso.src = "";
-  const finQuiz = document.getElementById("fin-quiz");
-  if (finQuiz) finQuiz.classList.add("hidden");
+  document.getElementById("fin-quiz")?.classList.add("hidden");
   accueil.classList.remove("hidden");
   quiz.classList.add("hidden");
   showCategorySelection();
