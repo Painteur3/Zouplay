@@ -211,3 +211,57 @@ answerInput.addEventListener('keydown', function(event) {
     validateBtn.click();
   }
 });
+
+// 🔹 Canvas pour particules
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// 🔹 Création des particules
+const particles = [];
+const particleCount = 60; // nombre de bulles/particules
+
+for (let i = 0; i < particleCount; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 4 + 2,
+        speedY: Math.random() * 1 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.5,
+        alpha: Math.random() * 0.5 + 0.3
+    });
+}
+
+// 🔹 Animation des particules
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`; // couleur dorée
+        ctx.fill();
+
+        p.y -= p.speedY; // monte doucement
+        p.x += p.speedX; // léger mouvement horizontal
+
+        // Si la particule sort de l'écran, on la replace en bas
+        if (p.y + p.radius < 0) {
+            p.y = canvas.height + p.radius;
+            p.x = Math.random() * canvas.width;
+        }
+    });
+
+    requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
+
+// 🔹 Ajustement du canvas au resize
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
