@@ -876,32 +876,39 @@ header {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Leaderboard */
+/* Leaderboard principal */
 #leaderboard {
-  margin-top: 25px;
-  padding: 15px;
+  margin: 25px auto;          /* centre le conteneur dans la page */
+  padding: 20px;
   background: #fff;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   max-width: 600px;
+  display: flex;
+  flex-direction: column;     /* empile titre, boutons, colonnes */
+  align-items: center;        /* centre horizontalement */
+  text-align: center;         /* centre texte des enfants */
+  gap: 20px;                  /* espace entre titre, boutons et colonnes */
+}
+
+/* Titre du leaderboard */
+#leaderboard h3 {
+  font-size: 1.8em;
+  color: #ff6600;
+  margin-bottom: 10px;
   text-align: center;
 }
 
-#leaderboard h3 {
-  color: #f5be48;
-  margin-bottom: 10px;
-  font-size: 1.5em;
-}
-
+/* Onglets / boutons du leaderboard */
 .leaderboard-tabs {
   display: flex;
-  justify-content: center;
+  justify-content: center;   /* centre les boutons */
   gap: 10px;
-  margin-bottom: 15px;
+  flex-wrap: wrap;           /* passe à la ligne si nécessaire */
 }
 
 .leaderboard-tabs button {
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 12px;
   border: none;
   cursor: pointer;
@@ -919,91 +926,54 @@ header {
   background-color: #ff6600;
 }
 
-.leaderboard-table table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.leaderboard-table th, .leaderboard-table td {
-  padding: 8px 6px;
-  border-bottom: 1px solid #f0f0f0;
-  text-align: center;
-}
-
-.leaderboard-table tbody tr:nth-child(even) {
-  background: #f9f9f9;
-}
-
-/* Leaderboard */
-#leaderboard {
-  margin-top: 20px;
-  background: #fff;
-  border-radius: 15px;
-  padding: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-#leaderboard h3 {
-  font-size: 1.5em;
-  margin-bottom: 15px;
-  color: #ff6600;
-}
-
+/* Conteneur des colonnes */
 .leaderboard-columns {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  justify-content: center;  /* centre les colonnes */
+  flex-wrap: wrap;           /* passe à la ligne si besoin */
   gap: 15px;
+  width: 100%;
 }
 
+/* Chaque colonne */
 .leaderboard-col {
   flex: 1 1 22%;
+  min-width: 120px;
   background: #f8f8f8;
   border-radius: 10px;
   padding: 10px;
-  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* centre les items dans la colonne */
+  gap: 8px;
 }
 
+/* Titre de chaque colonne */
 .leaderboard-col h4 {
   margin-bottom: 10px;
   color: #f5be48;
 }
 
+/* Liste pseudo + score */
 .leaderboard-col ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 
+/* Chaque item */
 .leaderboard-col ul li {
-  padding: 5px 0;
-  font-weight: 500;
-  border-bottom: 1px dashed #ccc;
+  padding: 8px 10px;
+  margin: 5px 0;
+  border: 2px solid #f5be48; /* contour doré */
+  border-radius: 12px;
+  background-color: #fff7e6;
+  text-align: center;         /* centre pseudo + score */
+  font-weight: bold;
   color: #333;
 }
 
 .leaderboard-col ul li:last-child {
   border-bottom: none;
 }
-
-#leaderboard h3 {
-  text-align: center; /* centre le titre */
-  margin-bottom: 20px;
-  font-size: 1.8em;
-  color: #ff6600;
-}
-
-.leaderboard-col ul li {
-  padding: 8px 10px;
-  margin: 5px 0;
-  border: 2px solid #f5be48;  /* contour doré */
-  border-radius: 12px;
-  background-color: #fff7e6;
-  text-align: center;          /* centre pseudo + score */
-  font-weight: bold;
-  color: #333;
-}
-
-
-
