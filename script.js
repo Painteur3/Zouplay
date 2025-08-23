@@ -230,3 +230,11 @@ function updateLeaderboard(score){
     tbody.appendChild(tr);
   });
 }
+
+// Affiche le leaderboard dès le chargement si l'élément existe
+document.addEventListener("DOMContentLoaded", () => {
+  if (leaderboardContainer) {
+    leaderboardContainer.style.display = "block"; // affiche
+    updateLeaderboard(0); // charge les scores depuis le localStorage
+  }
+});
