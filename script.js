@@ -1,8 +1,14 @@
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// ----------------------
+// Firebase Firestore (scores)
+// ----------------------
+import { collection, addDoc, query, orderBy, limit, where, getDocs } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { onAuthStateChanged } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+// Sauvegarder un score
 async function saveScore(user, score) {
-  if (!user) return; // joueur pas connecté
-  
+  if (!user) return;
   try {
     await addDoc(collection(window.db, "scores"), {
       uid: user.uid,
@@ -15,6 +21,59 @@ async function saveScore(user, score) {
     console.error("❌ Erreur enregistrement score: ", e);
   }
 }
+
+// Récupérer leaderboard
+async function getLeaderboard(period = "total") {
+  let dateLimit;
+  const now = new Date();
+
+  if (period === "day") {
+    dateLimit = new Date();
+    dateLimit.setDate(now.getDate() - 1);
+  } else if (period === "week") {
+    dateLimit = new Date();
+    dateLimit.setDate(now.getDate() - 7);
+  } else if (period === "month") {
+    dateLimit = new Date();
+    dateLimit.setMonth(now.getMonth() - 1);
+  }
+
+  let q;
+  if (period === "total") {
+    q = query(collection(window.db, "scores"), orderBy("score", "desc"), limit(25));
+  } else {
+    q = query(
+      collection(window.db, "scores"),
+      where("createdAt", ">=", dateLimit),
+      orderBy("score", "desc"),
+      limit(25)
+    );
+  }
+
+  const querySnapshot = await getDocs(q);
+  const results = [];
+  querySnapshot.forEach(doc => results.push(doc.data()));
+  return results;
+}
+
+// Afficher leaderboard
+async function showLeaderboard(period = "total") {
+  const scores = await getLeaderboard(period);
+  const container = document.getElementById("leaderboard");
+  container.innerHTML = "";
+
+  if (scores.length === 0) {
+    container.textContent = "Aucun score pour l’instant.";
+    return;
+  }
+
+  scores.forEach((entry, index) => {
+    const div = document.createElement("div");
+    div.textContent = `${index + 1}. ${entry.pseudo} — ${entry.score}`;
+    container.appendChild(div);
+  });
+}
+
 
 // Variables globales
 let categories = {
@@ -2394,29 +2453,40 @@ function verifierReponse() {
   }
 }
 
+// ----------------------
 // Terminer quiz
+// ----------------------
 function terminerQuiz(lastResult = "") {
   const newBest = score > bestScore;
   if (newBest) {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
+
+    // 🔥 Enregistrer le score en base Firestore
+    onAuthStateChanged(window.auth, user => {
+      if (user) {
+        saveScore(user, score);
+      }
+    });
+
     lancerConfettis();
   }
 
- quiz.innerHTML = `
-  <div class="quiz-end-card">
-    <h2>Fin d'aventure</h2>
-    ${lastResult ? `<p class="result-text">${lastResult}</p>` : ""}
-    <p class="score-text">🎯 Score : <span>${score}</span></p>
-    <p class="best-text">🏆 Record : <span>${bestScore}</span></p>
-    <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
-  </div>
-`;
+  quiz.innerHTML = `
+    <div class="quiz-end-card">
+      <h2>Fin d'aventure</h2>
+      ${lastResult ? `<p class="result-text">${lastResult}</p>` : ""}
+      <p class="score-text">🎯 Score : <span>${score}</span></p>
+      <p class="best-text">🏆 Record : <span>${bestScore}</span></p>
+      <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
+    </div>
+  `;
 
   document.getElementById("rejouer").addEventListener("click", () => {
-    location.reload();
+    startQuiz();
   });
 }
+
 
 // Démarrer quiz
 startBtn.addEventListener("click", () => {
