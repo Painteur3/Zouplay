@@ -147,23 +147,34 @@ function terminerQuiz(lastResult = "") {
     </div>
   `;
 
-  document.getElementById("rejouer").addEventListener("click", () => {
-    // Reset complet du quiz sans recharger la page
-    score = 0;
-    lives = 3;
-    currentPerso = null;
-    scoreSpan.textContent = score;
-    livesSpan.textContent = lives;
-    bestScoreSpan.textContent = "Record : " + bestScore;
-    resultText.textContent = "";
-    imgPerso.src = "";
-    quiz.classList.add("hidden");
-    accueil.classList.remove("hidden");
-    showCategorySelection();
+document.getElementById("rejouer").addEventListener("click", () => {
+  // 1️⃣ Réinitialiser toutes les variables
+  score = 0;
+  lives = 3;
+  currentPerso = null;
+  personnages = [];
+  
+  // 2️⃣ Réinitialiser l'affichage
+  scoreSpan.textContent = score;
+  livesSpan.textContent = lives;
+  bestScoreSpan.textContent = "Record : " + bestScore;
+  resultText.textContent = "";
+  imgPerso.src = "";
+  quiz.classList.add("hidden");           // cacher quiz
+  accueil.classList.remove("hidden");     // montrer accueil
+  showCategorySelection();                // montrer catégories et leaderboard
+
+  // 3️⃣ Réinitialiser le formulaire
+  document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => {
+    cb.checked = false;
   });
 
-  if (window.currentUser) updateLeaderboard(score);
-}
+  // 4️⃣ Nettoyer le leaderboard si nécessaire
+  const tbody = leaderboardContainer.querySelector("tbody");
+  if (tbody) tbody.innerHTML = "";
+  updateLeaderboard(0); // recharge le leaderboard depuis le localStorage
+});
+
 
 // 🔹 Démarrer quiz
 startBtn.addEventListener("click", () => {
