@@ -15,68 +15,52 @@ let currentPerso = null;
 let score = 0;
 let lives = 3;
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
-let confettiAnimation;
 
-// 🔹 DOM
+// DOM
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
-const imgPerso = document.getElementById("personnage-image");
-const answerInput = document.getElementById("answer");
-const resultText = document.getElementById("result");
-const validateBtn = document.getElementById("validate");
-const scoreSpan = document.getElementById("score");
-const livesSpan = document.getElementById("lives");
-const bestScoreSpan = document.getElementById("best-score");
+const categoriesContainer = document.getElementById("categories-container");
 const leaderboardContainer = document.getElementById("leaderboard-container");
 
-// Afficher scores initiaux
-scoreSpan.textContent = score;
-livesSpan.textContent = lives;
-bestScoreSpan.textContent = "Record : " + bestScore;
-
-// Générer catégories dynamiquement
-const categoriesContainer = document.getElementById("categories-container");
+// Afficher catégories dynamiquement
 for (let cat in categories) {
   const label = document.createElement("label");
   label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
   categoriesContainer.appendChild(label);
 }
 
-// 🔹 Fonctions pour cacher / afficher accueil
+// 🔹 Fonctions d'affichage
 function hideCategorySelection() {
-  const adventureTitle = accueil.querySelector("h2");
-  const categoriesForm = document.getElementById("categories-form");
-  const startBtn = document.getElementById("start-quiz");
-
-  if (adventureTitle) adventureTitle.style.display = "none";
-  if (categoriesForm) categoriesForm.style.display = "none";
-  if (startBtn) startBtn.style.display = "none";
-  if (leaderboardContainer) leaderboardContainer.style.display = "none";
+  accueil.querySelector("h2").style.display = "none";
+  document.getElementById("categories-form").style.display = "none";
+  startBtn.style.display = "none";
+  leaderboardContainer.style.display = "none";
 }
 
 function showCategorySelection() {
-  const adventureTitle = accueil.querySelector("h2");
-  const categoriesForm = document.getElementById("categories-form");
-  const startBtn = document.getElementById("start-quiz");
-
-  if (adventureTitle) adventureTitle.style.display = "block";
-  if (categoriesForm) categoriesForm.style.display = "block";
-  if (startBtn) startBtn.style.display = "inline-block";
-  if (leaderboardContainer) leaderboardContainer.style.display = "block";
+  accueil.querySelector("h2").style.display = "block";
+  document.getElementById("categories-form").style.display = "block";
+  startBtn.style.display = "inline-block";
+  leaderboardContainer.style.display = "block";
 }
 
 // 🔹 Afficher personnage
 function afficherPerso() {
   if (personnages.length === 0) return;
   currentPerso = personnages[Math.floor(Math.random() * personnages.length)];
-  imgPerso.src = currentPerso.img;
-  answerInput.value = "";
+  document.getElementById("personnage-image").src = currentPerso.img;
+  document.getElementById("answer").value = "";
+  document.getElementById("result").textContent = "";
+  document.getElementById("score").textContent = score;
+  document.getElementById("lives").textContent = lives;
+  document.getElementById("best-score").textContent = "Record : " + bestScore;
 }
 
 // 🔹 Vérifier réponse
 function verifierReponse() {
   if (!currentPerso) return;
+  const answerInput = document.getElementById("answer");
   const reponse = answerInput.value.trim().toLowerCase();
   let lastResult = "";
 
@@ -88,54 +72,25 @@ function verifierReponse() {
     lastResult = `❌ Mauvaise réponse. C'était ${currentPerso.nom}`;
   }
 
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
+  document.getElementById("score").textContent = score;
+  document.getElementById("lives").textContent = lives;
 
   personnages = personnages.filter(p => p !== currentPerso);
 
   if (lives <= 0 || personnages.length === 0) {
     terminerQuiz(lastResult);
   } else {
-    resultText.textContent = lastResult;
+    document.getElementById("result").textContent = lastResult;
+    afficherPerso();
   }
-}
-
-// 🔹 Confetti (exemple simple)
-function lancerConfettis() {
-  if (!confettiAnimation) {
-    // Utiliser la librairie confetti ou ton canvas ici
-    console.log("🎉 Confettis !");
-  }
-}
-
-// 🔹 Leaderboard
-function updateLeaderboard(score){
-  const div = leaderboardContainer;
-  if(!div) return;
-
-  let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-  scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
-  scores.sort((a,b)=> b.score - a.score);
-  scores = scores.slice(0,25);
-  localStorage.setItem("leaderboard", JSON.stringify(scores));
-
-  const tbody = div.querySelector('tbody');
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  scores.forEach((s,i)=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${i+1}</td><td>${s.user}</td><td>${s.score}</td>`;
-    tbody.appendChild(tr);
-  });
 }
 
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
-  const newBest = score > bestScore;
-  if (newBest) {
+  if (score > bestScore) {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
-    lancerConfettis();
+    // lancerConfettis(); // si tu as la fonction confettis
   }
 
   quiz.innerHTML = `
@@ -148,37 +103,42 @@ function terminerQuiz(lastResult = "") {
     </div>
   `;
 
-  document.getElementById("rejouer").addEventListener("click", () => {
-    rejouerQuiz();
-  });
+  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
 
   if (window.currentUser) updateLeaderboard(score);
 }
 
-// 🔹 Rejouer quiz
+// 🔹 Fonction Rejouer
 function rejouerQuiz() {
-  // Réinitialiser variables
+  // Reset variables
   score = 0;
   lives = 3;
   currentPerso = null;
   personnages = [];
-
-  // Réinitialiser affichage
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
-  bestScoreSpan.textContent = "Record : " + bestScore;
-  answerInput.value = "";
-  resultText.textContent = "";
-  imgPerso.src = "";
-
-  // Décocher toutes les catégories
+  
+  // Reset input et décocher catégories
   const checkboxes = document.querySelectorAll("#categories-container input[type='checkbox']");
   checkboxes.forEach(cb => cb.checked = false);
 
-  // Afficher accueil, masquer quiz
-  quiz.classList.add("hidden");
+  // Réafficher accueil
   accueil.classList.remove("hidden");
-  showCategorySelection();
+  quiz.classList.add("hidden");
+
+  // Restaurer contenu initial du quiz
+  quiz.innerHTML = `
+    <div id="score-container">
+      <span id="best-score">Record : ${bestScore}</span>
+      <div id="score-lives">Score: <span id="score">0</span> | Life: <span id="lives">3</span></div>
+    </div>
+    <div class="personnage-container">
+      <img id="personnage-image" src="" alt="Personnage">
+    </div>
+    <div class="answer-container">
+      <input type="text" id="answer" placeholder="Tape le nom...">
+      <button id="validate" class="btn btn-validate">Valider</button>
+    </div>
+    <p id="result"></p>
+  `;
 }
 
 // 🔹 Démarrer quiz
@@ -193,43 +153,50 @@ startBtn.addEventListener("click", () => {
     .map(cb => cb.value);
 
   personnages = selected.flatMap(cat => categories[cat] || []);
-  if (personnages.length === 0) {
-    personnages = Object.values(categories).flat();
-  }
+  if (personnages.length === 0) personnages = Object.values(categories).flat();
 
   quiz.classList.remove("hidden");
-
-  imgPerso.src = "";
-  answerInput.value = "";
-  resultText.textContent = "";
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
-  bestScoreSpan.textContent = "Meilleur score : " + bestScore;
+  accueil.classList.add("hidden");
 
   afficherPerso();
-  answerInput.focus();
+
+  // Réattacher listeners
+  const validateBtn = document.getElementById("validate");
+  const answerInput = document.getElementById("answer");
+
+  validateBtn.addEventListener("click", verifierReponse);
+
+  answerInput.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      validateBtn.click();
+    }
+  });
 });
 
-// 🔹 Bouton valider
-validateBtn.addEventListener("click", () => {
-  verifierReponse();
-  if (personnages.length > 0 && lives > 0) afficherPerso();
-});
+// 🔹 Leaderboard
+function updateLeaderboard(score){
+  if(!leaderboardContainer) return;
+  let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+  scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
+  scores.sort((a,b)=> b.score - a.score);
+  scores = scores.slice(0,25);
+  localStorage.setItem("leaderboard", JSON.stringify(scores));
 
-// 🔹 Entrée clavier Enter
-answerInput.addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    validateBtn.classList.add('click-effect');
-    setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
-    validateBtn.click();
-  }
-});
+  const tbody = leaderboardContainer.querySelector('tbody');
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  scores.forEach((s,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i+1}</td><td>${s.user}</td><td>${s.score}</td>`;
+    tbody.appendChild(tr);
+  });
+}
 
-// 🔹 Afficher leaderboard dès le chargement
+// Charger leaderboard au départ
 document.addEventListener("DOMContentLoaded", () => {
   if (leaderboardContainer) {
-    leaderboardContainer.style.display = "block"; 
-    updateLeaderboard(0); 
+    leaderboardContainer.style.display = "block";
+    updateLeaderboard(0);
   }
 });
