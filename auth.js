@@ -16,6 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(app);
+
+
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
   const overlay = document.createElement("div");
@@ -118,3 +123,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
