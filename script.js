@@ -1,37 +1,19 @@
-import { getFirestore, collection, addDoc, query, orderBy, limit, where, getDocs, Timestamp } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const db = getFirestore(); // Assurez-vous d’utiliser la même instance Firebase que auth.js
-
-let currentUser = null;
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const auth = getAuth();
-
-onAuthStateChanged(auth, user => {
-  currentUser = user;
-  if(user) loadLeaderboard(activeRange);
-});
-
 // Variables globales
 let categories = {
-
-"Akame ga Kill": [
-  { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-  { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-],
-
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
   "Black Clover": [
-  { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
-  { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
-]
-
+    { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
+    { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
+  ]
 };
-
 
 let personnages = [];
 let currentPerso = null;
 let score = 0;
-let lives = 3; // nombre de vies
+let lives = 3;
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 let confettiAnimation;
 
@@ -39,7 +21,6 @@ let confettiAnimation;
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
-
 const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
 const resultText = document.getElementById("result");
@@ -47,21 +28,27 @@ const validateBtn = document.getElementById("validate");
 const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
+const categoriesContainer = document.getElementById("categories-container");
+
+// Leaderboard container
+const leaderboardContainer = document.createElement("div");
+leaderboardContainer.id = "leaderboard";
+leaderboardContainer.style.marginTop = "20px";
+accueil.appendChild(leaderboardContainer);
 
 // Afficher scores initiaux
 scoreSpan.textContent = score;
 livesSpan.textContent = lives;
 bestScoreSpan.textContent = "Record : " + bestScore;
 
-// Générer les catégories dynamiquement
-const categoriesContainer = document.getElementById("categories-container");
+// Générer catégories dynamiquement
 for (let cat in categories) {
   const label = document.createElement("label");
   label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
   categoriesContainer.appendChild(label);
 }
 
-// Fonction confettis améliorée
+// --- Confettis ---
 function lancerConfettis() {
   const canvas = document.getElementById("confetti");
   const ctx = canvas.getContext("2d");
@@ -71,7 +58,7 @@ function lancerConfettis() {
   const confettis = [];
   const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#43aa8b","#577590","#bdb2ff","#ff6d00"];
   const gravity = 0.3;
-  const windMax = 1; // intensité max du vent
+  const windMax = 1;
 
   for (let i = 0; i < 300; i++) {
     confettis.push({
@@ -102,7 +89,6 @@ function lancerConfettis() {
 
     confettis.forEach(c => {
       if (c.alpha <= 0) return;
-
       ctx.save();
       ctx.translate(c.x + c.tilt, c.y);
       ctx.rotate((c.rotation * Math.PI) / 180);
@@ -114,37 +100,26 @@ function lancerConfettis() {
       ctx.stroke();
       ctx.restore();
 
-      // Tilt oscillation
       c.tiltAngle += c.tiltSpeed;
       c.tilt = Math.sin(c.tiltAngle) * 10;
       c.rotation += c.rotationSpeed;
 
-      // Mouvement
       if (!c.landed) {
         c.speedY += gravity;
         c.x += c.speedX;
         c.y += c.speedY;
 
-        // Rebond sur le sol
         if (c.y + c.d > canvas.height) {
           c.y = canvas.height - c.d;
           c.speedY *= -c.bounce;
-          c.speedX *= 0.8; // perte d'énergie horizontale
-          if (Math.abs(c.speedY) < 0.5) {
-            c.landed = true;
-          }
+          c.speedX *= 0.8;
+          if (Math.abs(c.speedY) < 0.5) c.landed = true;
         }
 
-        // Rebond sur les côtés
-        if (c.x < 0 || c.x > canvas.width) {
-          c.speedX *= -1;
-        }
+        if (c.x < 0 || c.x > canvas.width) c.speedX *= -1;
       }
 
-      // Disparition progressive après 5 sec
-      if (elapsed > 5000 || c.landed) {
-        c.alpha -= c.fadeSpeed;
-      }
+      if (elapsed > 5000 || c.landed) c.alpha -= c.fadeSpeed;
     });
 
     if (confettis.some(c => c.alpha > 0)) {
@@ -157,7 +132,6 @@ function lancerConfettis() {
   draw();
 }
 
-// Convertit hex en rgb pour le rgba
 function hexToRgb(hex) {
   const bigint = parseInt(hex.replace("#", ""), 16);
   const r = (bigint >> 16) & 255;
@@ -166,8 +140,7 @@ function hexToRgb(hex) {
   return `${r},${g},${b}`;
 }
 
-
-// Afficher personnage
+// --- Quiz ---
 function afficherPerso() {
   if (personnages.length === 0) return;
   currentPerso = personnages[Math.floor(Math.random() * personnages.length)];
@@ -175,7 +148,6 @@ function afficherPerso() {
   answerInput.value = "";
 }
 
-// Vérifier réponse
 function verifierReponse() {
   if (!currentPerso) return;
   const reponse = answerInput.value.trim().toLowerCase();
@@ -201,7 +173,73 @@ function verifierReponse() {
   }
 }
 
-// Terminer quiz
+// --- Leaderboard Firestore ---
+import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, Timestamp, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const db = getFirestore();
+const auth = getAuth();
+
+async function updateLeaderboard() {
+  const user = auth.currentUser;
+  if (!user) return;
+  const now = Timestamp.now();
+
+  try {
+    await addDoc(collection(db, "Scores"), {
+      pseudo: user.displayName || user.email,
+      bestscore: score,
+      lastPlayed: now
+    });
+  } catch(e) {
+    console.error("Erreur ajout score:", e);
+  }
+
+  // Récupérer top 25 pour chaque période
+  const periods = [
+    { id: "day", start: new Date(new Date().setHours(0,0,0,0)) },
+    { id: "week", start: (() => { let d = new Date(); let diff = d.getDay(); d.setDate(d.getDate() - diff); d.setHours(0,0,0,0); return d; })() },
+    { id: "month", start: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
+    { id: "total", start: null }
+  ];
+
+  leaderboardContainer.innerHTML = "";
+
+  for (let period of periods) {
+    let q;
+    if (period.start) {
+      q = query(
+        collection(db, "Scores"),
+        where("lastPlayed", ">=", Timestamp.fromDate(period.start)),
+        orderBy("bestscore", "desc"),
+        limit(25)
+      );
+    } else {
+      q = query(
+        collection(db, "Scores"),
+        orderBy("bestscore", "desc"),
+        limit(25)
+      );
+    }
+
+    const snapshot = await getDocs(q);
+    const scores = snapshot.docs.map(doc => doc.data());
+
+    const div = document.createElement("div");
+    div.classList.add("leaderboard-section");
+    div.innerHTML = `<h3>Top 25 - ${period.id.toUpperCase()}</h3>`;
+    const list = document.createElement("ol");
+    for (let s of scores) {
+      const li = document.createElement("li");
+      li.textContent = `${s.pseudo} : ${s.bestscore}`;
+      list.appendChild(li);
+    }
+    div.appendChild(list);
+    leaderboardContainer.appendChild(div);
+  }
+}
+
+// --- Terminer quiz ---
 function terminerQuiz(lastResult = "") {
   const newBest = score > bestScore;
   if (newBest) {
@@ -210,97 +248,34 @@ function terminerQuiz(lastResult = "") {
     lancerConfettis();
   }
 
-  if(currentUser){
-  const pseudo = currentUser.displayName || currentUser.email;
-  addDoc(collection(db, "Scores"), {
-    Pseudo: pseudo,
-    bestscore: score,
-    lastPlayed: Timestamp.now()
-  }).then(() => {
-    loadLeaderboard(activeRange);
-  }).catch(err => console.error(err));
+  quiz.innerHTML = `
+    <div class="quiz-end-card">
+      <h2>Fin d'aventure</h2>
+      ${lastResult ? `<p class="result-text">${lastResult}</p>` : ""}
+      <p class="score-text">🎯 Score : <span>${score}</span></p>
+      <p class="best-text">🏆 Record : <span>${bestScore}</span></p>
+      <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
+    </div>
+  `;
+
+  document.getElementById("rejouer").addEventListener("click", () => location.reload());
+
+  // Mettre à jour leaderboard
+  updateLeaderboard();
 }
 
-
- quiz.innerHTML = `
-  <div class="quiz-end-card">
-    <h2>Fin d'aventure</h2>
-    ${lastResult ? `<p class="result-text">${lastResult}</p>` : ""}
-    <p class="score-text">🎯 Score : <span>${score}</span></p>
-    <p class="best-text">🏆 Record : <span>${bestScore}</span></p>
-    <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
-  </div>
-`;
-
-  document.getElementById("rejouer").addEventListener("click", () => {
-    location.reload();
-  });
-}
-
-async function loadLeaderboard(range) {
-  if(!currentUser) return;
-  
-  let startDate = new Date();
-  switch(range){
-    case "day":
-      startDate.setHours(0,0,0,0);
-      break;
-    case "week":
-      const day = startDate.getDay();
-      startDate.setDate(startDate.getDate() - day);
-      startDate.setHours(0,0,0,0);
-      break;
-    case "month":
-      startDate.setDate(1);
-      startDate.setHours(0,0,0,0);
-      break;
-    case "total":
-      startDate = null;
-      break;
-  }
-
-  let q;
-  const scoresRef = collection(db, "Scores");
-  if(startDate){
-    q = query(scoresRef, where("lastPlayed", ">=", Timestamp.fromDate(startDate)), orderBy("bestscore", "desc"), limit(25));
-  } else {
-    q = query(scoresRef, orderBy("bestscore", "desc"), limit(25));
-  }
-
-  const querySnapshot = await getDocs(q);
-  leaderboardBody.innerHTML = "";
-  let rank = 1;
-  querySnapshot.forEach(doc => {
-    const data = doc.data();
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${rank++}</td><td>${data.Pseudo}</td><td>${data.bestscore}</td>`;
-    leaderboardBody.appendChild(tr);
-  });
-
-  if(querySnapshot.empty){
-    leaderboardBody.innerHTML = `<tr><td colspan="3">Aucun score disponible</td></tr>`;
-  }
-
-  leaderboardSection.classList.remove("hidden");
-}
-
-// Démarrer quiz
+// --- Démarrer quiz ---
 startBtn.addEventListener("click", () => {
   score = 0;
   lives = 3;
   currentPerso = null;
 
-  const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
-    .map(cb => cb.value);
-
+  const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked")).map(cb => cb.value);
   personnages = selected.flatMap(cat => categories[cat]);
-  if (personnages.length === 0) {
-    personnages = Object.values(categories).flat();
-  }
+  if (personnages.length === 0) personnages = Object.values(categories).flat();
 
   accueil.classList.add("hidden");
   quiz.classList.remove("hidden");
-
   imgPerso.src = "";
   answerInput.value = "";
   resultText.textContent = "";
@@ -311,113 +286,17 @@ startBtn.addEventListener("click", () => {
   afficherPerso();
 });
 
-// Bouton valider
+// --- Valider réponse ---
 validateBtn.addEventListener("click", () => {
   verifierReponse();
-  if (personnages.length > 0 && lives > 0) {
-    afficherPerso();
-  }
+  if (personnages.length > 0 && lives > 0) afficherPerso();
 });
 
-startBtn.addEventListener("click", function() {
-  // Masquer la section accueil
-  accueil.style.display = "none";
-
-  // Afficher la section quiz
-  quiz.classList.remove("hidden");
-
-  // Optionnel : sélectionner automatiquement le champ réponse
-  answerInput.focus();
-});
-
+// --- Entrée clavier ---
 document.addEventListener('DOMContentLoaded', () => {
-    const answerInput = document.getElementById('answer');
-    const validateButton = document.getElementById('validate');
-
-    if (answerInput && validateButton) {
-        answerInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); 
-
-                // Ajouter un effet visuel
-                validateButton.classList.add('click-effect');
-
-                // Retirer l'effet après 150ms
-                setTimeout(() => {
-                    validateButton.classList.remove('click-effect');
-                }, 150);
-
-                // Simuler le clic
-                validateButton.click();
-            }
-        });
-    }
-});
-
-const leaderboardSection = document.getElementById("leaderboard");
-const leaderboardBody = document.getElementById("leaderboard-body");
-const lbTabs = document.querySelectorAll(".lb-tab");
-let activeRange = "day";
-
-lbTabs.forEach(tab => {
-  tab.addEventListener("click", () => {
-    lbTabs.forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
-    activeRange = tab.dataset.range;
-    if(currentUser) loadLeaderboard(activeRange);
-  });
-});
-
-
-const canvas = document.getElementById('confetti');
-const ctx = canvas.getContext('2d');
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-const particles = [];
-const particleCount = 60; // nombre de bulles/particules
-
-// Création des particules
-for(let i=0; i<particleCount; i++){
-    particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 4 + 2,
-        speedY: Math.random() * 1 + 0.3,
-        speedX: (Math.random() - 0.5) * 0.5,
-        alpha: Math.random() * 0.5 + 0.3
-    });
-}
-
-// Animation
-function animateParticles(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`; // couleur dorée
-        ctx.fill();
-        
-        p.y -= p.speedY; // monte doucement
-        p.x += p.speedX; // léger mouvement horizontal
-
-        // Si la particule sort de l'écran, on la replace en bas
-        if(p.y + p.radius < 0) {
-            p.y = canvas.height + p.radius;
-            p.x = Math.random() * canvas.width;
-        }
-    });
-
-    requestAnimationFrame(animateParticles);
-}
-
-animateParticles();
-
-// Ajuster le canvas au resize
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
-
+  answerInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      validateBtn.classList.add('click-effect');
+      setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
+      validateBtn.click();
