@@ -53,20 +53,24 @@ function hideCategorySelection() {
   const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
   const startBtn = document.getElementById("start-quiz");
+  const leaderboard = document.getElementById("leaderboard-container");
 
   if (adventureTitle) adventureTitle.style.display = "none";
   if (categoriesForm) categoriesForm.style.display = "none";
   if (startBtn) startBtn.style.display = "none";
+  if (leaderboard) leaderboard.style.display = "none";
 }
 
 function showCategorySelection() {
   const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
   const startBtn = document.getElementById("start-quiz");
+  const leaderboard = document.getElementById("leaderboard-container");
 
   if (adventureTitle) adventureTitle.style.display = "block";
   if (categoriesForm) categoriesForm.style.display = "block";
   if (startBtn) startBtn.style.display = "inline-block";
+  if (leaderboard) leaderboard.style.display = "block";
 }
 
 // 🔹 Afficher personnage
