@@ -1,3 +1,8 @@
+import { getFirestore, collection, addDoc, query, orderBy, limit, where, getDocs, Timestamp } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(); // Assurez-vous d’utiliser la même instance Firebase que auth.js
+
 // Variables globales
 let categories = {
 
