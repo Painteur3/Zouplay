@@ -148,31 +148,26 @@ function terminerQuiz(lastResult = "") {
   `;
 
 document.getElementById("rejouer").addEventListener("click", () => {
-  // 1️⃣ Réinitialiser toutes les variables
+  // 1️⃣ Cacher le quiz et montrer l'accueil
+  quiz.classList.add("hidden");
+  accueil.classList.remove("hidden");
+
+  // 2️⃣ Afficher correctement le formulaire de catégories et le leaderboard
+  showCategorySelection();
+
+  // 3️⃣ Réinitialiser le texte et l'image du quiz
+  resultText.textContent = "";
+  imgPerso.src = "";
+
+  // 4️⃣ Réinitialiser score et vies (mais ne touche pas bestScore)
   score = 0;
   lives = 3;
   currentPerso = null;
-  personnages = [];
-  
-  // 2️⃣ Réinitialiser l'affichage
+
+  // 5️⃣ Mettre à jour l'affichage des scores
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
   bestScoreSpan.textContent = "Record : " + bestScore;
-  resultText.textContent = "";
-  imgPerso.src = "";
-  quiz.classList.add("hidden");           // cacher quiz
-  accueil.classList.remove("hidden");     // montrer accueil
-  showCategorySelection();                // montrer catégories et leaderboard
-
-  // 3️⃣ Réinitialiser le formulaire
-  document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => {
-    cb.checked = false;
-  });
-
-  // 4️⃣ Nettoyer le leaderboard si nécessaire
-  const tbody = leaderboardContainer.querySelector("tbody");
-  if (tbody) tbody.innerHTML = "";
-  updateLeaderboard(0); // recharge le leaderboard depuis le localStorage
 });
 
 
