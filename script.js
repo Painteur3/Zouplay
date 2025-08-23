@@ -148,8 +148,34 @@ function terminerQuiz(lastResult = "") {
   `;
 
 document.getElementById("rejouer").addEventListener("click", () => {
-    // Recharge la page pour tout réinitialiser proprement
-    window.location.reload();
+    // Reset des variables
+    score = 0;
+    lives = 3;
+    currentPerso = null;
+    personnages = [];
+
+    // Reset du DOM
+    scoreSpan.textContent = score;
+    livesSpan.textContent = lives;
+    bestScoreSpan.textContent = "Record : " + bestScore;
+    resultText.textContent = "";
+    imgPerso.src = "";
+
+    // Reset sections
+    quiz.classList.add("hidden");
+    accueil.classList.remove("hidden");
+    showCategorySelection();
+
+    // Reset des catégories cochées
+    document.querySelectorAll("#categories-container input[type='checkbox']").forEach(cb => cb.checked = false);
+
+    // Rebind des listeners si nécessaire
+    answerInput.value = "";
+    answerInput.removeEventListener('keydown', handleEnter);
+    answerInput.addEventListener('keydown', handleEnter);
+
+    // Mettre à jour le leaderboard si connecté
+    if (window.currentUser) updateLeaderboard(0);
 });
 
 
