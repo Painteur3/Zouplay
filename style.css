@@ -33,6 +33,7 @@ header h1 {
     margin: 20px;
     gap: 20px;
     flex-wrap: wrap;
+       padding-top: 0; /* supprime l’espace au-dessus */
 }
 
 /* Colonnes pub */
@@ -202,7 +203,6 @@ p {
   align-items: center;       /* centre horizontalement tout le contenu */
   gap: 15px;                 /* espace entre les éléments */
   padding: 20px;
-    padding-top: 0; /* supprime l’espace au-dessus */
 }
 
 /* Cacher la checkbox */
