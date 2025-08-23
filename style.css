@@ -876,54 +876,115 @@ header {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Leaderboard centré */
+/* Leaderboard */
 #leaderboard {
-  margin: 30px auto;
-  padding: 20px;
+  margin-top: 25px;
+  padding: 15px;
   background: #fff;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   max-width: 600px;
   text-align: center;
-  border: 2px solid #ffb347; /* encadrement du leaderboard */
 }
 
 #leaderboard h3 {
-  color: #ff6600;
-  font-size: 1.8em;
-  margin-bottom: 20px;
-  text-align: center;
+  color: #f5be48;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+}
+
+.leaderboard-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.leaderboard-tabs button {
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #ffb347;
+  color: #fff;
   font-weight: bold;
+  transition: background 0.3s;
 }
 
-/* Centrer les boutons */
-.btn, .leaderboard-tabs button {
-  display: inline-block;
-  margin: 10px auto; /* centré horizontalement */
-  text-align: center;
+.leaderboard-tabs button.active {
+  background: linear-gradient(135deg, #f5be48, #f7a600);
 }
 
-/* Encadrer pseudo et score dans le tableau */
+.leaderboard-tabs button:hover:not(.active) {
+  background-color: #ff6600;
+}
+
 .leaderboard-table table {
   width: 100%;
   border-collapse: collapse;
-  border: 2px solid #ffb347; /* encadrement global tableau */
-  border-radius: 10px;
-  overflow: hidden;
 }
 
 .leaderboard-table th, .leaderboard-table td {
-  padding: 10px;
-  border-bottom: 1px dashed #ffb347;
+  padding: 8px 6px;
+  border-bottom: 1px solid #f0f0f0;
   text-align: center;
-  font-weight: 500;
-  color: #333;
-}
-
-.leaderboard-table th {
-  background-color: #ffe6b3;
 }
 
 .leaderboard-table tbody tr:nth-child(even) {
   background: #f9f9f9;
 }
+
+/* Leaderboard */
+#leaderboard {
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#leaderboard h3 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: #ff6600;
+}
+
+.leaderboard-columns {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.leaderboard-col {
+  flex: 1 1 22%;
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 120px;
+}
+
+.leaderboard-col h4 {
+  margin-bottom: 10px;
+  color: #f5be48;
+}
+
+.leaderboard-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.leaderboard-col ul li {
+  padding: 5px 0;
+  font-weight: 500;
+  border-bottom: 1px dashed #ccc;
+  color: #333;
+}
+
+.leaderboard-col ul li:last-child {
+  border-bottom: none;
+}
+
+
