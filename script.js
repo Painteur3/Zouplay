@@ -23,23 +23,28 @@ let score = 0;
 let lives = 3;
 let bestScore = 0;
 
-// DOM
+// 🔹 DOM
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
 const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
 const resultText = document.getElementById("result");
-const validateBtn = document.getElementById("validate");
 const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
 const leaderboardContainer = document.getElementById("leaderboard-container");
 const categoriesContainer = document.getElementById("categories-container");
 
-// 🔹 Fonctions d’affichage catégories
-function renderCategories() {
-  if (!categoriesContainer) return;
+// 🔹 Firebase Firestore
+import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, serverTimestamp, query, collection, orderBy, limit, getDocs } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore();
+
+// 🔹 Générer catégories dynamiquement
+function generateCategories() {
+  if(!categoriesContainer) return;
   categoriesContainer.innerHTML = "";
   for (let cat in categories) {
     const label = document.createElement("label");
@@ -48,39 +53,36 @@ function renderCategories() {
   }
 }
 
-function hideCategorySelection() {
-  const adventureTitle = accueil.querySelector("h2");
-  const categoriesForm = document.getElementById("categories-form");
-  if (adventureTitle) adventureTitle.style.display = "none";
-  if (categoriesForm) categoriesForm.style.display = "none";
-  if (startBtn) startBtn.style.display = "none";
-  if (leaderboardContainer) leaderboardContainer.style.display = "none";
+// 🔹 Afficher / cacher catégories
+function showCategorySelection() {
+  if(accueil) accueil.classList.remove("hidden");
+  if(categoriesContainer) categoriesContainer.style.display = "block";
+  if(startBtn) startBtn.style.display = "inline-block";
+  if(leaderboardContainer) leaderboardContainer.style.display = "block";
 }
 
-function showCategorySelection() {
-  const adventureTitle = accueil.querySelector("h2");
-  const categoriesForm = document.getElementById("categories-form");
-  if (adventureTitle) adventureTitle.style.display = "block";
-  if (categoriesForm) categoriesForm.style.display = "block";
-  if (startBtn) startBtn.style.display = "inline-block";
-  if (leaderboardContainer) leaderboardContainer.style.display = "block";
+function hideCategorySelection() {
+  if(accueil) accueil.classList.add("hidden");
+  if(categoriesContainer) categoriesContainer.style.display = "none";
+  if(startBtn) startBtn.style.display = "none";
+  if(leaderboardContainer) leaderboardContainer.style.display = "none";
 }
 
 // 🔹 Afficher personnage
 function afficherPerso() {
-  if (personnages.length === 0) return;
-  currentPerso = personnages[Math.floor(Math.random() * personnages.length)];
+  if(personnages.length === 0) return;
+  currentPerso = personnages[Math.floor(Math.random()*personnages.length)];
   imgPerso.src = currentPerso.img;
   answerInput.value = "";
 }
 
 // 🔹 Vérifier réponse
 function verifierReponse() {
-  if (!currentPerso) return;
+  if(!currentPerso) return;
   const reponse = answerInput.value.trim().toLowerCase();
   let lastResult = "";
 
-  if (reponse === currentPerso.nom.toLowerCase()) {
+  if(reponse === currentPerso.nom.toLowerCase()) {
     score++;
     lastResult = "✅ Bonne réponse !";
   } else {
@@ -93,7 +95,7 @@ function verifierReponse() {
 
   personnages = personnages.filter(p => p !== currentPerso);
 
-  if (lives <= 0 || personnages.length === 0) {
+  if(lives <= 0 || personnages.length === 0) {
     terminerQuiz(lastResult);
   } else {
     resultText.textContent = lastResult;
@@ -101,20 +103,16 @@ function verifierReponse() {
 }
 
 // 🔹 Terminer quiz
-function terminerQuiz(lastResult = "") {
+async function terminerQuiz(lastResult="") {
   resultText.textContent = lastResult;
 
   // Mettre à jour bestScore
-  if (window.currentUser && score > bestScore) {
-    bestScore = score;
-    bestScoreSpan.textContent = "Record : " + bestScore;
-    // 🔹 Mettre à jour Firestore
-    updateUserScore(score);
-  }
+  if(score > bestScore) bestScore = score;
+  bestScoreSpan.textContent = "Record : " + bestScore;
 
-  // Créer ou afficher le bloc de fin
+  // Bloc fin
   let finQuiz = document.getElementById("fin-quiz");
-  if (!finQuiz) {
+  if(!finQuiz) {
     finQuiz = document.createElement("div");
     finQuiz.id = "fin-quiz";
     finQuiz.classList.add("quiz-end-card");
@@ -135,10 +133,31 @@ function terminerQuiz(lastResult = "") {
   finQuiz.classList.remove("hidden");
   quiz.classList.add("hidden");
 
-  const rejouerBtn = document.getElementById("rejouer");
-  rejouerBtn.addEventListener("click", rejouerQuiz);
+  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
 
-  if (window.currentUser) updateLeaderboard();
+  // 🔹 Enregistrer score Firebase si utilisateur connecté
+  if(window.currentUser) {
+    const userRef = doc(db, "Scores", window.currentUser.uid);
+    const userSnap = await getDoc(userRef);
+
+    if(userSnap.exists()) {
+      const data = userSnap.data();
+      const newBest = score > (data.bestscore || 0) ? score : data.bestscore;
+      await updateDoc(userRef, {
+        bestscore: newBest,
+        lastPlayed: serverTimestamp(),
+        scoresHistory: arrayUnion({ score, date: serverTimestamp() })
+      });
+    } else {
+      await setDoc(userRef, {
+        pseudo: window.currentUser.displayName || window.currentUser.email,
+        bestscore: score,
+        lastPlayed: serverTimestamp(),
+        scoresHistory: [{ score, date: serverTimestamp() }]
+      });
+    }
+    updateLeaderboard();
+  }
 }
 
 // 🔹 Réinitialiser quiz
@@ -146,9 +165,8 @@ function rejouerQuiz() {
   score = 0;
   lives = 3;
   currentPerso = null;
-
   answerInput.value = "";
-  document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => cb.checked = false);
+  document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb=>cb.checked=false);
 
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
@@ -156,7 +174,7 @@ function rejouerQuiz() {
   imgPerso.src = "";
 
   const finQuiz = document.getElementById("fin-quiz");
-  if (finQuiz) finQuiz.classList.add("hidden");
+  if(finQuiz) finQuiz.classList.add("hidden");
 
   accueil.classList.remove("hidden");
   quiz.classList.add("hidden");
@@ -164,7 +182,7 @@ function rejouerQuiz() {
 }
 
 // 🔹 Démarrer quiz
-startBtn.addEventListener("click", () => {
+startBtn.addEventListener("click", ()=>{
   score = 0;
   lives = 3;
   currentPerso = null;
@@ -173,11 +191,8 @@ startBtn.addEventListener("click", () => {
 
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
-
   personnages = selected.flatMap(cat => categories[cat]);
-  if (personnages.length === 0) {
-    personnages = Object.values(categories).flat();
-  }
+  if(personnages.length === 0) personnages = Object.values(categories).flat();
 
   quiz.classList.remove("hidden");
   accueil.classList.add("hidden");
@@ -193,73 +208,44 @@ startBtn.addEventListener("click", () => {
   answerInput.focus();
 });
 
-// 🔹 Bouton valider
-validateBtn.addEventListener("click", () => {
+// 🔹 Valider réponse
+document.getElementById("validate").addEventListener("click", ()=>{
   verifierReponse();
-  if (personnages.length > 0 && lives > 0) afficherPerso();
+  if(personnages.length>0 && lives>0) afficherPerso();
 });
 
 // 🔹 Entrée clavier Enter
-answerInput.addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    validateBtn.click();
+answerInput.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    document.getElementById("validate").click();
   }
 });
 
-// 🔹 Leaderboard Firestore
-import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, Timestamp, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const db = getFirestore();
+// 🔹 Leaderboard
+async function updateLeaderboard(type="total") {
+  if(!leaderboardContainer) return;
+  const tbody = leaderboardContainer.querySelector('tbody');
+  if(!tbody) return;
 
-async function updateUserScore(score){
-  const userDoc = doc(db, "Scores", window.currentUser.uid);
-  const docSnap = await getDoc(userDoc);
-
-  if (!docSnap.exists()) {
-    await setDoc(userDoc, {
-      pseudo: window.currentUser.displayName,
-      bestscore: score,
-      lastPlayed: Timestamp.now(),
-      scoresHistory: [{ score, date: Timestamp.now() }]
-    });
-  } else {
-    const data = docSnap.data();
-    const newBest = Math.max(data.bestscore || 0, score);
-    await updateDoc(userDoc, {
-      bestscore: newBest,
-      lastPlayed: Timestamp.now(),
-      scoresHistory: arrayUnion({ score, date: Timestamp.now() })
-    });
-  }
-
-  updateLeaderboard();
-}
-
-async function updateLeaderboard() {
-  if (!leaderboardContainer) return;
-  const tbody = leaderboardContainer.querySelector("tbody");
-  if (!tbody) return;
-
-  const q = query(collection(db, "Scores"), orderBy("bestscore", "desc"), limit(25));
-  const querySnapshot = await getDocs(q);
+  const q = query(collection(db,"Scores"), orderBy("bestscore","desc"), limit(25));
+  const querySnap = await getDocs(q);
 
   tbody.innerHTML = "";
-  let rank = 1;
-  querySnapshot.forEach(doc => {
-    const data = doc.data();
+  querySnap.forEach((docSnap,i)=>{
+    const data = docSnap.data();
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${rank}</td><td>${data.pseudo}</td><td>${data.bestscore}</td>`;
+    tr.innerHTML = `<td>${i+1}</td><td>${data.pseudo}</td><td>${data.bestscore}</td>`;
     tbody.appendChild(tr);
-    rank++;
   });
 }
 
-// 🔹 Initialisation DOM
-document.addEventListener("DOMContentLoaded", () => {
-  renderCategories();
+// 🔹 Initialisation au chargement
+document.addEventListener("DOMContentLoaded", ()=>{
+  generateCategories();
+  showCategorySelection();
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
   bestScoreSpan.textContent = "Record : " + bestScore;
-  showCategorySelection();
-  if (leaderboardContainer) updateLeaderboard();
+  updateLeaderboard();
 });
