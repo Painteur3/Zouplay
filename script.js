@@ -10,7 +10,7 @@ const categories = {
     { nom: "Suppaman", img: "images/Dragon Ball/Suppaman.jpg" },
     { nom: "Yajirobe", img: "images/Dragon Ball/Yajirobe.jpg" },
     { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" },
-    ],
+  ],
   "Black Clover": [
     { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
     { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
@@ -34,7 +34,6 @@ const validateBtn = document.getElementById("validate");
 const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
-const leaderboardContainer = document.getElementById("leaderboard-container");
 const categoriesContainer = document.getElementById("categories-container");
 
 // 🔹 Afficher scores initiaux
@@ -58,7 +57,6 @@ function hideCategorySelection() {
   if (adventureTitle) adventureTitle.style.display = "none";
   if (categoriesForm) categoriesForm.style.display = "none";
   if (startBtn) startBtn.style.display = "none";
-  if (leaderboardContainer) leaderboardContainer.style.display = "none";
 }
 
 function showCategorySelection() {
@@ -69,7 +67,6 @@ function showCategorySelection() {
   if (adventureTitle) adventureTitle.style.display = "block";
   if (categoriesForm) categoriesForm.style.display = "block";
   if (startBtn) startBtn.style.display = "inline-block";
-  if (leaderboardContainer) leaderboardContainer.style.display = "block";
 }
 
 // 🔹 Afficher personnage
@@ -115,7 +112,6 @@ function terminerQuiz(lastResult = "") {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
     bestScoreSpan.textContent = "Record : " + bestScore;
-    // lancerConfettis(); // Si animation confetti existe
   }
 
   // Créer ou afficher le bloc de fin
@@ -143,8 +139,6 @@ function terminerQuiz(lastResult = "") {
 
   const rejouerBtn = document.getElementById("rejouer");
   rejouerBtn.addEventListener("click", rejouerQuiz);
-
-  if (window.currentUser) updateLeaderboard(score);
 }
 
 // 🔹 Réinitialiser quiz
@@ -215,34 +209,5 @@ answerInput.addEventListener('keydown', function(event) {
     validateBtn.classList.add('click-effect');
     setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
     validateBtn.click();
-  }
-});
-
-// 🔹 Leaderboard
-function updateLeaderboard(score){
-  const div = leaderboardContainer;
-  if(!div) return;
-
-  let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-  scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
-  scores.sort((a,b)=> b.score - a.score);
-  scores = scores.slice(0,25);
-  localStorage.setItem("leaderboard", JSON.stringify(scores));
-
-  const tbody = div.querySelector('tbody');
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  scores.forEach((s,i)=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${i+1}</td><td>${s.user}</td><td>${s.score}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// 🔹 Affiche le leaderboard dès le chargement
-document.addEventListener("DOMContentLoaded", () => {
-  if (leaderboardContainer) {
-    leaderboardContainer.style.display = "block";
-    updateLeaderboard(0);
   }
 });
