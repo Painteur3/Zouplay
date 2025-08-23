@@ -21,6 +21,7 @@ let confettiAnimation;
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
+
 const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
 const resultText = document.getElementById("result");
@@ -28,6 +29,7 @@ const validateBtn = document.getElementById("validate");
 const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
+
 const leaderboardContainer = document.getElementById("leaderboard-container");
 
 // Header
@@ -44,6 +46,17 @@ for (let cat in categories) {
   const label = document.createElement("label");
   label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
   categoriesContainer.appendChild(label);
+}
+
+// 🔹 Fonctions pour cacher / afficher UI
+function hideUI() {
+  if(header) header.style.display = "none";
+  if(leaderboardContainer) leaderboardContainer.classList.add('hidden');
+}
+
+function showUI() {
+  if(header) header.style.display = "flex";
+  if(leaderboardContainer) leaderboardContainer.classList.remove('hidden');
 }
 
 // 🔹 Fonction confettis
@@ -174,8 +187,7 @@ function verifierReponse() {
 
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
-  if(header) header.classList.remove("hidden");
-  if(leaderboardContainer) leaderboardContainer.classList.remove("hidden");
+  showUI();
 
   const newBest = score > bestScore;
   if (newBest) {
@@ -207,8 +219,7 @@ startBtn.addEventListener("click", () => {
   lives = 3;
   currentPerso = null;
 
-  if(header) header.classList.add("hidden");
-  if(leaderboardContainer) leaderboardContainer.classList.add("hidden");
+  hideUI();
 
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
@@ -239,56 +250,19 @@ validateBtn.addEventListener("click", () => {
 });
 
 // 🔹 Entrée clavier Enter
-document.addEventListener('DOMContentLoaded', () => {
-  answerInput.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      validateBtn.classList.add('click-effect');
-      setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
-      validateBtn.click();
-    }
-  });
+answerInput.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    validateBtn.classList.add('click-effect');
+    setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
+    validateBtn.click();
+  }
 });
-
-// 🔹 Particules d’ambiance dorées
-const canvas = document.getElementById('confetti');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-const particles = [];
-const particleCount = 60;
-for(let i=0; i<particleCount; i++){
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    radius: Math.random() * 4 + 2,
-    speedY: Math.random() * 1 + 0.3,
-    speedX: (Math.random() - 0.5) * 0.5,
-    alpha: Math.random() * 0.5 + 0.3
-  });
-}
-
-function animateParticles(){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(255, 215, 0, ${p.alpha})`;
-    ctx.fill();
-    p.x += p.speedX;
-    p.y += p.speedY;
-    if(p.y > canvas.height) p.y = 0;
-    if(p.x > canvas.width) p.x = 0;
-    if(p.x < 0) p.x = canvas.width;
-  });
-  requestAnimationFrame(animateParticles);
-}
-animateParticles();
 
 // 🔹 Leaderboard (exemple statique)
 function updateLeaderboard(score){
-  if(!leaderboardContainer) return;
+  const div = leaderboardContainer;
+  if(!div) return;
 
   let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
   scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
@@ -296,10 +270,12 @@ function updateLeaderboard(score){
   scores = scores.slice(0,25);
   localStorage.setItem("leaderboard", JSON.stringify(scores));
 
-  leaderboardContainer.innerHTML = "<h3>🏆 Leaderboard Top 25</h3>";
-  scores.forEach(s=>{
-    const p = document.createElement("p");
-    p.textContent = `${s.user} : ${s.score}`;
-    leaderboardContainer.appendChild(p);
+  const tbody = div.querySelector('tbody');
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  scores.forEach((s,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i+1}</td><td>${s.user}</td><td>${s.score}</td>`;
+    tbody.appendChild(tr);
   });
 }
