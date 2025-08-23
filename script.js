@@ -2,6 +2,7 @@
 let categories = {
   "Akame ga Kill": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
   "Black Clover": [
