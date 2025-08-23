@@ -23,10 +23,6 @@ let score = 0;
 let lives = 3;
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 
-// Animation record
-let recordAnimationActive = false;
-let recordAnimationTime = 0;
-
 // DOM
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
@@ -56,8 +52,6 @@ for (let cat in categories) {
 function hideCategorySelection() {
   const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
-  const startBtn = document.getElementById("start-quiz");
-
   if (adventureTitle) adventureTitle.style.display = "none";
   if (categoriesForm) categoriesForm.style.display = "none";
   if (startBtn) startBtn.style.display = "none";
@@ -66,8 +60,6 @@ function hideCategorySelection() {
 function showCategorySelection() {
   const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
-  const startBtn = document.getElementById("start-quiz");
-
   if (adventureTitle) adventureTitle.style.display = "block";
   if (categoriesForm) categoriesForm.style.display = "block";
   if (startBtn) startBtn.style.display = "inline-block";
@@ -107,22 +99,91 @@ function verifierReponse() {
   }
 }
 
+// 🔹 Canvas particules de fond
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+const particleCount = 60;
+
+for (let i = 0; i < particleCount; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 4 + 2,
+        speedY: Math.random() * 1 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.5,
+        alpha: Math.random() * 0.5 + 0.3
+    });
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
+        ctx.fill();
+
+        p.y -= p.speedY;
+        p.x += p.speedX;
+        if (p.y + p.radius < 0) p.y = canvas.height + p.radius;
+    });
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+// 🔹 Animation confetti record
+function lancerAnimationRecord() {
+    const recordParticles = [];
+    const particleCount = 80;
+
+    for (let i = 0; i < particleCount; i++) {
+        recordParticles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 6 + 2,
+            speedY: Math.random() * 2 + 1,
+            speedX: (Math.random() - 0.5) * 2,
+            alpha: Math.random() * 0.7 + 0.3
+        });
+    }
+
+    let frames = 0;
+    function animateRecord() {
+        recordParticles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,215,0,${p.alpha})`;
+            ctx.fill();
+            p.y -= p.speedY;
+            p.x += p.speedX;
+            if (p.y + p.radius < 0) p.y = canvas.height + p.radius;
+        });
+        frames++;
+        if (frames < 120) requestAnimationFrame(animateRecord); // ~2 sec
+    }
+    animateRecord();
+}
+
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
   resultText.textContent = lastResult;
 
-  // Mettre à jour bestScore et déclencher animation record si battu
   if (score > bestScore) {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
     bestScoreSpan.textContent = "Record : " + bestScore;
-
-    // Animation record
-    recordAnimationActive = true;
-    recordAnimationTime = 0;
+    lancerAnimationRecord(); // <-- confetti record
   }
 
-  // Créer ou afficher le bloc de fin
   let finQuiz = document.getElementById("fin-quiz");
   if (!finQuiz) {
     finQuiz = document.createElement("div");
@@ -145,8 +206,7 @@ function terminerQuiz(lastResult = "") {
   finQuiz.classList.remove("hidden");
   quiz.classList.add("hidden");
 
-  const rejouerBtn = document.getElementById("rejouer");
-  rejouerBtn.addEventListener("click", rejouerQuiz);
+  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
 }
 
 // 🔹 Réinitialiser quiz
@@ -154,21 +214,14 @@ function rejouerQuiz() {
   score = 0;
   lives = 3;
   currentPerso = null;
-
-  // Reset input et catégories
   answerInput.value = "";
   document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => cb.checked = false);
-
-  // Réinitialiser UI
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
   resultText.textContent = "";
   imgPerso.src = "";
-
-  // Masquer bloc fin et afficher accueil
   const finQuiz = document.getElementById("fin-quiz");
   if (finQuiz) finQuiz.classList.add("hidden");
-
   accueil.classList.remove("hidden");
   quiz.classList.add("hidden");
   showCategorySelection();
@@ -179,16 +232,13 @@ startBtn.addEventListener("click", () => {
   score = 0;
   lives = 3;
   currentPerso = null;
-
   hideCategorySelection();
 
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
 
   personnages = selected.flatMap(cat => categories[cat]);
-  if (personnages.length === 0) {
-    personnages = Object.values(categories).flat();
-  }
+  if (personnages.length === 0) personnages = Object.values(categories).flat();
 
   quiz.classList.remove("hidden");
   accueil.classList.add("hidden");
@@ -218,75 +268,4 @@ answerInput.addEventListener('keydown', function(event) {
     setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
     validateBtn.click();
   }
-});
-
-// 🔹 Canvas pour particules
-const canvas = document.getElementById('confetti');
-const ctx = canvas.getContext('2d');
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-// 🔹 Création des particules
-const particles = [];
-const particleCount = 60;
-
-for (let i = 0; i < particleCount; i++) {
-    particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 4 + 2,
-        speedY: Math.random() * 1 + 0.3,
-        speedX: (Math.random() - 0.5) * 0.5,
-        alpha: Math.random() * 0.5 + 0.3
-    });
-}
-
-// 🔹 Animation des particules + record
-function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Particules normales
-    particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
-        ctx.fill();
-
-        p.y -= p.speedY;
-        p.x += p.speedX;
-
-        if (p.y + p.radius < 0) {
-            p.y = canvas.height + p.radius;
-            p.x = Math.random() * canvas.width;
-        }
-    });
-
-    // Animation record (superposition)
-    if (recordAnimationActive) {
-        recordAnimationTime++;
-        const maxTime = 100; // durée en frames
-
-        for (let i = 0; i < 30; i++) {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height * 0.5;
-            const radius = Math.random() * 6 + 2;
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,215,0,${Math.random()})`;
-            ctx.fill();
-        }
-
-        if (recordAnimationTime > maxTime) recordAnimationActive = false;
-    }
-
-    requestAnimationFrame(animateParticles);
-}
-
-animateParticles();
-
-// 🔹 Ajustement du canvas au resize
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
 });
