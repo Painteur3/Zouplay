@@ -264,3 +264,140 @@ window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 });
+
+// 🔹 Canvas pour confettis record
+const recordCanvas = document.getElementById('confetti-record');
+const recordCtx = recordCanvas.getContext('2d');
+
+recordCanvas.width = window.innerWidth;
+recordCanvas.height = window.innerHeight;
+
+let confettiAnimationRecord;
+
+// 🔹 Fonction lancer confettis record
+function lancerConfettisRecord() {
+    const confettis = [];
+    const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#43aa8b","#577590","#bdb2ff","#ff6d00"];
+    const gravity = 0.3;
+    const windMax = 1;
+
+    for (let i = 0; i < 300; i++) {
+        confettis.push({
+            x: Math.random() * recordCanvas.width,
+            y: Math.random() * recordCanvas.height - recordCanvas.height,
+            r: Math.random() * 4 + 2,
+            d: Math.random() * 10 + 10,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            tilt: Math.random() * 10 - 5,
+            tiltAngle: 0,
+            tiltSpeed: Math.random() * 0.07 + 0.05,
+            speedY: Math.random() * 2 + 2,
+            speedX: (Math.random() * windMax * 2) - windMax,
+            alpha: 1,
+            fadeSpeed: 0.02,
+            bounce: Math.random() * 0.7 + 0.3,
+            rotation: Math.random() * 360,
+            rotationSpeed: Math.random() * 5 + 2,
+            landed: false
+        });
+    }
+
+    const startTime = Date.now();
+
+    function draw() {
+        const elapsed = Date.now() - startTime;
+        recordCtx.clearRect(0, 0, recordCanvas.width, recordCanvas.height);
+
+        confettis.forEach(c => {
+            if (c.alpha <= 0) return;
+
+            recordCtx.save();
+            recordCtx.translate(c.x + c.tilt, c.y);
+            recordCtx.rotate((c.rotation * Math.PI) / 180);
+            recordCtx.beginPath();
+            recordCtx.lineWidth = c.r / 2;
+            recordCtx.strokeStyle = `rgba(${hexToRgb(c.color)},${c.alpha})`;
+            recordCtx.moveTo(-c.r / 2, 0);
+            recordCtx.lineTo(c.r / 2, c.d);
+            recordCtx.stroke();
+            recordCtx.restore();
+
+            c.tiltAngle += c.tiltSpeed;
+            c.tilt = Math.sin(c.tiltAngle) * 10;
+            c.rotation += c.rotationSpeed;
+
+            if (!c.landed) {
+                c.speedY += gravity;
+                c.x += c.speedX;
+                c.y += c.speedY;
+
+                if (c.y + c.d > recordCanvas.height) {
+                    c.y = recordCanvas.height - c.d;
+                    c.speedY *= -c.bounce;
+                    c.speedX *= 0.8;
+                    if (Math.abs(c.speedY) < 0.5) c.landed = true;
+                }
+
+                if (c.x < 0 || c.x > recordCanvas.width) c.speedX *= -1;
+            }
+
+            if (elapsed > 5000 || c.landed) c.alpha -= c.fadeSpeed;
+        });
+
+        if (confettis.some(c => c.alpha > 0)) {
+            confettiAnimationRecord = requestAnimationFrame(draw);
+        } else {
+            recordCtx.clearRect(0, 0, recordCanvas.width, recordCanvas.height);
+        }
+    }
+
+    draw();
+}
+
+// 🔹 Ajustement du canvas record au resize
+window.addEventListener('resize', () => {
+    recordCanvas.width = window.innerWidth;
+    recordCanvas.height = window.innerHeight;
+});
+
+// 🔹 Modifier terminerQuiz pour déclencher l’animation
+function terminerQuiz(lastResult = "") {
+    resultText.textContent = lastResult;
+
+    // Mettre à jour bestScore
+    if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("bestScore", bestScore);
+        bestScoreSpan.textContent = "Record : " + bestScore;
+
+        // Lancer animation confettis record
+        lancerConfettisRecord();
+    }
+
+    // Créer ou afficher le bloc de fin
+    let finQuiz = document.getElementById("fin-quiz");
+    if (!finQuiz) {
+        finQuiz = document.createElement("div");
+        finQuiz.id = "fin-quiz";
+        finQuiz.classList.add("quiz-end-card");
+        finQuiz.innerHTML = `
+            <h2>Fin d'aventure</h2>
+            <p class="result-text">${lastResult}</p>
+            <p class="score-text">🎯 Score : <span>${score}</span></p>
+            <p class="best-text">🏆 Record : <span>${bestScore}</span></p>
+            <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
+        `;
+        quiz.parentNode.appendChild(finQuiz);
+    } else {
+        finQuiz.querySelector(".result-text").textContent = lastResult;
+        finQuiz.querySelector(".score-text span").textContent = score;
+        finQuiz.querySelector(".best-text span").textContent = bestScore;
+    }
+
+    finQuiz.classList.remove("hidden");
+    quiz.classList.add("hidden");
+
+    const rejouerBtn = document.getElementById("rejouer");
+    rejouerBtn.addEventListener("click", rejouerQuiz);
+}
+
