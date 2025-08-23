@@ -212,64 +212,63 @@ answerInput.addEventListener('keydown', function(event) {
   }
 });
 
-const canvas = document.getElementById('confetti');
-const ctx = canvas.getContext('2d');
-
+// 🔹 Canvas unique
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const particles = [];
-const particleCount = 60; // nombre de bulles/particules
+// -------------------
+// 🔹 Bulles de fond
+// -------------------
+const bgParticles = [];
+const bgCount = 60;
 
-// Création des particules
-for(let i=0; i<particleCount; i++){
-    particles.push({
+for (let i = 0; i < bgCount; i++) {
+    bgParticles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 4 + 2,
+        r: Math.random() * 4 + 2,
         speedY: Math.random() * 1 + 0.3,
         speedX: (Math.random() - 0.5) * 0.5,
         alpha: Math.random() * 0.5 + 0.3
     });
 }
 
-// Animation
-function animateParticles(){
+function animateBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`; // couleur dorée
-        ctx.fill();
-        
-        p.y -= p.speedY; // monte doucement
-        p.x += p.speedX; // léger mouvement horizontal
 
-        // Si la particule sort de l'écran, on la replace en bas
-        if(p.y + p.radius < 0) {
-            p.y = canvas.height + p.radius;
+    // Bulles dorées
+    bgParticles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
+        ctx.fill();
+
+        p.y -= p.speedY;
+        p.x += p.speedX;
+        if (p.y + p.r < 0) {
+            p.y = canvas.height + p.r;
             p.x = Math.random() * canvas.width;
         }
     });
 
-    requestAnimationFrame(animateParticles);
+    // Si des confettis sont actifs, les dessiner aussi
+    drawConfettis();
+
+    requestAnimationFrame(animateBackground);
 }
 
-animateParticles();
-
-// Ajuster le canvas au resize
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
-
-// 🔹 Confettis spéciaux quand record battu
+// -------------------
+// 🔹 Confettis record
+// -------------------
+let confettis = [];
 function lancerConfettisRecord() {
-    const confettis = [];
-    const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#43aa8b","#577590","#bdb2ff","#ff6d00"];
+    const colors = ["#f94144","#f3722c","#f9c74f","#90be6d",
+                    "#43aa8b","#577590","#bdb2ff","#ff6d00"];
 
-    for (let i = 0; i < 150; i++) {
+    confettis = [];
+    for (let i = 0; i < 200; i++) {
         confettis.push({
             x: Math.random() * canvas.width,
             y: -10,
@@ -281,32 +280,25 @@ function lancerConfettisRecord() {
             fade: Math.random() * 0.02 + 0.01
         });
     }
-
-    function drawConfettis() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // nettoie le canvas
-        // 🔹 on redessine aussi les bulles de fond
-        animateParticles();
-
-        confettis.forEach(c => {
-            ctx.beginPath();
-            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${hexToRgb(c.color)},${c.alpha})`;
-            ctx.fill();
-
-            c.x += c.speedX;
-            c.y += c.speedY;
-            c.alpha -= c.fade;
-        });
-
-        if (confettis.some(c => c.alpha > 0)) {
-            requestAnimationFrame(drawConfettis);
-        }
-    }
-
-    drawConfettis();
 }
 
-// helper pour convertir hex -> rgb
+function drawConfettis() {
+    confettis.forEach(c => {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${hexToRgb(c.color)},${c.alpha})`;
+        ctx.fill();
+
+        c.x += c.speedX;
+        c.y += c.speedY;
+        c.alpha -= c.fade;
+    });
+
+    // garder seulement ceux encore visibles
+    confettis = confettis.filter(c => c.alpha > 0);
+}
+
+// Helper hex -> rgb
 function hexToRgb(hex) {
     hex = hex.replace(/^#/, '');
     let bigint = parseInt(hex, 16);
@@ -316,3 +308,13 @@ function hexToRgb(hex) {
     return `${r},${g},${b}`;
 }
 
+// -------------------
+// 🔹 Lancer animations
+// -------------------
+animateBackground();
+
+// 🔹 Resize canvas
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
