@@ -265,3 +265,75 @@ window.addEventListener('resize', () => {
     canvas.height = window.innerHeight;
 });
 
+// 🔹 Particules feu d'artifice pour record
+let recordParticles = [];
+let recordActive = false;
+
+function startRecordAnimation() {
+    recordParticles = [];
+    const count = 100;
+    for (let i = 0; i < count; i++) {
+        recordParticles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 3 + 2,
+            speedY: Math.random() * 2 + 1,
+            speedX: (Math.random() - 0.5) * 2,
+            alpha: Math.random() * 0.5 + 0.5,
+            color: `hsl(${Math.random()*360},100%,70%)`
+        });
+    }
+    recordActive = true;
+
+    // Stop après 3s
+    setTimeout(() => {
+        recordActive = false;
+    }, 3000);
+}
+
+// 🔹 Modifie l’animation des particules pour inclure le record
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Particules dorées
+    particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
+        ctx.fill();
+        p.y -= p.speedY;
+        p.x += p.speedX;
+        if (p.y + p.radius < 0) p.y = canvas.height + p.radius;
+        if (p.x - p.radius > canvas.width) p.x = 0;
+        if (p.x + p.radius < 0) p.x = canvas.width;
+    });
+
+    // Particules record
+    if (recordActive) {
+        recordParticles.forEach(s => {
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.radius, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${s.alpha})`;
+            ctx.fill();
+            s.y -= s.speedY;
+            s.x += s.speedX;
+            if (s.y + s.radius < 0) s.y = canvas.height + s.radius;
+            if (s.x - s.radius > canvas.width) s.x = 0;
+            if (s.x + s.radius < 0) s.x = canvas.width;
+        });
+    }
+
+    requestAnimationFrame(animateParticles);
+}
+
+// 🔹 Appel quand record est battu
+if (score > bestScore) {
+    bestScore = score;
+    localStorage.setItem("bestScore", bestScore);
+    bestScoreSpan.textContent = "Record : " + bestScore;
+
+    // 🌟 Lancer animation record
+    startRecordAnimation();
+}
+
+
