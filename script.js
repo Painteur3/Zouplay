@@ -1,3 +1,21 @@
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+async function saveScore(user, score) {
+  if (!user) return; // joueur pas connecté
+  
+  try {
+    await addDoc(collection(window.db, "scores"), {
+      uid: user.uid,
+      pseudo: user.displayName || "Anonyme",
+      score: score,
+      createdAt: new Date()
+    });
+    console.log("✅ Score enregistré !");
+  } catch (e) {
+    console.error("❌ Erreur enregistrement score: ", e);
+  }
+}
+
 // Variables globales
 let categories = {
 
