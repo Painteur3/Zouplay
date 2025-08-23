@@ -1,4 +1,19 @@
-// 🔹 Variables globales
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, Timestamp, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCxGh9xsAFoqNhtNwPuqsE8oi9hdcbo9Zk",
+  authDomain: "quiz-anime-3c4e7.firebaseapp.com",
+  projectId: "quiz-anime-3c4e7",
+  storageBucket: "quiz-anime-3c4e7.appspot.com",
+  messagingSenderId: "469629091409",
+  appId: "1:469629091409:web:790357c7bed5cfac6dc270"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔹 Variables globales (inchangées)
 const categories = { 
   "Akame ga Kill": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
@@ -10,7 +25,7 @@ const categories = {
     { nom: "Suppaman", img: "images/Dragon Ball/Suppaman.jpg" },
     { nom: "Yajirobe", img: "images/Dragon Ball/Yajirobe.jpg" },
     { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" },
-    ],
+  ],
   "Black Clover": [
     { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
     { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
@@ -21,7 +36,7 @@ let personnages = [];
 let currentPerso = null;
 let score = 0;
 let lives = 3;
-let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
+let bestScore = 0; // on récupérera depuis Firestore
 
 // DOM
 const accueil = document.getElementById("accueil");
@@ -30,7 +45,6 @@ const startBtn = document.getElementById("start-quiz");
 const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
 const resultText = document.getElementById("result");
-const validateBtn = document.getElementById("validate");
 const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
@@ -49,27 +63,55 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
-// 🔹 Fonctions cacher / afficher catégories
-function hideCategorySelection() {
-  const adventureTitle = accueil.querySelector("h2");
-  const categoriesForm = document.getElementById("categories-form");
-  const startBtn = document.getElementById("start-quiz");
+// 🔹 Firestore : sauvegarder score
+async function saveScore() {
+  if (!window.currentUser) return;
+  const userRef = doc(db, "Scores", window.currentUser.uid);
+  const userSnap = await getDoc(userRef);
+  const entry = { score: score, date: Timestamp.now() };
 
-  if (adventureTitle) adventureTitle.style.display = "none";
-  if (categoriesForm) categoriesForm.style.display = "none";
-  if (startBtn) startBtn.style.display = "none";
-  if (leaderboardContainer) leaderboardContainer.style.display = "none";
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      pseudo: window.currentUser.displayName,
+      bestscore: score,
+      lastPlayed: Timestamp.now(),
+      scoresHistory: [entry]
+    });
+    bestScore = score;
+  } else {
+    const data = userSnap.data();
+    const newBest = Math.max(data.bestscore || 0, score);
+    await updateDoc(userRef, {
+      bestscore: newBest,
+      lastPlayed: Timestamp.now(),
+      scoresHistory: arrayUnion(entry)
+    });
+    bestScore = newBest;
+  }
+  bestScoreSpan.textContent = "Record : " + bestScore;
 }
 
-function showCategorySelection() {
-  const adventureTitle = accueil.querySelector("h2");
-  const categoriesForm = document.getElementById("categories-form");
-  const startBtn = document.getElementById("start-quiz");
+// 🔹 Firestore : récupérer leaderboard top 25
+async function updateLeaderboard() {
+  if (!leaderboardContainer) return;
+  const scoresCol = collection(db, "Scores");
+  const scoresSnap = await getDocs(scoresCol);
+  let users = [];
+  scoresSnap.forEach(docSnap => {
+    const data = docSnap.data();
+    users.push({ pseudo: data.pseudo, score: data.bestscore });
+  });
+  users.sort((a,b)=>b.score-a.score);
+  users = users.slice(0,25);
 
-  if (adventureTitle) adventureTitle.style.display = "block";
-  if (categoriesForm) categoriesForm.style.display = "block";
-  if (startBtn) startBtn.style.display = "inline-block";
-  if (leaderboardContainer) leaderboardContainer.style.display = "block";
+  const tbody = leaderboardContainer.querySelector('tbody');
+  if(!tbody) return;
+  tbody.innerHTML = "";
+  users.forEach((u,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i+1}</td><td>${u.pseudo}</td><td>${u.score}</td>`;
+    tbody.appendChild(tr);
+  });
 }
 
 // 🔹 Afficher personnage
@@ -96,7 +138,6 @@ function verifierReponse() {
 
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
-
   personnages = personnages.filter(p => p !== currentPerso);
 
   if (lives <= 0 || personnages.length === 0) {
@@ -107,18 +148,11 @@ function verifierReponse() {
 }
 
 // 🔹 Terminer quiz
-function terminerQuiz(lastResult = "") {
+async function terminerQuiz(lastResult = "") {
   resultText.textContent = lastResult;
 
-  // Mettre à jour bestScore
-  if (score > bestScore) {
-    bestScore = score;
-    localStorage.setItem("bestScore", bestScore);
-    bestScoreSpan.textContent = "Record : " + bestScore;
-    // lancerConfettis(); // Si animation confetti existe
-  }
+  if (window.currentUser) await saveScore();
 
-  // Créer ou afficher le bloc de fin
   let finQuiz = document.getElementById("fin-quiz");
   if (!finQuiz) {
     finQuiz = document.createElement("div");
@@ -141,10 +175,9 @@ function terminerQuiz(lastResult = "") {
   finQuiz.classList.remove("hidden");
   quiz.classList.add("hidden");
 
-  const rejouerBtn = document.getElementById("rejouer");
-  rejouerBtn.addEventListener("click", rejouerQuiz);
+  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
 
-  if (window.currentUser) updateLeaderboard(score);
+  if (window.currentUser) updateLeaderboard();
 }
 
 // 🔹 Réinitialiser quiz
@@ -152,24 +185,19 @@ function rejouerQuiz() {
   score = 0;
   lives = 3;
   currentPerso = null;
-
-  // Reset input et catégories
   answerInput.value = "";
   document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => cb.checked = false);
 
-  // Réinitialiser UI
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
   resultText.textContent = "";
   imgPerso.src = "";
 
-  // Masquer bloc fin et afficher accueil
   const finQuiz = document.getElementById("fin-quiz");
-  if (finQuiz) finQuiz.classList.add("hidden");
+  if(finQuiz) finQuiz.classList.add("hidden");
 
   accueil.classList.remove("hidden");
   quiz.classList.add("hidden");
-  showCategorySelection();
 }
 
 // 🔹 Démarrer quiz
@@ -178,15 +206,10 @@ startBtn.addEventListener("click", () => {
   lives = 3;
   currentPerso = null;
 
-  hideCategorySelection();
-
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
-
   personnages = selected.flatMap(cat => categories[cat]);
-  if (personnages.length === 0) {
-    personnages = Object.values(categories).flat();
-  }
+  if(personnages.length === 0) personnages = Object.values(categories).flat();
 
   quiz.classList.remove("hidden");
   accueil.classList.add("hidden");
@@ -203,46 +226,20 @@ startBtn.addEventListener("click", () => {
 });
 
 // 🔹 Bouton valider
-validateBtn.addEventListener("click", () => {
+document.getElementById("validate").addEventListener("click", () => {
   verifierReponse();
-  if (personnages.length > 0 && lives > 0) afficherPerso();
+  if(personnages.length>0 && lives>0) afficherPerso();
 });
 
 // 🔹 Entrée clavier Enter
 answerInput.addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
+  if(event.key==='Enter') {
     event.preventDefault();
-    validateBtn.classList.add('click-effect');
-    setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
-    validateBtn.click();
+    document.getElementById("validate").click();
   }
 });
 
-// 🔹 Leaderboard
-function updateLeaderboard(score){
-  const div = leaderboardContainer;
-  if(!div) return;
-
-  let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-  scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
-  scores.sort((a,b)=> b.score - a.score);
-  scores = scores.slice(0,25);
-  localStorage.setItem("leaderboard", JSON.stringify(scores));
-
-  const tbody = div.querySelector('tbody');
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  scores.forEach((s,i)=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${i+1}</td><td>${s.user}</td><td>${s.score}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// 🔹 Affiche le leaderboard dès le chargement
+// 🔹 Leaderboard initial
 document.addEventListener("DOMContentLoaded", () => {
-  if (leaderboardContainer) {
-    leaderboardContainer.style.display = "block";
-    updateLeaderboard(0);
-  }
+  if(leaderboardContainer) leaderboardContainer.style.display = "block";
 });
