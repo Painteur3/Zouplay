@@ -47,6 +47,20 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
+// Ajout de la classe 'selected' lorsque la checkbox est cochée
+const checkboxes = categoriesContainer.querySelectorAll('input[type="checkbox"]');
+
+checkboxes.forEach(cb => {
+  cb.addEventListener('change', () => {
+    if(cb.checked){
+      cb.parentElement.classList.add('selected');
+    } else {
+      cb.parentElement.classList.remove('selected');
+    }
+  });
+});
+
+
 // ----------------------
 // Firebase Firestore (scores)
 // ----------------------
