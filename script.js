@@ -1,18 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, Timestamp, query, collection, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCxGh9xsAFoqNhtNwPuqsE8oi9hdcbo9Zk",
-  authDomain: "quiz-anime-3c4e7.firebaseapp.com",
-  projectId: "quiz-anime-3c4e7",
-  storageBucket: "quiz-anime-3c4e7.appspot.com",
-  messagingSenderId: "469629091409",
-  appId: "1:469629091409:web:790357c7bed5cfac6dc270"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 // 🔹 Variables globales
 const categories = { 
   "Akame ga Kill": [
@@ -24,7 +9,7 @@ const categories = {
     { nom: "Krillin", img: "images/Dragon Ball/Kuririn.jpg" },
     { nom: "Suppaman", img: "images/Dragon Ball/Suppaman.jpg" },
     { nom: "Yajirobe", img: "images/Dragon Ball/Yajirobe.jpg" },
-    { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" }
+    { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" },
   ],
   "Black Clover": [
     { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
@@ -52,26 +37,40 @@ const bestScoreSpan = document.getElementById("best-score");
 const leaderboardContainer = document.getElementById("leaderboard-container");
 const categoriesContainer = document.getElementById("categories-container");
 
-// 🔹 Générer catégories dynamiquement
-for (let cat in categories) {
-  const label = document.createElement("label");
-  label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
-  categoriesContainer.appendChild(label);
-}
-showCategorySelection();
+// 🔹 Firebase Firestore
+import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, serverTimestamp, query, collection, orderBy, limit, getDocs } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// 🔹 Afficher / cacher catégories
-function hideCategorySelection() {
-  accueil.querySelector("h2")?.style.setProperty("display","none");
-  document.getElementById("categories-form")?.style.setProperty("display","none");
-  startBtn.style.setProperty("display","none");
-  if(leaderboardContainer) leaderboardContainer.style.display = "none";
+const db = getFirestore();
+
+// 🔹 Afficher scores initiaux
+scoreSpan.textContent = score;
+livesSpan.textContent = lives;
+bestScoreSpan.textContent = "Record : " + bestScore;
+
+// 🔹 Générer catégories dynamiquement
+function renderCategories() {
+  categoriesContainer.innerHTML = "";
+  for (let cat in categories) {
+    const label = document.createElement("label");
+    label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
+    categoriesContainer.appendChild(label);
+  }
 }
+
+// 🔹 Cacher / afficher catégories
+function hideCategorySelection() {
+  accueil.querySelector("h2")?.style.display = "none";
+  document.getElementById("categories-form")?.style.display = "none";
+  startBtn.style.display = "none";
+  leaderboardContainer.style.display = "none";
+}
+
 function showCategorySelection() {
-  accueil.querySelector("h2")?.style.setProperty("display","block");
-  document.getElementById("categories-form")?.style.setProperty("display","block");
-  startBtn.style.setProperty("display","inline-block");
-  if(leaderboardContainer) leaderboardContainer.style.display = "block";
+  accueil.querySelector("h2")?.style.display = "block";
+  document.getElementById("categories-form")?.style.display = "block";
+  startBtn.style.display = "inline-block";
+  leaderboardContainer.style.display = "block";
 }
 
 // 🔹 Afficher personnage
@@ -98,7 +97,6 @@ function verifierReponse() {
 
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
-
   personnages = personnages.filter(p => p !== currentPerso);
 
   if (lives <= 0 || personnages.length === 0) {
@@ -112,34 +110,33 @@ function verifierReponse() {
 async function terminerQuiz(lastResult = "") {
   resultText.textContent = lastResult;
 
-  // Mettre à jour Firestore si utilisateur connecté
+  // Mettre à jour bestScore si connecté
   if (window.currentUser) {
     const userRef = doc(db, "Scores", window.currentUser.uid);
     const userSnap = await getDoc(userRef);
 
-    let data = {
-      pseudo: window.currentUser.displayName || window.currentUser.email,
-      bestscore: score,
-      lastPlayed: Timestamp.now(),
-      scoresHistory: [{ score, date: Timestamp.now() }]
-    };
+    let userData = { pseudo: window.currentUser.displayName, bestscore: score, lastPlayed: serverTimestamp(), scoresHistory: [{score, date: serverTimestamp()}] };
 
     if (userSnap.exists()) {
-      const oldData = userSnap.data();
-      data.bestscore = Math.max(oldData.bestscore || 0, score);
-      data.scoresHistory = [...(oldData.scoresHistory || []), { score, date: Timestamp.now() }];
-      data.lastPlayed = Timestamp.now();
-      await setDoc(userRef, data);
+      const data = userSnap.data();
+      const newBest = Math.max(data.bestscore || 0, score);
+      userData.bestscore = newBest;
+      userData.scoresHistory = arrayUnion({score, date: serverTimestamp()});
+      await updateDoc(userRef, {
+        bestscore: newBest,
+        lastPlayed: serverTimestamp(),
+        scoresHistory: arrayUnion({score, date: serverTimestamp()})
+      });
     } else {
-      await setDoc(userRef, data);
+      await setDoc(userRef, userData);
     }
 
-    bestScore = data.bestscore;
+    bestScore = Math.max(bestScore, score);
+    bestScoreSpan.textContent = "Record : " + bestScore;
+    updateLeaderboard(); // Mise à jour du leaderboard
   }
 
-  bestScoreSpan.textContent = "Record : " + bestScore;
-
-  // Bloc fin de quiz
+  // Bloc fin quiz
   let finQuiz = document.getElementById("fin-quiz");
   if (!finQuiz) {
     finQuiz = document.createElement("div");
@@ -162,10 +159,7 @@ async function terminerQuiz(lastResult = "") {
   finQuiz.classList.remove("hidden");
   quiz.classList.add("hidden");
 
-  const rejouerBtn = document.getElementById("rejouer");
-  rejouerBtn.addEventListener("click", rejouerQuiz);
-
-  if (window.currentUser) updateLeaderboard("total");
+  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
 }
 
 // 🔹 Réinitialiser quiz
@@ -173,14 +167,17 @@ function rejouerQuiz() {
   score = 0;
   lives = 3;
   currentPerso = null;
+
   answerInput.value = "";
   document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => cb.checked = false);
+
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
   resultText.textContent = "";
   imgPerso.src = "";
-  const finQuiz = document.getElementById("fin-quiz");
-  if (finQuiz) finQuiz.classList.add("hidden");
+
+  document.getElementById("fin-quiz")?.classList.add("hidden");
+
   accueil.classList.remove("hidden");
   quiz.classList.add("hidden");
   showCategorySelection();
@@ -191,13 +188,16 @@ startBtn.addEventListener("click", () => {
   score = 0;
   lives = 3;
   currentPerso = null;
+
   hideCategorySelection();
 
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
 
   personnages = selected.flatMap(cat => categories[cat]);
-  if (personnages.length === 0) personnages = Object.values(categories).flat();
+  if (personnages.length === 0) {
+    personnages = Object.values(categories).flat();
+  }
 
   quiz.classList.remove("hidden");
   accueil.classList.add("hidden");
@@ -229,29 +229,29 @@ answerInput.addEventListener('keydown', function(event) {
   }
 });
 
-// 🔹 Leaderboard Firestore
-async function updateLeaderboard(period="total") {
-  if(!leaderboardContainer) return;
+// 🔹 Leaderboard
+async function updateLeaderboard() {
+  if (!leaderboardContainer) return;
+
+  const scoresQuery = query(collection(db, "Scores"), orderBy("bestscore", "desc"), limit(25));
+  const querySnapshot = await getDocs(scoresQuery);
+
   const tbody = leaderboardContainer.querySelector('tbody');
-  if(!tbody) return;
-
-  const scoresCol = collection(db, "Scores");
-  const q = query(scoresCol, orderBy("bestscore","desc"), limit(25));
-  const querySnap = await getDocs(q);
-
+  if (!tbody) return;
   tbody.innerHTML = "";
-  let i=0;
-  querySnap.forEach(docSnap => {
+
+  let rank = 1;
+  querySnapshot.forEach(docSnap => {
     const data = docSnap.data();
-    tbody.innerHTML += `<tr><td>${i+1}</td><td>${data.pseudo}</td><td>${data.bestscore}</td></tr>`;
-    i++;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${rank}</td><td>${data.pseudo}</td><td>${data.bestscore}</td>`;
+    tbody.appendChild(tr);
+    rank++;
   });
 }
 
-// 🔹 Affiche leaderboard dès le chargement
+// 🔹 Initialisation
 document.addEventListener("DOMContentLoaded", () => {
-  leaderboardContainer.style.display = "block";
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
-  bestScoreSpan.textContent = "Record : " + bestScore;
+  renderCategories();
+  showCategorySelection();
 });
