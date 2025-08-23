@@ -10,7 +10,7 @@ const categories = {
     { nom: "Suppaman", img: "images/Dragon Ball/Suppaman.jpg" },
     { nom: "Yajirobe", img: "images/Dragon Ball/Yajirobe.jpg" },
     { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" },
-  ],
+    ],
   "Black Clover": [
     { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
     { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
@@ -21,68 +21,72 @@ let personnages = [];
 let currentPerso = null;
 let score = 0;
 let lives = 3;
-let bestScore = 0;
+let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 
-// 🔹 DOM
+// DOM
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
 const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
 const resultText = document.getElementById("result");
+const validateBtn = document.getElementById("validate");
 const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
 const leaderboardContainer = document.getElementById("leaderboard-container");
 const categoriesContainer = document.getElementById("categories-container");
 
-// 🔹 Firebase Firestore
-import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, serverTimestamp, query, collection, orderBy, limit, getDocs } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const db = getFirestore();
+// 🔹 Afficher scores initiaux
+scoreSpan.textContent = score;
+livesSpan.textContent = lives;
+bestScoreSpan.textContent = "Record : " + bestScore;
 
 // 🔹 Générer catégories dynamiquement
-function generateCategories() {
-  if(!categoriesContainer) return;
-  categoriesContainer.innerHTML = "";
-  for (let cat in categories) {
-    const label = document.createElement("label");
-    label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
-    categoriesContainer.appendChild(label);
-  }
+for (let cat in categories) {
+  const label = document.createElement("label");
+  label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
+  categoriesContainer.appendChild(label);
 }
 
-// 🔹 Afficher / cacher catégories
-function showCategorySelection() {
-  if(accueil) accueil.classList.remove("hidden");
-  if(categoriesContainer) categoriesContainer.style.display = "block";
-  if(startBtn) startBtn.style.display = "inline-block";
-  if(leaderboardContainer) leaderboardContainer.style.display = "block";
-}
-
+// 🔹 Fonctions cacher / afficher catégories
 function hideCategorySelection() {
-  if(accueil) accueil.classList.add("hidden");
-  if(categoriesContainer) categoriesContainer.style.display = "none";
-  if(startBtn) startBtn.style.display = "none";
-  if(leaderboardContainer) leaderboardContainer.style.display = "none";
+  const adventureTitle = accueil.querySelector("h2");
+  const categoriesForm = document.getElementById("categories-form");
+  const startBtn = document.getElementById("start-quiz");
+
+  if (adventureTitle) adventureTitle.style.display = "none";
+  if (categoriesForm) categoriesForm.style.display = "none";
+  if (startBtn) startBtn.style.display = "none";
+  if (leaderboardContainer) leaderboardContainer.style.display = "none";
+}
+
+function showCategorySelection() {
+  const adventureTitle = accueil.querySelector("h2");
+  const categoriesForm = document.getElementById("categories-form");
+  const startBtn = document.getElementById("start-quiz");
+
+  if (adventureTitle) adventureTitle.style.display = "block";
+  if (categoriesForm) categoriesForm.style.display = "block";
+  if (startBtn) startBtn.style.display = "inline-block";
+  if (leaderboardContainer) leaderboardContainer.style.display = "block";
 }
 
 // 🔹 Afficher personnage
 function afficherPerso() {
-  if(personnages.length === 0) return;
-  currentPerso = personnages[Math.floor(Math.random()*personnages.length)];
+  if (personnages.length === 0) return;
+  currentPerso = personnages[Math.floor(Math.random() * personnages.length)];
   imgPerso.src = currentPerso.img;
   answerInput.value = "";
 }
 
 // 🔹 Vérifier réponse
 function verifierReponse() {
-  if(!currentPerso) return;
+  if (!currentPerso) return;
   const reponse = answerInput.value.trim().toLowerCase();
   let lastResult = "";
 
-  if(reponse === currentPerso.nom.toLowerCase()) {
+  if (reponse === currentPerso.nom.toLowerCase()) {
     score++;
     lastResult = "✅ Bonne réponse !";
   } else {
@@ -95,7 +99,7 @@ function verifierReponse() {
 
   personnages = personnages.filter(p => p !== currentPerso);
 
-  if(lives <= 0 || personnages.length === 0) {
+  if (lives <= 0 || personnages.length === 0) {
     terminerQuiz(lastResult);
   } else {
     resultText.textContent = lastResult;
@@ -103,16 +107,20 @@ function verifierReponse() {
 }
 
 // 🔹 Terminer quiz
-async function terminerQuiz(lastResult="") {
+function terminerQuiz(lastResult = "") {
   resultText.textContent = lastResult;
 
   // Mettre à jour bestScore
-  if(score > bestScore) bestScore = score;
-  bestScoreSpan.textContent = "Record : " + bestScore;
+  if (score > bestScore) {
+    bestScore = score;
+    localStorage.setItem("bestScore", bestScore);
+    bestScoreSpan.textContent = "Record : " + bestScore;
+    // lancerConfettis(); // Si animation confetti existe
+  }
 
-  // Bloc fin
+  // Créer ou afficher le bloc de fin
   let finQuiz = document.getElementById("fin-quiz");
-  if(!finQuiz) {
+  if (!finQuiz) {
     finQuiz = document.createElement("div");
     finQuiz.id = "fin-quiz";
     finQuiz.classList.add("quiz-end-card");
@@ -133,31 +141,10 @@ async function terminerQuiz(lastResult="") {
   finQuiz.classList.remove("hidden");
   quiz.classList.add("hidden");
 
-  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
+  const rejouerBtn = document.getElementById("rejouer");
+  rejouerBtn.addEventListener("click", rejouerQuiz);
 
-  // 🔹 Enregistrer score Firebase si utilisateur connecté
-  if(window.currentUser) {
-    const userRef = doc(db, "Scores", window.currentUser.uid);
-    const userSnap = await getDoc(userRef);
-
-    if(userSnap.exists()) {
-      const data = userSnap.data();
-      const newBest = score > (data.bestscore || 0) ? score : data.bestscore;
-      await updateDoc(userRef, {
-        bestscore: newBest,
-        lastPlayed: serverTimestamp(),
-        scoresHistory: arrayUnion({ score, date: serverTimestamp() })
-      });
-    } else {
-      await setDoc(userRef, {
-        pseudo: window.currentUser.displayName || window.currentUser.email,
-        bestscore: score,
-        lastPlayed: serverTimestamp(),
-        scoresHistory: [{ score, date: serverTimestamp() }]
-      });
-    }
-    updateLeaderboard();
-  }
+  if (window.currentUser) updateLeaderboard(score);
 }
 
 // 🔹 Réinitialiser quiz
@@ -165,16 +152,20 @@ function rejouerQuiz() {
   score = 0;
   lives = 3;
   currentPerso = null;
-  answerInput.value = "";
-  document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb=>cb.checked=false);
 
+  // Reset input et catégories
+  answerInput.value = "";
+  document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => cb.checked = false);
+
+  // Réinitialiser UI
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
   resultText.textContent = "";
   imgPerso.src = "";
 
+  // Masquer bloc fin et afficher accueil
   const finQuiz = document.getElementById("fin-quiz");
-  if(finQuiz) finQuiz.classList.add("hidden");
+  if (finQuiz) finQuiz.classList.add("hidden");
 
   accueil.classList.remove("hidden");
   quiz.classList.add("hidden");
@@ -182,7 +173,7 @@ function rejouerQuiz() {
 }
 
 // 🔹 Démarrer quiz
-startBtn.addEventListener("click", ()=>{
+startBtn.addEventListener("click", () => {
   score = 0;
   lives = 3;
   currentPerso = null;
@@ -191,8 +182,11 @@ startBtn.addEventListener("click", ()=>{
 
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
+
   personnages = selected.flatMap(cat => categories[cat]);
-  if(personnages.length === 0) personnages = Object.values(categories).flat();
+  if (personnages.length === 0) {
+    personnages = Object.values(categories).flat();
+  }
 
   quiz.classList.remove("hidden");
   accueil.classList.add("hidden");
@@ -208,44 +202,47 @@ startBtn.addEventListener("click", ()=>{
   answerInput.focus();
 });
 
-// 🔹 Valider réponse
-document.getElementById("validate").addEventListener("click", ()=>{
+// 🔹 Bouton valider
+validateBtn.addEventListener("click", () => {
   verifierReponse();
-  if(personnages.length>0 && lives>0) afficherPerso();
+  if (personnages.length > 0 && lives > 0) afficherPerso();
 });
 
 // 🔹 Entrée clavier Enter
-answerInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    document.getElementById("validate").click();
+answerInput.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    validateBtn.classList.add('click-effect');
+    setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
+    validateBtn.click();
   }
 });
 
 // 🔹 Leaderboard
-async function updateLeaderboard(type="total") {
-  if(!leaderboardContainer) return;
-  const tbody = leaderboardContainer.querySelector('tbody');
-  if(!tbody) return;
+function updateLeaderboard(score){
+  const div = leaderboardContainer;
+  if(!div) return;
 
-  const q = query(collection(db,"Scores"), orderBy("bestscore","desc"), limit(25));
-  const querySnap = await getDocs(q);
+  let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+  scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
+  scores.sort((a,b)=> b.score - a.score);
+  scores = scores.slice(0,25);
+  localStorage.setItem("leaderboard", JSON.stringify(scores));
 
+  const tbody = div.querySelector('tbody');
+  if (!tbody) return;
   tbody.innerHTML = "";
-  querySnap.forEach((docSnap,i)=>{
-    const data = docSnap.data();
+  scores.forEach((s,i)=>{
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${i+1}</td><td>${data.pseudo}</td><td>${data.bestscore}</td>`;
+    tr.innerHTML = `<td>${i+1}</td><td>${s.user}</td><td>${s.score}</td>`;
     tbody.appendChild(tr);
   });
 }
 
-// 🔹 Initialisation au chargement
-document.addEventListener("DOMContentLoaded", ()=>{
-  generateCategories();
-  showCategorySelection();
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
-  bestScoreSpan.textContent = "Record : " + bestScore;
-  updateLeaderboard();
+// 🔹 Affiche le leaderboard dès le chargement
+document.addEventListener("DOMContentLoaded", () => {
+  if (leaderboardContainer) {
+    leaderboardContainer.style.display = "block";
+    updateLeaderboard(0);
+  }
 });

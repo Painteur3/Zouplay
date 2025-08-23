@@ -16,8 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  window.currentUser = null; // utilisateur courant global
-
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
   const overlay = document.createElement("div");
@@ -55,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("close-signup").addEventListener("click", () => closeModal(signupModal));
   overlay.addEventListener("click", () => { closeModal(loginModal); closeModal(signupModal); });
 
-  // --- INSCRIPTION ---
   document.getElementById("signup").addEventListener("click", () => {
     const pseudo = document.getElementById("signup-pseudo").value.trim();
     const email = document.getElementById("signup-email").value.trim();
@@ -71,11 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(userCredential => updateProfile(userCredential.user, { displayName: pseudo }))
       .then(() => {
-        window.currentUser = {
-          uid: auth.currentUser.uid,
-          displayName: pseudo,
-          email: auth.currentUser.email
-        };
         messageEl.textContent = `Compte créé : ${pseudo}`;
         messageEl.style.color = "green";
         setTimeout(() => closeModal(signupModal), 1500);
@@ -86,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // --- CONNEXION ---
   document.getElementById("login").addEventListener("click", () => {
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
@@ -101,11 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
         const pseudo = userCredential.user.displayName || userCredential.user.email;
-        window.currentUser = {
-          uid: userCredential.user.uid,
-          displayName: pseudo,
-          email: userCredential.user.email
-        };
         messageEl.textContent = `Connecté : ${pseudo}`;
         messageEl.style.color = "green";
         setTimeout(() => closeModal(loginModal), 1500);
@@ -120,17 +106,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   onAuthStateChanged(auth, user => {
     if(user){
-      window.currentUser = {
-        uid: user.uid,
-        displayName: user.displayName,
-        email: user.email
-      };
       loginLink.style.display = "none";
       signupLink.style.display = "none";
       userInfo.style.display = "inline-flex";
       userPseudo.textContent = user.displayName || user.email;
     } else {
-      window.currentUser = null;
       loginLink.style.display = "inline-block";
       signupLink.style.display = "inline-block";
       userInfo.style.display = "none";
