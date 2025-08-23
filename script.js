@@ -43,7 +43,7 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
-// 🔹 Fonctions pour cacher / afficher titre + catégories + bouton
+// 🔹 Fonctions pour cacher / afficher titre + catégories + bouton + leaderboard
 function hideCategorySelection() {
   const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
@@ -52,6 +52,7 @@ function hideCategorySelection() {
   if (adventureTitle) adventureTitle.style.display = "none";
   if (categoriesForm) categoriesForm.style.display = "none";
   if (startBtn) startBtn.style.display = "none";
+  if (leaderboardContainer) leaderboardContainer.style.display = "none";
 }
 
 function showCategorySelection() {
@@ -62,6 +63,7 @@ function showCategorySelection() {
   if (adventureTitle) adventureTitle.style.display = "block";
   if (categoriesForm) categoriesForm.style.display = "block";
   if (startBtn) startBtn.style.display = "inline-block";
+  if (leaderboardContainer) leaderboardContainer.style.display = "block";
 }
 
 // 🔹 Afficher personnage
@@ -100,7 +102,6 @@ function verifierReponse() {
 
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
-  // Ne pas montrer titre/categories/start pour l'instant
   const newBest = score > bestScore;
   if (newBest) {
     bestScore = score;
