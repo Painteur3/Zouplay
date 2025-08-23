@@ -55,30 +55,27 @@
       <button id="start-quiz" class="btn btn-start">Commencer le quiz</button>
 
       <!-- Leaderboard -->
-<section id="leaderboard" class="hidden">
-  <h3>Classement des meilleurs scores</h3>
-  <div class="leaderboard-tabs">
-    <button class="lb-tab active" data-range="day">Jour</button>
-    <button class="lb-tab" data-range="week">Semaine</button>
-    <button class="lb-tab" data-range="month">Mois</button>
-    <button class="lb-tab" data-range="total">Total</button>
-  </div>
-  <div class="leaderboard-table">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Pseudo</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard-body">
-        <tr><td colspan="3">Chargement...</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
+      <section id="leaderboard" class="hidden">
+        <h3>Leaderboard</h3>
+        <div class="leaderboard-columns">
+          <div class="leaderboard-col" id="leaderboard-day">
+            <h4>Jour</h4>
+            <ul></ul>
+          </div>
+          <div class="leaderboard-col" id="leaderboard-week">
+            <h4>Semaine</h4>
+            <ul></ul>
+          </div>
+          <div class="leaderboard-col" id="leaderboard-month">
+            <h4>Mois</h4>
+            <ul></ul>
+          </div>
+          <div class="leaderboard-col" id="leaderboard-total">
+            <h4>Total</h4>
+            <ul></ul>
+          </div>
+        </div>
+      </section>
     </section>
 
     <!-- Quiz -->
