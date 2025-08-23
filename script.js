@@ -47,19 +47,12 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
-// Ajout de la classe 'selected' lorsque la checkbox est cochée
-const checkboxes = categoriesContainer.querySelectorAll('input[type="checkbox"]');
-
-checkboxes.forEach(cb => {
-  cb.addEventListener('change', () => {
-    if(cb.checked){
-      cb.parentElement.classList.add('selected');
-    } else {
-      cb.parentElement.classList.remove('selected');
-    }
-  });
+// Ajouter la classe selected
+categoriesContainer.addEventListener('change', (e) => {
+  if (e.target && e.target.type === "checkbox") {
+    e.target.parentElement.classList.toggle('selected', e.target.checked);
+  }
 });
-
 
 // ----------------------
 // Firebase Firestore (scores)
@@ -79,9 +72,8 @@ async function saveScore(user, score) {
       score: score,
       createdAt: new Date()
     });
-    console.log("✅ Score enregistré !");
   } catch (e) {
-    console.error("❌ Erreur enregistrement score: ", e);
+    console.error("Erreur enregistrement score: ", e);
   }
 }
 
@@ -117,7 +109,6 @@ async function showLeaderboard(period="total") {
   const scores = await getLeaderboard(period);
   const container = document.getElementById("leaderboard");
 
-  // Supprimer uniquement les entrées existantes
   container.querySelectorAll(".score-entry").forEach(e => e.remove());
 
   if (scores.length === 0) {
@@ -156,6 +147,7 @@ function afficherPerso() {
   currentPerso = personnages[Math.floor(Math.random()*personnages.length)];
   imgPerso.src = currentPerso.img;
   answerInput.value = "";
+  resultText.textContent = "";
 }
 
 function verifierReponse() {
@@ -188,9 +180,7 @@ function terminerQuiz(lastResult="") {
   if (newBest) {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
-
     onAuthStateChanged(window.auth, user => { if(user) saveScore(user,score); });
-
     lancerConfettis();
   }
 
@@ -204,27 +194,24 @@ function terminerQuiz(lastResult="") {
     </div>
   `;
 
-  document.getElementById("rejouer").addEventListener("click", () => startQuiz());
+  document.getElementById("rejouer").addEventListener("click", startQuiz);
 }
 
 function startQuiz() {
-  score = 0; lives = 3; currentPerso=null;
+  score = 0; lives = 3; currentPerso = null;
 
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
 
-  personnages = selected.flatMap(cat=>categories[cat]);
-  if(personnages.length===0) personnages = Object.values(categories).flat();
+  personnages = selected.flatMap(cat => categories[cat]);
+  if(personnages.length === 0) personnages = Object.values(categories).flat();
 
   accueil.classList.add("hidden");
   quiz.classList.remove("hidden");
 
-  imgPerso.src = "";
-  answerInput.value = "";
-  resultText.textContent = "";
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
-  bestScoreSpan.textContent = "Meilleur score : " + bestScore;
+  bestScoreSpan.textContent = "Record : " + bestScore;
 
   afficherPerso();
 }
@@ -235,7 +222,7 @@ validateBtn.addEventListener("click", () => { verifierReponse(); afficherPerso()
 
 // Entrée "Enter"
 answerInput.addEventListener("keydown", e => {
-  if(e.key==="Enter"){ e.preventDefault(); validateBtn.click(); }
+  if(e.key === "Enter"){ e.preventDefault(); validateBtn.click(); }
 });
 
 // ----------------------
@@ -253,7 +240,7 @@ function lancerConfettis(){
   for(let i=0;i<300;i++){
     confettis.push({
       x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height-canvas.height,
+      y: Math.random()*-canvas.height,
       r: Math.random()*4+2,
       d: Math.random()*10+10,
       color: colors[Math.floor(Math.random()*colors.length)],
@@ -271,7 +258,7 @@ function lancerConfettis(){
     });
   }
 
-  let startTime=Date.now();
+  let startTime = Date.now();
 
   function draw(){
     const elapsed = Date.now()-startTime;
@@ -313,5 +300,4 @@ function hexToRgb(hex){
   return `${r},${g},${b}`; 
 }
 
-// Resize canvas
 window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
