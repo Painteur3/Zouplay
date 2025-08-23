@@ -1,106 +1,194 @@
-// ----- VARIABLES GLOBALES -----
-const categories = {
-  "Animaux": ["Chat", "Chien", "Lion", "Tigre"],
-  "Fruits": ["Pomme", "Banane", "Orange", "Mangue"],
-  "Pays": ["France", "Italie", "Japon", "Brésil"]
+// Variables globales
+let categories = {
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
+  "Black Clover": [
+    { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
+    { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
+  ]
 };
 
 let personnages = [];
 let currentPerso = null;
 let score = 0;
 let lives = 3;
+let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
+let confettiAnimation;
 
-// ----- ELEMENTS HTML -----
+// DOM
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
-const categoriesContainer = document.getElementById("categories-container");
-const startBtn = document.getElementById("start-btn");
-const persoName = document.getElementById("perso-name");
+const startBtn = document.getElementById("start-quiz");
+const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
-const submitBtn = document.getElementById("submit-btn");
-const scoreEl = document.getElementById("score");
-const livesEl = document.getElementById("lives");
+const resultText = document.getElementById("result");
+const validateBtn = document.getElementById("validate");
+const scoreSpan = document.getElementById("score");
+const livesSpan = document.getElementById("lives");
+const bestScoreSpan = document.getElementById("best-score");
 
-// ----- INITIALISATION DES CATEGORIES -----
-function initCategories() {
-  categoriesContainer.innerHTML = ""; // on nettoie juste le conteneur
-  for (let cat in categories) {
-    const label = document.createElement("label");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = cat;
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(cat));
-    categoriesContainer.appendChild(label);
-    categoriesContainer.appendChild(document.createElement("br"));
-  }
+// Afficher scores initiaux
+scoreSpan.textContent = score;
+livesSpan.textContent = lives;
+bestScoreSpan.textContent = "Record : " + bestScore;
+
+// Générer les catégories dynamiquement
+const categoriesContainer = document.getElementById("categories-container");
+for (let cat in categories) {
+  const label = document.createElement("label");
+  label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
+  categoriesContainer.appendChild(label);
 }
-initCategories();
 
-// ----- FONCTION POUR AFFICHER UN PERSONNAGE -----
+// Fonction confettis (ton code original)
+function lancerConfettis() { /* ... */ }
+function hexToRgb(hex) { /* ... */ }
+
+// Afficher personnage
 function afficherPerso() {
-  if (personnages.length === 0) {
-    alert("Quiz terminé !");
-    accueil.classList.remove("hidden");
-    quiz.classList.add("hidden");
-    return;
-  }
-  const index = Math.floor(Math.random() * personnages.length);
-  currentPerso = personnages[index];
-  persoName.textContent = currentPerso;
+  if (personnages.length === 0) return;
+  currentPerso = personnages[Math.floor(Math.random() * personnages.length)];
+  imgPerso.src = currentPerso.img;
+  answerInput.value = "";
 }
 
-// ----- GESTION DU BOUTON START -----
+// Vérifier réponse
+function verifierReponse() {
+  if (!currentPerso) return;
+  const reponse = answerInput.value.trim().toLowerCase();
+  let lastResult = "";
+
+  if (reponse === currentPerso.nom.toLowerCase()) {
+    score++;
+    lastResult = "✅ Bonne réponse !";
+  } else {
+    lives--;
+    lastResult = `❌ Mauvaise réponse. C'était ${currentPerso.nom}`;
+  }
+
+  scoreSpan.textContent = score;
+  livesSpan.textContent = lives;
+  personnages = personnages.filter(p => p !== currentPerso);
+
+  if (lives <= 0 || personnages.length === 0) {
+    terminerQuiz(lastResult);
+  } else {
+    resultText.textContent = lastResult;
+  }
+}
+
+// Terminer quiz
+function terminerQuiz(lastResult = "") {
+  const newBest = score > bestScore;
+  if (newBest) {
+    bestScore = score;
+    localStorage.setItem("bestScore", bestScore);
+    lancerConfettis();
+  }
+  quiz.innerHTML = `
+    <div class="quiz-end-card">
+      <h2>Fin d'aventure</h2>
+      ${lastResult ? `<p class="result-text">${lastResult}</p>` : ""}
+      <p class="score-text">🎯 Score : <span>${score}</span></p>
+      <p class="best-text">🏆 Record : <span>${bestScore}</span></p>
+      <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
+    </div>
+  `;
+  document.getElementById("rejouer").addEventListener("click", () => {
+    location.reload();
+  });
+}
+
+// Démarrer quiz
 startBtn.addEventListener("click", () => {
   score = 0;
   lives = 3;
   currentPerso = null;
 
-  // Récupérer les catégories cochées
-  const selected = Array.from(categoriesContainer.querySelectorAll("input[type=checkbox]:checked"))
+  // Récupérer catégories cochées, sinon prendre toutes
+  const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
 
-  // Si aucune sélection, prendre toutes les catégories
-  if (selected.length === 0) {
-    personnages = Object.values(categories).flat();
-  } else {
-    personnages = selected.flatMap(cat => categories[cat]);
-  }
+  personnages = selected.length
+    ? selected.flatMap(cat => categories[cat])
+    : Object.values(categories).flat();
 
-  // Ne pas toucher aux checkbox, seulement cacher accueil et montrer quiz
+  // Masquer accueil, afficher quiz
   accueil.classList.add("hidden");
   quiz.classList.remove("hidden");
 
-  afficherPerso();
+  // Reset affichage
+  imgPerso.src = "";
   answerInput.value = "";
-  answerInput.focus();
-  scoreEl.textContent = score;
-  livesEl.textContent = lives;
+  resultText.textContent = "";
+  scoreSpan.textContent = score;
+  livesSpan.textContent = lives;
+  bestScoreSpan.textContent = "Meilleur score : " + bestScore;
+
+  afficherPerso();
 });
 
-// ----- GESTION DU BOUTON SUBMIT -----
-submitBtn.addEventListener("click", () => {
-  const answer = answerInput.value.trim();
-  if (answer.toLowerCase() === currentPerso.toLowerCase()) {
-    score++;
-  } else {
-    lives--;
+// Bouton valider
+validateBtn.addEventListener("click", () => {
+  verifierReponse();
+  if (personnages.length > 0 && lives > 0) {
+    afficherPerso();
   }
+});
 
-  scoreEl.textContent = score;
-  livesEl.textContent = lives;
-
-  if (lives <= 0) {
-    alert("Game Over !");
-    accueil.classList.remove("hidden");
-    quiz.classList.add("hidden");
-    return;
+// Entrée clavier Enter
+document.addEventListener('DOMContentLoaded', () => {
+  const answerInput = document.getElementById('answer');
+  const validateButton = document.getElementById('validate');
+  if (answerInput && validateButton) {
+    answerInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        validateButton.classList.add('click-effect');
+        setTimeout(() => validateButton.classList.remove('click-effect'), 150);
+        validateButton.click();
+      }
+    });
   }
+});
 
-  // Retirer le personnage courant pour ne pas le répéter
-  personnages = personnages.filter(p => p !== currentPerso);
+// Canvas particules confettis/bulles
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const particles = [];
+const particleCount = 60;
 
-  answerInput.value = "";
-  afficherPerso();
-  answerInput.focus();
+for(let i=0;i<particleCount;i++){
+  particles.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    radius: Math.random()*4+2,
+    speedY: Math.random()*1+0.3,
+    speedX: (Math.random()-0.5)*0.5,
+    alpha: Math.random()*0.5+0.3
+  });
+}
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+    ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
+    ctx.fill();
+    p.y -= p.speedY;
+    p.x += p.speedX;
+    if(p.y+p.radius<0){ p.y=canvas.height+p.radius; p.x=Math.random()*canvas.width; }
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 });
