@@ -878,7 +878,8 @@ header {
 
 /* Conteneur principal du leaderboard */
 #leaderboard-container {
-  max-width: none; /* ignore la limite max */
+  width: 80%; /* 20% de moins que le main */
+  max-width: 640px; /* 80% de 800px pour correspondre au max du main */
   margin: 25px auto;
   padding: 20px;
   background: #fff;
