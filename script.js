@@ -4,6 +4,34 @@ const categories = {
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
+    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
+  ],
   "Black Clover": [
     { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
     { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
