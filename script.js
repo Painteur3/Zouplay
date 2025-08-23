@@ -147,36 +147,23 @@ function terminerQuiz(lastResult = "") {
     </div>
   `;
 
-document.getElementById("rejouer").addEventListener("click", () => {
-    // Reset des variables
+  document.getElementById("rejouer").addEventListener("click", () => {
+    // Reset complet du quiz sans recharger la page
     score = 0;
     lives = 3;
     currentPerso = null;
-    personnages = [];
-
-    // Reset du DOM
     scoreSpan.textContent = score;
     livesSpan.textContent = lives;
     bestScoreSpan.textContent = "Record : " + bestScore;
     resultText.textContent = "";
     imgPerso.src = "";
-
-    // Reset sections
     quiz.classList.add("hidden");
     accueil.classList.remove("hidden");
     showCategorySelection();
+  });
 
-    // Reset des catégories cochées
-    document.querySelectorAll("#categories-container input[type='checkbox']").forEach(cb => cb.checked = false);
-
-    // Rebind des listeners si nécessaire
-    answerInput.value = "";
-    answerInput.removeEventListener('keydown', handleEnter);
-    answerInput.addEventListener('keydown', handleEnter);
-
-    // Mettre à jour le leaderboard si connecté
-    if (window.currentUser) updateLeaderboard(0);
-});
+  if (window.currentUser) updateLeaderboard(score);
+}
 
 
 
