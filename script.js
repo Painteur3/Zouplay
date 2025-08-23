@@ -21,7 +21,6 @@ let confettiAnimation;
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
-
 const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
 const resultText = document.getElementById("result");
@@ -29,11 +28,7 @@ const validateBtn = document.getElementById("validate");
 const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
-
 const leaderboardContainer = document.getElementById("leaderboard-container");
-
-// Header
-const header = document.querySelector("header");
 
 // Afficher scores initiaux
 scoreSpan.textContent = score;
@@ -48,108 +43,19 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
-// 🔹 Fonctions pour cacher / afficher UI
-function hideUI() {
-  if (header) header.style.setProperty("display", "none", "important");
-  if (leaderboardContainer) leaderboardContainer.classList.add('hidden');
+// 🔹 Fonctions pour cacher / afficher sélection
+function hideCategorySelection() {
+  const categoriesForm = document.getElementById("categories-form");
+  const startBtn = document.getElementById("start-quiz");
+  if (categoriesForm) categoriesForm.classList.add("hidden");
+  if (startBtn) startBtn.classList.add("hidden");
 }
 
-function showUI() {
-  if (header) header.style.setProperty("display", "flex", "important");
-  if (leaderboardContainer) leaderboardContainer.classList.remove('hidden');
-}
-
-// 🔹 Fonction confettis
-function lancerConfettis() {
-  const canvas = document.getElementById("confetti");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
-
-  const confettis = [];
-  const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#43aa8b","#577590","#bdb2ff","#ff6d00"];
-  const gravity = 0.3;
-  const windMax = 1;
-
-  for (let i = 0; i < 300; i++) {
-    confettis.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height - canvas.height,
-      r: Math.random() * 4 + 2,
-      d: Math.random() * 10 + 10,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      tilt: Math.random() * 10 - 5,
-      tiltAngle: 0,
-      tiltSpeed: Math.random() * 0.07 + 0.05,
-      speedY: Math.random() * 2 + 2,
-      speedX: (Math.random() * windMax * 2) - windMax,
-      alpha: 1,
-      fadeSpeed: 0.02,
-      bounce: Math.random() * 0.7 + 0.3,
-      rotation: Math.random() * 360,
-      rotationSpeed: Math.random() * 5 + 2,
-      landed: false
-    });
-  }
-
-  let startTime = Date.now();
-
-  function draw() {
-    const elapsed = Date.now() - startTime;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    confettis.forEach(c => {
-      if (c.alpha <= 0) return;
-      ctx.save();
-      ctx.translate(c.x + c.tilt, c.y);
-      ctx.rotate((c.rotation * Math.PI) / 180);
-      ctx.beginPath();
-      ctx.lineWidth = c.r / 2;
-      ctx.strokeStyle = `rgba(${hexToRgb(c.color)},${c.alpha})`;
-      ctx.moveTo(-c.r / 2, 0);
-      ctx.lineTo(c.r / 2, c.d);
-      ctx.stroke();
-      ctx.restore();
-
-      c.tiltAngle += c.tiltSpeed;
-      c.tilt = Math.sin(c.tiltAngle) * 10;
-      c.rotation += c.rotationSpeed;
-
-      if (!c.landed) {
-        c.speedY += gravity;
-        c.x += c.speedX;
-        c.y += c.speedY;
-
-        if (c.y + c.d > canvas.height) {
-          c.y = canvas.height - c.d;
-          c.speedY *= -c.bounce;
-          c.speedX *= 0.8;
-          if (Math.abs(c.speedY) < 0.5) c.landed = true;
-        }
-        if (c.x < 0 || c.x > canvas.width) c.speedX *= -1;
-      }
-
-      if (elapsed > 5000 || c.landed) c.alpha -= c.fadeSpeed;
-    });
-
-    if (confettis.some(c => c.alpha > 0)) {
-      confettiAnimation = requestAnimationFrame(draw);
-    } else {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-  }
-
-  draw();
-}
-
-// Convertir hex en rgb
-function hexToRgb(hex) {
-  const bigint = parseInt(hex.replace("#", ""), 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return `${r},${g},${b}`;
+function showCategorySelection() {
+  const categoriesForm = document.getElementById("categories-form");
+  const startBtn = document.getElementById("start-quiz");
+  if (categoriesForm) categoriesForm.classList.remove("hidden");
+  if (startBtn) startBtn.classList.remove("hidden");
 }
 
 // 🔹 Afficher personnage
@@ -188,7 +94,7 @@ function verifierReponse() {
 
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
-  showUI();
+  showCategorySelection();
 
   const newBest = score > bestScore;
   if (newBest) {
@@ -209,9 +115,7 @@ function terminerQuiz(lastResult = "") {
 
   document.getElementById("rejouer").addEventListener("click", () => location.reload());
 
-  if (window.currentUser) {
-    updateLeaderboard(score);
-  }
+  if (window.currentUser) updateLeaderboard(score);
 }
 
 // 🔹 Démarrer quiz
@@ -220,7 +124,7 @@ startBtn.addEventListener("click", () => {
   lives = 3;
   currentPerso = null;
 
-  hideUI();
+  hideCategorySelection();
 
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
