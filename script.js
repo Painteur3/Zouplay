@@ -1,5 +1,3 @@
-// script.js
-
 // 🔹 Variables globales
 const categories = { 
   "Akame ga Kill": [
@@ -23,7 +21,6 @@ let confettiAnimation;
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
 const startBtn = document.getElementById("start-quiz");
-
 const imgPerso = document.getElementById("personnage-image");
 const answerInput = document.getElementById("answer");
 const resultText = document.getElementById("result");
@@ -31,12 +28,9 @@ const validateBtn = document.getElementById("validate");
 const scoreSpan = document.getElementById("score");
 const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
+const leaderboardContainer = document.getElementById("leaderboard-container");
 
-const leaderboardContainer = document.createElement("div");
-leaderboardContainer.id = "leaderboard";
-accueil.appendChild(leaderboardContainer);
-
-// Récupérer le header pour le cacher pendant le quiz
+// Header
 const header = document.querySelector("header");
 
 // Afficher scores initiaux
@@ -180,7 +174,6 @@ function verifierReponse() {
 
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
-  // Réafficher header et leaderboard
   if(header) header.classList.remove("hidden");
   if(leaderboardContainer) leaderboardContainer.classList.remove("hidden");
 
@@ -203,7 +196,6 @@ function terminerQuiz(lastResult = "") {
 
   document.getElementById("rejouer").addEventListener("click", () => location.reload());
 
-  // 🔹 Mettre à jour leaderboard si connecté
   if (window.currentUser) {
     updateLeaderboard(score);
   }
@@ -215,7 +207,6 @@ startBtn.addEventListener("click", () => {
   lives = 3;
   currentPerso = null;
 
-  // Cacher header et leaderboard pendant le quiz
   if(header) header.classList.add("hidden");
   if(leaderboardContainer) leaderboardContainer.classList.add("hidden");
 
@@ -249,19 +240,14 @@ validateBtn.addEventListener("click", () => {
 
 // 🔹 Entrée clavier Enter
 document.addEventListener('DOMContentLoaded', () => {
-  const answerInput = document.getElementById('answer');
-  const validateButton = document.getElementById('validate');
-
-  if (answerInput && validateButton) {
-    answerInput.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        validateButton.classList.add('click-effect');
-        setTimeout(() => validateButton.classList.remove('click-effect'), 150);
-        validateButton.click();
-      }
-    });
-  }
+  answerInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      validateBtn.classList.add('click-effect');
+      setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
+      validateBtn.click();
+    }
+  });
 });
 
 // 🔹 Particules d’ambiance dorées
@@ -302,8 +288,7 @@ animateParticles();
 
 // 🔹 Leaderboard (exemple statique)
 function updateLeaderboard(score){
-  const div = document.getElementById("leaderboard");
-  if(!div) return;
+  if(!leaderboardContainer) return;
 
   let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
   scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
@@ -311,10 +296,10 @@ function updateLeaderboard(score){
   scores = scores.slice(0,25);
   localStorage.setItem("leaderboard", JSON.stringify(scores));
 
-  div.innerHTML = "<h3>🏆 Leaderboard Top 25</h3>";
+  leaderboardContainer.innerHTML = "<h3>🏆 Leaderboard Top 25</h3>";
   scores.forEach(s=>{
     const p = document.createElement("p");
     p.textContent = `${s.user} : ${s.score}`;
-    div.appendChild(p);
+    leaderboardContainer.appendChild(p);
   });
 }
