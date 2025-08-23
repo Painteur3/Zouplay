@@ -4,31 +4,31 @@ const categories = {
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
-  "Akame ga Kill": [
+  "Akame ga KillA": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
-  "Akame ga Kill": [
+  "Akame ga KilZl": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
-  "Akame ga Kill": [
+  "Akame ga KilZ": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
-  "Akame ga Kill": [
+  "Akame ga KilEl": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
-  "Akame ga Kill": [
+  "Akame ga KiRll": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
-  "Akame ga Kill": [
+  "Akame ga KiFll": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
-  "Akame ga Kill": [
+  "Akame ga KiDll": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
