@@ -23,6 +23,10 @@ let score = 0;
 let lives = 3;
 let bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
 
+// Animation record
+let recordAnimationActive = false;
+let recordAnimationTime = 0;
+
 // DOM
 const accueil = document.getElementById("accueil");
 const quiz = document.getElementById("quiz");
@@ -107,11 +111,15 @@ function verifierReponse() {
 function terminerQuiz(lastResult = "") {
   resultText.textContent = lastResult;
 
-  // Mettre à jour bestScore
+  // Mettre à jour bestScore et déclencher animation record si battu
   if (score > bestScore) {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
     bestScoreSpan.textContent = "Record : " + bestScore;
+
+    // Animation record
+    recordAnimationActive = true;
+    recordAnimationTime = 0;
   }
 
   // Créer ou afficher le bloc de fin
@@ -221,7 +229,7 @@ canvas.height = window.innerHeight;
 
 // 🔹 Création des particules
 const particles = [];
-const particleCount = 60; // nombre de bulles/particules
+const particleCount = 60;
 
 for (let i = 0; i < particleCount; i++) {
     particles.push({
@@ -234,25 +242,43 @@ for (let i = 0; i < particleCount; i++) {
     });
 }
 
-// 🔹 Animation des particules
+// 🔹 Animation des particules + record
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Particules normales
     particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`; // couleur dorée
+        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
         ctx.fill();
 
-        p.y -= p.speedY; // monte doucement
-        p.x += p.speedX; // léger mouvement horizontal
+        p.y -= p.speedY;
+        p.x += p.speedX;
 
-        // Si la particule sort de l'écran, on la replace en bas
         if (p.y + p.radius < 0) {
             p.y = canvas.height + p.radius;
             p.x = Math.random() * canvas.width;
         }
     });
+
+    // Animation record (superposition)
+    if (recordAnimationActive) {
+        recordAnimationTime++;
+        const maxTime = 100; // durée en frames
+
+        for (let i = 0; i < 30; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height * 0.5;
+            const radius = Math.random() * 6 + 2;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,215,0,${Math.random()})`;
+            ctx.fill();
+        }
+
+        if (recordAnimationTime > maxTime) recordAnimationActive = false;
+    }
 
     requestAnimationFrame(animateParticles);
 }
