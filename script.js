@@ -100,7 +100,7 @@ function verifierReponse() {
 
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
-  // On ne montre pas encore le titre/categories/start
+  // Ne pas montrer titre/categories/start pour l'instant
   const newBest = score > bestScore;
   if (newBest) {
     bestScore = score;
@@ -119,11 +119,18 @@ function terminerQuiz(lastResult = "") {
   `;
 
   document.getElementById("rejouer").addEventListener("click", () => {
-    // Recharger quiz et réafficher titre + catégories + bouton
-    showCategorySelection();
-    accueil.classList.remove("hidden");
+    // Reset complet du quiz sans recharger la page
+    score = 0;
+    lives = 3;
+    currentPerso = null;
+    scoreSpan.textContent = score;
+    livesSpan.textContent = lives;
+    bestScoreSpan.textContent = "Record : " + bestScore;
+    resultText.textContent = "";
+    imgPerso.src = "";
     quiz.classList.add("hidden");
-    location.reload();
+    accueil.classList.remove("hidden");
+    showCategorySelection();
   });
 
   if (window.currentUser) updateLeaderboard(score);
