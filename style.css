@@ -636,14 +636,14 @@ header {
 .dev-badge {
     display: inline-block;
     margin-left: 5px;
-    padding: 1px 4px;       /* réduit un peu le padding */
-    font-size: 0.6em;       /* plus petit que 0.7em */
+    padding: 0 3px;       /* padding très réduit */
+    font-size: 0.45em;    /* beaucoup plus petit */
     font-weight: bold;
     color: #fff;
     background-color: #ff6600;
-    border-radius: 6px;     /* un peu plus petit pour coller à la taille */
+    border-radius: 4px;   /* petit arrondi */
     text-transform: uppercase;
-    vertical-align: middle; /* aligne bien avec le texte du H3 */
+    vertical-align: middle;
     animation: pulse 3s infinite alternate;
 }
 
