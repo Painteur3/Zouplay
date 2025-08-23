@@ -37,19 +37,9 @@ const bestScoreSpan = document.getElementById("best-score");
 const leaderboardContainer = document.getElementById("leaderboard-container");
 const categoriesContainer = document.getElementById("categories-container");
 
-// 🔹 Firebase Firestore
-import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, serverTimestamp, query, collection, orderBy, limit, getDocs } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const db = getFirestore();
-
-// 🔹 Afficher scores initiaux
-scoreSpan.textContent = score;
-livesSpan.textContent = lives;
-bestScoreSpan.textContent = "Record : " + bestScore;
-
-// 🔹 Générer catégories dynamiquement
+// 🔹 Fonctions d’affichage catégories
 function renderCategories() {
+  if (!categoriesContainer) return;
   categoriesContainer.innerHTML = "";
   for (let cat in categories) {
     const label = document.createElement("label");
@@ -58,19 +48,22 @@ function renderCategories() {
   }
 }
 
-// 🔹 Cacher / afficher catégories
 function hideCategorySelection() {
-  accueil.querySelector("h2")?.style.display = "none";
-  document.getElementById("categories-form")?.style.display = "none";
-  startBtn.style.display = "none";
-  leaderboardContainer.style.display = "none";
+  const adventureTitle = accueil.querySelector("h2");
+  const categoriesForm = document.getElementById("categories-form");
+  if (adventureTitle) adventureTitle.style.display = "none";
+  if (categoriesForm) categoriesForm.style.display = "none";
+  if (startBtn) startBtn.style.display = "none";
+  if (leaderboardContainer) leaderboardContainer.style.display = "none";
 }
 
 function showCategorySelection() {
-  accueil.querySelector("h2")?.style.display = "block";
-  document.getElementById("categories-form")?.style.display = "block";
-  startBtn.style.display = "inline-block";
-  leaderboardContainer.style.display = "block";
+  const adventureTitle = accueil.querySelector("h2");
+  const categoriesForm = document.getElementById("categories-form");
+  if (adventureTitle) adventureTitle.style.display = "block";
+  if (categoriesForm) categoriesForm.style.display = "block";
+  if (startBtn) startBtn.style.display = "inline-block";
+  if (leaderboardContainer) leaderboardContainer.style.display = "block";
 }
 
 // 🔹 Afficher personnage
@@ -97,6 +90,7 @@ function verifierReponse() {
 
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
+
   personnages = personnages.filter(p => p !== currentPerso);
 
   if (lives <= 0 || personnages.length === 0) {
@@ -107,36 +101,18 @@ function verifierReponse() {
 }
 
 // 🔹 Terminer quiz
-async function terminerQuiz(lastResult = "") {
+function terminerQuiz(lastResult = "") {
   resultText.textContent = lastResult;
 
-  // Mettre à jour bestScore si connecté
-  if (window.currentUser) {
-    const userRef = doc(db, "Scores", window.currentUser.uid);
-    const userSnap = await getDoc(userRef);
-
-    let userData = { pseudo: window.currentUser.displayName, bestscore: score, lastPlayed: serverTimestamp(), scoresHistory: [{score, date: serverTimestamp()}] };
-
-    if (userSnap.exists()) {
-      const data = userSnap.data();
-      const newBest = Math.max(data.bestscore || 0, score);
-      userData.bestscore = newBest;
-      userData.scoresHistory = arrayUnion({score, date: serverTimestamp()});
-      await updateDoc(userRef, {
-        bestscore: newBest,
-        lastPlayed: serverTimestamp(),
-        scoresHistory: arrayUnion({score, date: serverTimestamp()})
-      });
-    } else {
-      await setDoc(userRef, userData);
-    }
-
-    bestScore = Math.max(bestScore, score);
+  // Mettre à jour bestScore
+  if (window.currentUser && score > bestScore) {
+    bestScore = score;
     bestScoreSpan.textContent = "Record : " + bestScore;
-    updateLeaderboard(); // Mise à jour du leaderboard
+    // 🔹 Mettre à jour Firestore
+    updateUserScore(score);
   }
 
-  // Bloc fin quiz
+  // Créer ou afficher le bloc de fin
   let finQuiz = document.getElementById("fin-quiz");
   if (!finQuiz) {
     finQuiz = document.createElement("div");
@@ -159,7 +135,10 @@ async function terminerQuiz(lastResult = "") {
   finQuiz.classList.remove("hidden");
   quiz.classList.add("hidden");
 
-  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
+  const rejouerBtn = document.getElementById("rejouer");
+  rejouerBtn.addEventListener("click", rejouerQuiz);
+
+  if (window.currentUser) updateLeaderboard();
 }
 
 // 🔹 Réinitialiser quiz
@@ -176,7 +155,8 @@ function rejouerQuiz() {
   resultText.textContent = "";
   imgPerso.src = "";
 
-  document.getElementById("fin-quiz")?.classList.add("hidden");
+  const finQuiz = document.getElementById("fin-quiz");
+  if (finQuiz) finQuiz.classList.add("hidden");
 
   accueil.classList.remove("hidden");
   quiz.classList.add("hidden");
@@ -223,26 +203,50 @@ validateBtn.addEventListener("click", () => {
 answerInput.addEventListener('keydown', function(event) {
   if (event.key === 'Enter') {
     event.preventDefault();
-    validateBtn.classList.add('click-effect');
-    setTimeout(() => validateBtn.classList.remove('click-effect'), 150);
     validateBtn.click();
   }
 });
 
-// 🔹 Leaderboard
+// 🔹 Leaderboard Firestore
+import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, Timestamp, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const db = getFirestore();
+
+async function updateUserScore(score){
+  const userDoc = doc(db, "Scores", window.currentUser.uid);
+  const docSnap = await getDoc(userDoc);
+
+  if (!docSnap.exists()) {
+    await setDoc(userDoc, {
+      pseudo: window.currentUser.displayName,
+      bestscore: score,
+      lastPlayed: Timestamp.now(),
+      scoresHistory: [{ score, date: Timestamp.now() }]
+    });
+  } else {
+    const data = docSnap.data();
+    const newBest = Math.max(data.bestscore || 0, score);
+    await updateDoc(userDoc, {
+      bestscore: newBest,
+      lastPlayed: Timestamp.now(),
+      scoresHistory: arrayUnion({ score, date: Timestamp.now() })
+    });
+  }
+
+  updateLeaderboard();
+}
+
 async function updateLeaderboard() {
   if (!leaderboardContainer) return;
-
-  const scoresQuery = query(collection(db, "Scores"), orderBy("bestscore", "desc"), limit(25));
-  const querySnapshot = await getDocs(scoresQuery);
-
-  const tbody = leaderboardContainer.querySelector('tbody');
+  const tbody = leaderboardContainer.querySelector("tbody");
   if (!tbody) return;
-  tbody.innerHTML = "";
 
+  const q = query(collection(db, "Scores"), orderBy("bestscore", "desc"), limit(25));
+  const querySnapshot = await getDocs(q);
+
+  tbody.innerHTML = "";
   let rank = 1;
-  querySnapshot.forEach(docSnap => {
-    const data = docSnap.data();
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${rank}</td><td>${data.pseudo}</td><td>${data.bestscore}</td>`;
     tbody.appendChild(tr);
@@ -250,8 +254,12 @@ async function updateLeaderboard() {
   });
 }
 
-// 🔹 Initialisation
+// 🔹 Initialisation DOM
 document.addEventListener("DOMContentLoaded", () => {
   renderCategories();
+  scoreSpan.textContent = score;
+  livesSpan.textContent = lives;
+  bestScoreSpan.textContent = "Record : " + bestScore;
   showCategorySelection();
+  if (leaderboardContainer) updateLeaderboard();
 });
