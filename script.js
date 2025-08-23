@@ -43,7 +43,7 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
-// 🔹 Fonctions pour cacher / afficher sélection (titre + catégories + bouton)
+// 🔹 Fonctions pour cacher / afficher titre + catégories + bouton
 function hideCategorySelection() {
   const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
@@ -100,8 +100,7 @@ function verifierReponse() {
 
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
-  showCategorySelection();
-
+  // On ne montre pas encore le titre/categories/start
   const newBest = score > bestScore;
   if (newBest) {
     bestScore = score;
@@ -119,7 +118,13 @@ function terminerQuiz(lastResult = "") {
     </div>
   `;
 
-  document.getElementById("rejouer").addEventListener("click", () => location.reload());
+  document.getElementById("rejouer").addEventListener("click", () => {
+    // Recharger quiz et réafficher titre + catégories + bouton
+    showCategorySelection();
+    accueil.classList.remove("hidden");
+    quiz.classList.add("hidden");
+    location.reload();
+  });
 
   if (window.currentUser) updateLeaderboard(score);
 }
