@@ -33,7 +33,6 @@ header h1 {
     margin: 20px;
     gap: 20px;
     flex-wrap: wrap;
-       padding-top: 0; /* supprime l’espace au-dessus */
 }
 
 /* Colonnes pub */
