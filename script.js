@@ -1,7 +1,7 @@
 // script.js
 
 // 🔹 Variables globales
-const categories = { // const pour éviter le problème de scope
+const categories = { 
   "Akame ga Kill": [
     { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
@@ -35,6 +35,9 @@ const bestScoreSpan = document.getElementById("best-score");
 const leaderboardContainer = document.createElement("div");
 leaderboardContainer.id = "leaderboard";
 accueil.appendChild(leaderboardContainer);
+
+// Récupérer le header pour le cacher pendant le quiz
+const header = document.querySelector("header");
 
 // Afficher scores initiaux
 scoreSpan.textContent = score;
@@ -177,6 +180,10 @@ function verifierReponse() {
 
 // 🔹 Terminer quiz
 function terminerQuiz(lastResult = "") {
+  // Réafficher header et leaderboard
+  if(header) header.classList.remove("hidden");
+  if(leaderboardContainer) leaderboardContainer.classList.remove("hidden");
+
   const newBest = score > bestScore;
   if (newBest) {
     bestScore = score;
@@ -207,6 +214,10 @@ startBtn.addEventListener("click", () => {
   score = 0;
   lives = 3;
   currentPerso = null;
+
+  // Cacher header et leaderboard pendant le quiz
+  if(header) header.classList.add("hidden");
+  if(leaderboardContainer) leaderboardContainer.classList.add("hidden");
 
   const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
     .map(cb => cb.value);
@@ -289,13 +300,13 @@ function animateParticles(){
 }
 animateParticles();
 
-// 🔹 Leaderboard (exemple statique, à relier à Firestore si voulu)
+// 🔹 Leaderboard (exemple statique)
 function updateLeaderboard(score){
   const div = document.getElementById("leaderboard");
   if(!div) return;
 
   let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-  scores.push({user: window.currentUser.displayName || "Invité", score, date: Date.now()});
+  scores.push({user: window.currentUser?.displayName || "Invité", score, date: Date.now()});
   scores.sort((a,b)=> b.score - a.score);
   scores = scores.slice(0,25);
   localStorage.setItem("leaderboard", JSON.stringify(scores));
