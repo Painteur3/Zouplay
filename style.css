@@ -878,7 +878,7 @@ header {
 
 /* Conteneur principal du leaderboard */
 #leaderboard-container {
-  max-width: 600px;
+  max-width: 1200px;
   margin: 25px auto;
   padding: 20px;
   background: #fff;
