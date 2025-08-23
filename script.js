@@ -2,7 +2,9 @@
 // Variables globales
 // ----------------------
 let categories = {
-  "Akame ga Kill": [{ nom: "Run", img: "images/Akame ga Kill/Run.jpg" }],
+  "Akame ga Kill": [
+    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" }
+  ],
   "Vinland Saga": [
     { nom: "Haldor", img: "images/Vinland Saga/Haldor.jpg" },
     { nom: "Canute", img: "images/Vinland Saga/Canute.jpg" }
