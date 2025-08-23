@@ -3,6 +3,15 @@ import { getFirestore, collection, addDoc, query, orderBy, limit, where, getDocs
 
 const db = getFirestore(); // Assurez-vous d’utiliser la même instance Firebase que auth.js
 
+let currentUser = null;
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const auth = getAuth();
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  if(user) loadLeaderboard(activeRange);
+});
+
 // Variables globales
 let categories = {
 
@@ -201,6 +210,18 @@ function terminerQuiz(lastResult = "") {
     lancerConfettis();
   }
 
+  if(currentUser){
+  const pseudo = currentUser.displayName || currentUser.email;
+  addDoc(collection(db, "Scores"), {
+    Pseudo: pseudo,
+    bestscore: score,
+    lastPlayed: Timestamp.now()
+  }).then(() => {
+    loadLeaderboard(activeRange);
+  }).catch(err => console.error(err));
+}
+
+
  quiz.innerHTML = `
   <div class="quiz-end-card">
     <h2>Fin d'aventure</h2>
@@ -214,6 +235,53 @@ function terminerQuiz(lastResult = "") {
   document.getElementById("rejouer").addEventListener("click", () => {
     location.reload();
   });
+}
+
+async function loadLeaderboard(range) {
+  if(!currentUser) return;
+  
+  let startDate = new Date();
+  switch(range){
+    case "day":
+      startDate.setHours(0,0,0,0);
+      break;
+    case "week":
+      const day = startDate.getDay();
+      startDate.setDate(startDate.getDate() - day);
+      startDate.setHours(0,0,0,0);
+      break;
+    case "month":
+      startDate.setDate(1);
+      startDate.setHours(0,0,0,0);
+      break;
+    case "total":
+      startDate = null;
+      break;
+  }
+
+  let q;
+  const scoresRef = collection(db, "Scores");
+  if(startDate){
+    q = query(scoresRef, where("lastPlayed", ">=", Timestamp.fromDate(startDate)), orderBy("bestscore", "desc"), limit(25));
+  } else {
+    q = query(scoresRef, orderBy("bestscore", "desc"), limit(25));
+  }
+
+  const querySnapshot = await getDocs(q);
+  leaderboardBody.innerHTML = "";
+  let rank = 1;
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${rank++}</td><td>${data.Pseudo}</td><td>${data.bestscore}</td>`;
+    leaderboardBody.appendChild(tr);
+  });
+
+  if(querySnapshot.empty){
+    leaderboardBody.innerHTML = `<tr><td colspan="3">Aucun score disponible</td></tr>`;
+  }
+
+  leaderboardSection.classList.remove("hidden");
 }
 
 // Démarrer quiz
@@ -285,6 +353,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+const leaderboardSection = document.getElementById("leaderboard");
+const leaderboardBody = document.getElementById("leaderboard-body");
+const lbTabs = document.querySelectorAll(".lb-tab");
+let activeRange = "day";
+
+lbTabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    lbTabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    activeRange = tab.dataset.range;
+    if(currentUser) loadLeaderboard(activeRange);
+  });
+});
+
 
 const canvas = document.getElementById('confetti');
 const ctx = canvas.getContext('2d');
