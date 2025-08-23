@@ -1,251 +1,151 @@
-// 🔹 Variables globales
-const categories = { 
-  "Akame ga Kill": [
-    { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
-    { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
-  ],
-  "Dragon Ball": [
-    { nom: "Pagos", img: "images/Dragon Ball/Pagos.jpg" },
-    { nom: "Krillin", img: "images/Dragon Ball/Kuririn.jpg" },
-    { nom: "Suppaman", img: "images/Dragon Ball/Suppaman.jpg" },
-    { nom: "Yajirobe", img: "images/Dragon Ball/Yajirobe.jpg" },
-    { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" },
-  ],
-  "Black Clover": [
-    { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
-    { nom: "Acier", img: "images/Black Clover/Acier.jpg" }
-  ]
-};
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon2.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon2.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="images/favicon2.png">
 
-let personnages = [];
-let currentPerso = null;
-let score = 0;
-let lives = 3;
-let bestScore = 0;
+  <title>Quiz – Le Masque de l’Anime</title>
+  <link rel="stylesheet" href="style.css">
 
-// 🔹 DOM
-const accueil = document.getElementById("accueil");
-const quiz = document.getElementById("quiz");
-const startBtn = document.getElementById("start-quiz");
-const imgPerso = document.getElementById("personnage-image");
-const answerInput = document.getElementById("answer");
-const resultText = document.getElementById("result");
-const scoreSpan = document.getElementById("score");
-const livesSpan = document.getElementById("lives");
-const bestScoreSpan = document.getElementById("best-score");
-const leaderboardContainer = document.getElementById("leaderboard-container");
-const categoriesContainer = document.getElementById("categories-container");
+  <!-- Script global AdSense 
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2912587106364560"
+     crossorigin="anonymous"></script> -->
+</head>
+<body>
 
-// 🔹 Firebase Firestore
-import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, serverTimestamp, query, collection, orderBy, limit, getDocs } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<header>
+  <div class="header-center">
+    <h1>Le Masque de l’Anime</h1>
+    <p>Test ta mémoire sur tes animés préférés !</p>
+  </div>
 
-const db = getFirestore();
+  <nav class="header-right">
+    <ul>
+      <li><a href="#" id="open-login">Se connecter <span class="dev-badge">Dév</span></a></li>
+      <li><a href="#" id="open-signup">S'inscrire <span class="dev-badge">Dév</span></a></li>
+    </ul>
+    <div id="user-info" style="display:none;">
+      <span id="user-pseudo"></span>
+      <button id="logout" class="btn">Déconnexion</button>
+    </div>
+  </nav>
+</header>
 
-// 🔹 Générer catégories dynamiquement
-function generateCategories() {
-  if(!categoriesContainer) return;
-  categoriesContainer.innerHTML = "";
-  for (let cat in categories) {
-    const label = document.createElement("label");
-    label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
-    categoriesContainer.appendChild(label);
-  }
-}
+<div class="container">
+  <!-- Colonne pub gauche -->
+  <aside class="pub">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2912587106364560"
+         data-ad-slot="1111111111"
+         data-ad-format="auto"></ins>
+  </aside>
 
-// 🔹 Afficher / cacher catégories
-function showCategorySelection() {
-  if(accueil) accueil.classList.remove("hidden");
-  if(categoriesContainer) categoriesContainer.style.display = "block";
-  if(startBtn) startBtn.style.display = "inline-block";
-  if(leaderboardContainer) leaderboardContainer.style.display = "block";
-}
+  <!-- Zone principale -->
+  <main>
+    <!-- Accueil -->
+    <section id="accueil">
+      <h2>Prépare ton aventure</h2>
+      <form id="categories-form">
+        <div id="categories-container"></div>
+      </form>
+      <button id="start-quiz" class="btn btn-start">Commencer le quiz</button>
 
-function hideCategorySelection() {
-  if(accueil) accueil.classList.add("hidden");
-  if(categoriesContainer) categoriesContainer.style.display = "none";
-  if(startBtn) startBtn.style.display = "none";
-  if(leaderboardContainer) leaderboardContainer.style.display = "none";
-}
+      <!-- Leaderboard -->
+      <div id="leaderboard-container">
+        <h3>🏆 Leaderboard</h3>
+        <div class="leaderboard-tabs">
+          <button class="leaderboard-tab active" data-type="day">Jour</button>
+          <button class="leaderboard-tab" data-type="week">Semaine</button>
+          <button class="leaderboard-tab" data-type="month">Mois</button>
+          <button class="leaderboard-tab" data-type="total">Total</button>
+        </div>
+        <table id="leaderboard" class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Pseudo</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
-// 🔹 Afficher personnage
-function afficherPerso() {
-  if(personnages.length === 0) return;
-  currentPerso = personnages[Math.floor(Math.random()*personnages.length)];
-  imgPerso.src = currentPerso.img;
-  answerInput.value = "";
-}
+    <!-- Quiz -->
+    <section id="quiz" class="hidden">
+      <div id="score-container">
+        <span id="best-score">Record : 0</span>
+        <div id="score-lives">
+          Score: <span id="score">0</span> | Life: <span id="lives">3</span>
+        </div>
+      </div>
 
-// 🔹 Vérifier réponse
-function verifierReponse() {
-  if(!currentPerso) return;
-  const reponse = answerInput.value.trim().toLowerCase();
-  let lastResult = "";
+      <div class="personnage-container">
+        <img id="personnage-image" src="" alt="Personnage">
+      </div>
 
-  if(reponse === currentPerso.nom.toLowerCase()) {
-    score++;
-    lastResult = "✅ Bonne réponse !";
-  } else {
-    lives--;
-    lastResult = `❌ Mauvaise réponse. C'était ${currentPerso.nom}`;
-  }
+      <div class="answer-container">
+        <input type="text" id="answer" placeholder="Tape le nom...">
+        <button id="validate" class="btn btn-validate">Valider</button>
+      </div>
 
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
+      <p id="result"></p>
+    </section>
 
-  personnages = personnages.filter(p => p !== currentPerso);
+    <canvas id="confetti"></canvas>
+  </main>
 
-  if(lives <= 0 || personnages.length === 0) {
-    terminerQuiz(lastResult);
-  } else {
-    resultText.textContent = lastResult;
-  }
-}
+  <!-- Colonne pub droite -->
+  <aside class="pub">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2912587106364560"
+         data-ad-slot="2222222222"
+         data-ad-format="auto"></ins>
+  </aside>
+</div>
 
-// 🔹 Terminer quiz
-async function terminerQuiz(lastResult="") {
-  resultText.textContent = lastResult;
+<!-- Barre d’info défilante -->
+<div class="info-bar">
+  <div class="info-content">
+    🚀 Nouveaux quiz disponibles ! &nbsp;&nbsp; | &nbsp;&nbsp; 🎉 Création de compte ajouté ! &nbsp;&nbsp; | &nbsp;&nbsp; 🌟 Création du classement en cours !
+  </div>
+</div>
 
-  // Mettre à jour bestScore
-  if(score > bestScore) bestScore = score;
-  bestScoreSpan.textContent = "Record : " + bestScore;
+<!-- Script pour initialiser les blocs AdSense -->
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
-  // Bloc fin
-  let finQuiz = document.getElementById("fin-quiz");
-  if(!finQuiz) {
-    finQuiz = document.createElement("div");
-    finQuiz.id = "fin-quiz";
-    finQuiz.classList.add("quiz-end-card");
-    finQuiz.innerHTML = `
-      <h2>Fin d'aventure</h2>
-      <p class="result-text">${lastResult}</p>
-      <p class="score-text">🎯 Score : <span>${score}</span></p>
-      <p class="best-text">🏆 Record : <span>${bestScore}</span></p>
-      <button id="rejouer" class="btn-rejouer">🔄 Rejouer</button>
-    `;
-    quiz.parentNode.appendChild(finQuiz);
-  } else {
-    finQuiz.querySelector(".result-text").textContent = lastResult;
-    finQuiz.querySelector(".score-text span").textContent = score;
-    finQuiz.querySelector(".best-text span").textContent = bestScore;
-  }
+<!-- Modal Connexion -->
+<div id="login-modal" class="modal" style="display:none;">
+  <h2>Connexion</h2>
+  <input type="email" id="login-email" placeholder="Email">
+  <input type="password" id="login-password" placeholder="Mot de passe">
+  <div id="login-message" class="modal-message"></div>
+  <button id="login" class="btn btn-validate">Se connecter</button>
+  <button id="close-login" class="btn">Fermer</button>
+</div>
 
-  finQuiz.classList.remove("hidden");
-  quiz.classList.add("hidden");
+<!-- Modal Inscription -->
+<div id="signup-modal" class="modal" style="display:none;">
+  <h2>Inscription</h2>
+  <input type="text" id="signup-pseudo" placeholder="Pseudo">
+  <input type="email" id="signup-email" placeholder="Email">
+  <input type="password" id="signup-password" placeholder="Mot de passe">
+  <div id="signup-message" class="modal-message"></div>
+  <button id="signup" class="btn btn-validate">Créer un compte</button>
+  <button id="close-signup" class="btn">Fermer</button>
+</div>
 
-  document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
+<script src="script.js"></script>
+<script type="module" src="auth.js"></script>
 
-  // 🔹 Enregistrer score Firebase si utilisateur connecté
-  if(window.currentUser) {
-    const userRef = doc(db, "Scores", window.currentUser.uid);
-    const userSnap = await getDoc(userRef);
-
-    if(userSnap.exists()) {
-      const data = userSnap.data();
-      const newBest = score > (data.bestscore || 0) ? score : data.bestscore;
-      await updateDoc(userRef, {
-        bestscore: newBest,
-        lastPlayed: serverTimestamp(),
-        scoresHistory: arrayUnion({ score, date: serverTimestamp() })
-      });
-    } else {
-      await setDoc(userRef, {
-        pseudo: window.currentUser.displayName || window.currentUser.email,
-        bestscore: score,
-        lastPlayed: serverTimestamp(),
-        scoresHistory: [{ score, date: serverTimestamp() }]
-      });
-    }
-    updateLeaderboard();
-  }
-}
-
-// 🔹 Réinitialiser quiz
-function rejouerQuiz() {
-  score = 0;
-  lives = 3;
-  currentPerso = null;
-  answerInput.value = "";
-  document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb=>cb.checked=false);
-
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
-  resultText.textContent = "";
-  imgPerso.src = "";
-
-  const finQuiz = document.getElementById("fin-quiz");
-  if(finQuiz) finQuiz.classList.add("hidden");
-
-  accueil.classList.remove("hidden");
-  quiz.classList.add("hidden");
-  showCategorySelection();
-}
-
-// 🔹 Démarrer quiz
-startBtn.addEventListener("click", ()=>{
-  score = 0;
-  lives = 3;
-  currentPerso = null;
-
-  hideCategorySelection();
-
-  const selected = Array.from(document.querySelectorAll("#categories-container input[type=checkbox]:checked"))
-    .map(cb => cb.value);
-  personnages = selected.flatMap(cat => categories[cat]);
-  if(personnages.length === 0) personnages = Object.values(categories).flat();
-
-  quiz.classList.remove("hidden");
-  accueil.classList.add("hidden");
-
-  imgPerso.src = "";
-  answerInput.value = "";
-  resultText.textContent = "";
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
-  bestScoreSpan.textContent = "Record : " + bestScore;
-
-  afficherPerso();
-  answerInput.focus();
-});
-
-// 🔹 Valider réponse
-document.getElementById("validate").addEventListener("click", ()=>{
-  verifierReponse();
-  if(personnages.length>0 && lives>0) afficherPerso();
-});
-
-// 🔹 Entrée clavier Enter
-answerInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    document.getElementById("validate").click();
-  }
-});
-
-// 🔹 Leaderboard
-async function updateLeaderboard(type="total") {
-  if(!leaderboardContainer) return;
-  const tbody = leaderboardContainer.querySelector('tbody');
-  if(!tbody) return;
-
-  const q = query(collection(db,"Scores"), orderBy("bestscore","desc"), limit(25));
-  const querySnap = await getDocs(q);
-
-  tbody.innerHTML = "";
-  querySnap.forEach((docSnap,i)=>{
-    const data = docSnap.data();
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${i+1}</td><td>${data.pseudo}</td><td>${data.bestscore}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// 🔹 Initialisation au chargement
-document.addEventListener("DOMContentLoaded", ()=>{
-  generateCategories();
-  showCategorySelection();
-  scoreSpan.textContent = score;
-  livesSpan.textContent = lives;
-  bestScoreSpan.textContent = "Record : " + bestScore;
-  updateLeaderboard();
-});
+</body>
+</html>
