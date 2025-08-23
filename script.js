@@ -5,11 +5,11 @@ const categories = {
     { nom: "Liver", img: "images/Akame ga Kill/Liver.jpg" }
   ],
   "Dragon Ball": [
-{ nom: "Pagos", img: "images/Dragon Ball/Pagos.jpg" },
-{ nom: "Krillin", img: "images/Dragon Ball/Kuririn.jpg" },
-{ nom: "Suppaman", img: "images/Dragon Ball/Suppaman.jpg" },
-{ nom: "Yajirobe", img: "images/Dragon Ball/Yajirobe.jpg" },
-{ nom: "Baba", img: "images/Dragon Ball/Baba.jpg" },
+    { nom: "Pagos", img: "images/Dragon Ball/Pagos.jpg" },
+    { nom: "Krillin", img: "images/Dragon Ball/Kuririn.jpg" },
+    { nom: "Suppaman", img: "images/Dragon Ball/Suppaman.jpg" },
+    { nom: "Yajirobe", img: "images/Dragon Ball/Yajirobe.jpg" },
+    { nom: "Baba", img: "images/Dragon Ball/Baba.jpg" },
     ],
   "Black Clover": [
     { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
