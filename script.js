@@ -147,23 +147,11 @@ function terminerQuiz(lastResult = "") {
     </div>
   `;
 
-  document.getElementById("rejouer").addEventListener("click", () => {
-    // Reset complet du quiz sans recharger la page
-    score = 0;
-    lives = 3;
-    currentPerso = null;
-    scoreSpan.textContent = score;
-    livesSpan.textContent = lives;
-    bestScoreSpan.textContent = "Record : " + bestScore;
-    resultText.textContent = "";
-    imgPerso.src = "";
-    quiz.classList.add("hidden");
-    accueil.classList.remove("hidden");
-    showCategorySelection();
-  });
+document.getElementById("rejouer").addEventListener("click", () => {
+    // Recharge la page pour tout réinitialiser proprement
+    window.location.reload();
+});
 
-  if (window.currentUser) updateLeaderboard(score);
-}
 
 
 
