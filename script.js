@@ -263,3 +263,56 @@ window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 });
+
+// 🔹 Confettis spéciaux quand record battu
+function lancerConfettisRecord() {
+    const confettis = [];
+    const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#43aa8b","#577590","#bdb2ff","#ff6d00"];
+
+    for (let i = 0; i < 150; i++) {
+        confettis.push({
+            x: Math.random() * canvas.width,
+            y: -10,
+            r: Math.random() * 4 + 2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speedY: Math.random() * 3 + 2,
+            speedX: (Math.random() - 0.5) * 4,
+            alpha: 1,
+            fade: Math.random() * 0.02 + 0.01
+        });
+    }
+
+    function drawConfettis() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // nettoie le canvas
+        // 🔹 on redessine aussi les bulles de fond
+        animateParticles();
+
+        confettis.forEach(c => {
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${hexToRgb(c.color)},${c.alpha})`;
+            ctx.fill();
+
+            c.x += c.speedX;
+            c.y += c.speedY;
+            c.alpha -= c.fade;
+        });
+
+        if (confettis.some(c => c.alpha > 0)) {
+            requestAnimationFrame(drawConfettis);
+        }
+    }
+
+    drawConfettis();
+}
+
+// helper pour convertir hex -> rgb
+function hexToRgb(hex) {
+    hex = hex.replace(/^#/, '');
+    let bigint = parseInt(hex, 16);
+    let r = (bigint >> 16) & 255;
+    let g = (bigint >> 8) & 255;
+    let b = bigint & 255;
+    return `${r},${g},${b}`;
+}
+
