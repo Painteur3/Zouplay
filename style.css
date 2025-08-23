@@ -241,14 +241,14 @@ p {
   transform: translateY(-2px) scale(1.02);
 }
 
-/* Style pour label sélectionné */
-#categories-container label:has(input:checked) {
+#categories-container label.selected {
   background: linear-gradient(135deg, #f5be48, #f7a600);
   color: white;
   border-color: #f7b968;
   box-shadow: 0 0 10px rgba(245, 190, 72, 0.5);
-  transform: none; /* pas de déplacement au hover */
+  transform: none;
 }
+
 
 /* Cacher la checkbox */
 #categories-container input[type="checkbox"] {
