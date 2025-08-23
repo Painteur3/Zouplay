@@ -43,19 +43,25 @@ for (let cat in categories) {
   categoriesContainer.appendChild(label);
 }
 
-// 🔹 Fonctions pour cacher / afficher sélection
+// 🔹 Fonctions pour cacher / afficher sélection (titre + catégories + bouton)
 function hideCategorySelection() {
+  const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
   const startBtn = document.getElementById("start-quiz");
-  if (categoriesForm) categoriesForm.classList.add("hidden");
-  if (startBtn) startBtn.classList.add("hidden");
+
+  if (adventureTitle) adventureTitle.style.display = "none";
+  if (categoriesForm) categoriesForm.style.display = "none";
+  if (startBtn) startBtn.style.display = "none";
 }
 
 function showCategorySelection() {
+  const adventureTitle = accueil.querySelector("h2");
   const categoriesForm = document.getElementById("categories-form");
   const startBtn = document.getElementById("start-quiz");
-  if (categoriesForm) categoriesForm.classList.remove("hidden");
-  if (startBtn) startBtn.classList.remove("hidden");
+
+  if (adventureTitle) adventureTitle.style.display = "block";
+  if (categoriesForm) categoriesForm.style.display = "block";
+  if (startBtn) startBtn.style.display = "inline-block";
 }
 
 // 🔹 Afficher personnage
@@ -134,7 +140,6 @@ startBtn.addEventListener("click", () => {
     personnages = Object.values(categories).flat();
   }
 
-  accueil.classList.add("hidden");
   quiz.classList.remove("hidden");
 
   imgPerso.src = "";
