@@ -1,21 +1,40 @@
-Prompt pour trier et corriger les noms incorrect ou inexistant : 
-
-Voici une liste de personnages (au format JSON) :
+Contexte :
+Tu as une liste de personnages au format JSON :
 { nom: "NomOriginal", img: "chemin/image.jpg" }
 
-Travail à faire :
-1. **Traduire uniquement le champ `nom`** en version VF-JAP :
-   - Si le personnage a un nom officiel connu en français → utiliser celui-là (ex : "Kuririn" → "Krilin", "Son Gokuu" → "Sangoku", "Mutenroshi" → "Tortue Géniale").
-   - Si le personnage n’a pas de vraie VF officielle → garder son nom japonais mais simplifié (sans romanisation compliquée) pour qu’un joueur puisse le taper facilement.
-   - Respecter les accents et orthographes françaises (ex : "Yajirobe" → "Yajirobé", "Tao" → "Tao Paï Paï").
-   - Ne pas inventer de traduction inexistante.
+Travail à effectuer :
 
-2. **Filtrer les personnages pour la difficulté** :
-   - Conserver les personnages **principaux et secondaires intéressants** (héros, antagonistes, alliés récurrents, personnages secondaires connus d’un arc ou d’une saga).
-   - Supprimer les **figurants, soldats anonymes, ou personnages extrêmement obscurs**.
-   - L’objectif est de **garder un certain niveau de challenge**, mais éviter les personnages dont presque personne ne se souviendrait.
+Traduction des noms (nom) :
 
-3. **Format de sortie** :
-   - Conserver exactement le format JSON.
-   - Ne modifier que le champ `nom` des personnages retenus.
-   - Supprimer complètement les entrées des personnages jugés trop insignifiants.
+Si un personnage a un nom officiel connu en français, utilise ce nom (ex : "Kuririn" → "Krilin", "Son Gokuu" → "Sangoku", "Mutenroshi" → "Tortue Géniale").
+
+Si le personnage n’a pas de traduction officielle, garde son nom japonais simplifié pour être facile à taper.
+
+Respecte les accents et l’orthographe française (ex : "Yajirobe" → "Yajirobé", "Tao" → "Tao Paï Paï").
+
+Ne jamais inventer de traduction.
+
+Filtrage des personnages :
+
+Conserve uniquement les personnages principaux, secondaires intéressants ou récurrents.
+
+Supprime les figurants, soldats anonymes, ou personnages extrêmement obscurs.
+
+L’objectif : garder un niveau de challenge mais éviter des noms que presque personne ne reconnaîtrait.
+
+Format de sortie :
+
+Conserve exactement le format JSON.
+
+Modifie uniquement le champ nom.
+
+Supprime complètement les entrées jugées trop insignifiantes.
+
+Exemple de sortie attendue :
+
+[
+  { "nom": "Sangoku", "img": "images/goku.jpg" },
+  { "nom": "Krilin", "img": "images/krilin.jpg" },
+  { "nom": "Vegeta", "img": "images/vegeta.jpg" },
+  { "nom": "Tortue Géniale", "img": "images/mutenroshi.jpg" }
+]
