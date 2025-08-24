@@ -316,6 +316,11 @@ p {
   cursor: default;
 }
 
+#accueil, #quiz {
+    margin: 0;
+    padding: 0;
+}
+
 .quiz-end-card {
   text-align: center;
   background: white;
