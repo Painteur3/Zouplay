@@ -1,39 +1,40 @@
-Contexte :
-Tu as une liste de personnages au format JSON :
-
-{ "nom": "NomOriginal", "img": "chemin/image.jpg" }
-
-
 Travail à effectuer :
 
-Traduction des noms (nom) :
+Traduction des noms (champ nom) :
 
-Si un personnage a un nom officiel connu en français, utilise ce nom.
-(exemple : "Kuririn" → "Krilin", "Son Gokuu" → "Sangoku", "Mutenroshi" → "Tortue Géniale").
+Si un personnage a un nom officiel connu en français, utilise ce nom complet officiel.
 
-Si le personnage n’a pas de traduction officielle, conserve son nom japonais mais simplifié (pour être facile à taper).
+Exemple : "Kuririn" → "Krilin", "Son Gokuu" → "Sangoku".
 
-Respecte les accents et l’orthographe française.
-(exemple : "Yajirobe" → "Yajirobé", "Tao" → "Tao Paï Paï").
+Si le nom original est incomplet ou partiel, complète-le pour obtenir le nom officiel complet.
 
-Ne jamais inventer de traduction.
+Exemple : "Son" → "Sangoku", "Muten" → "Tortue Géniale".
+
+Si le personnage n’a pas de traduction officielle, conserve son nom japonais complet mais simplifié pour qu’il soit facile à taper, en respectant les accents français.
+
+Exemple : "Yajirobe" → "Yajirobé", "Tao" → "Tao Paï Paï".
+
+Nettoyage :
+
+Supprime totalement les entrées jugées insignifiantes ou génériques (ex. "Télévision", "maitre", "élève").
+
+Ne jamais inventer de traduction si le nom n’existe pas officiellement.
+
+Ordre :
+
+Mets toutes les entrées par ordre alphabétique du champ nom.
 
 Format de sortie :
 
-Conserve exactement le format JSON.
+Conserve exactement le format JSON initial.
 
-Ne modifie que le champ nom.
-
-Supprime totalement les entrées jugées insignifiantes.
-
-Le résultat final doit être un JSON propre et complet, basé uniquement sur la liste que je t’ai envoyée.
+Modifie uniquement le champ nom.
 
 Exemple attendu :
 
 [
-  { "nom": "Sangoku", "img": "images/goku.jpg" },
   { "nom": "Krilin", "img": "images/krilin.jpg" },
-  { "nom": "Vegeta", "img": "images/vegeta.jpg" },
-  { "nom": "Tortue Géniale", "img": "images/mutenroshi.jpg" }
+  { "nom": "Sangoku", "img": "images/goku.jpg" },
+  { "nom": "Tortue Géniale", "img": "images/mutenroshi.jpg" },
+  { "nom": "Vegeta", "img": "images/vegeta.jpg" }
 ]
-
