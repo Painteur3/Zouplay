@@ -987,3 +987,9 @@ header {
   transition: opacity 1.5s ease-in-out;
   z-index: 1000;   /* au-dessus du contenu */
 }
+
+#fun-fact-text {
+  line-height: 1.4;
+  opacity: 0;
+  transition: opacity 1s ease-in-out; /* fondu */
+}
