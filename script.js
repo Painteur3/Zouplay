@@ -2254,7 +2254,31 @@ const categories = {
   { nom: "Askeladd", img: "images/Vinland Saga/Askeladd.jpg" },
   { nom: "Haldor", img: "images/Vinland Saga/Haldor.jpg" },
   { nom: "Canute", img: "images/Vinland Saga/Canute.jpg" }
-]
+],
+
+  "Wind Breaker": [
+{ nom: "Ren", img: "images/Ren.jpg" },
+{ nom: "Tsugeura", img: "images/Tsugeura.jpg" },
+{ nom: "Youdai", img: "images/Youdai.jpg" },
+{ nom: "Jien", img: "images/Jien.jpg" },
+{ nom: "Hayato", img: "images/Hayato.jpg" },
+{ nom: "Kouta", img: "images/Kouta.jpg" },
+{ nom: "Kotoha", img: "images/Kotoha.jpg" },
+{ nom: "Tasuku", img: "images/Tasuku.jpg" },
+{ nom: "Yukinari", img: "images/Yukinari.jpg" },
+{ nom: "Mitsuki", img: "images/Mitsuki.jpg" },
+{ nom: "Haruka", img: "images/Haruka.jpg" },
+{ nom: "Touma", img: "images/Touma.jpg" },
+{ nom: "Kyoutarou", img: "images/Kyoutarou.jpg" },
+{ nom: "Masaki", img: "images/Masaki.jpg" },
+{ nom: "Akihiko", img: "images/Akihiko.jpg" },
+{ nom: "Hajime", img: "images/Hajime.jpg" },
+{ nom: "Chouji", img: "images/Chouji.jpg" },
+{ nom: "Jou", img: "images/Jou.jpg" },
+{ nom: "Minoru", img: "images/Minoru.jpg" },
+{ nom: "Takeshi", img: "images/Takeshi.jpg" }
+],
+  
 };
 
 let personnages = [], currentPerso = null, score = 0, lives = 3;
