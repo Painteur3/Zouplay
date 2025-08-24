@@ -1,6 +1,8 @@
 // 🔹 Catégories et personnages
 const categories = { 
+  
   "Akame ga Kill": [
+    
   { nom: "Run", img: "images/Akame ga Kill/Run.jpg" },
   { nom: "Poney", img: "images/Akame ga Kill/Poney.jpg" },
   { nom: "Chouri", img: "images/Akame ga Kill/Chouri.jpg" },
@@ -81,6 +83,7 @@ const categories = {
 ],
 
   "Black Clover": [
+    
   { nom: "Baro", img: "images/Black Clover/Baro.jpg" },
   { nom: "Yagos", img: "images/Black Clover/Yagos.jpg" },
   { nom: "Orsi", img: "images/Black Clover/Orsi.jpg" },
@@ -184,6 +187,7 @@ const categories = {
 ],
 
   "Bleach": [
+    
 { nom: "Wabisuke", img: "images/Bleach/Wabisuke.jpg" },
 { nom: "Ryuuken", img: "images/Bleach/Ryuuken.jpg" },
 { nom: "Aaroniero", img: "images/Bleach/Aaroniero.jpg" },
@@ -310,6 +314,7 @@ const categories = {
 ],
 
 "Blue Exorcist": [
+  
 { nom: "Igor", img: "images/Blue Exorcist/Igor.jpg" },
 { nom: "Nemu", img: "images/Blue Exorcist/Nemu.jpg" },
 { nom: "Shirou", img: "images/Blue Exorcist/Shirou.jpg" },
