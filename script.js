@@ -111,11 +111,14 @@ function verifierReponse() {
 function terminerQuiz(lastResult = "") {
   resultText.textContent = lastResult;
 
+  let isNewRecord = false;
+
   // Mettre à jour bestScore
   if (score > bestScore) {
     bestScore = score;
     localStorage.setItem("bestScore", bestScore);
     bestScoreSpan.textContent = "Record : " + bestScore;
+    isNewRecord = true;
   }
 
   // Créer ou afficher le bloc de fin
@@ -143,6 +146,46 @@ function terminerQuiz(lastResult = "") {
 
   const rejouerBtn = document.getElementById("rejouer");
   rejouerBtn.addEventListener("click", rejouerQuiz);
+
+  // Déclencher confettis uniquement si nouveau record
+  if (isNewRecord) {
+    canvas.style.display = "block";
+    let startTime = null;
+
+    function animateParticlesRecord(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        ctx.fillStyle = `rgba(${r},${g},${b},${p.alpha})`;
+        ctx.fill();
+
+        p.y -= p.speedY;
+        p.x += p.speedX;
+
+        if(p.y + p.radius < 0) {
+            p.y = canvas.height + p.radius;
+            p.x = Math.random() * canvas.width;
+        }
+      });
+
+      if (elapsed < 5000) {
+        requestAnimationFrame(animateParticlesRecord);
+      } else {
+        canvas.style.display = "none";
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    animateParticlesRecord();
+  }
 }
 
 // 🔹 Réinitialiser quiz
@@ -151,17 +194,14 @@ function rejouerQuiz() {
   lives = 3;
   currentPerso = null;
 
-  // Reset input et catégories
   answerInput.value = "";
   document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => cb.checked = false);
 
-  // Réinitialiser UI
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
   resultText.textContent = "";
   imgPerso.src = "";
 
-  // Masquer bloc fin et afficher accueil
   const finQuiz = document.getElementById("fin-quiz");
   if (finQuiz) finQuiz.classList.add("hidden");
 
@@ -216,6 +256,7 @@ answerInput.addEventListener('keydown', function(event) {
   }
 });
 
+// 🔹 Canvas confettis
 const canvas = document.getElementById('confetti');
 const ctx = canvas.getContext('2d');
 
@@ -223,7 +264,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const particles = [];
-const particleCount = 60; // nombre de bulles/particules
+const particleCount = 60;
 
 // Création des particules
 for(let i=0; i<particleCount; i++){
@@ -237,20 +278,19 @@ for(let i=0; i<particleCount; i++){
     });
 }
 
-// Animation
+// Animation continue (optionnelle, si tu veux toujours visible)
 function animateParticles(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`; // couleur dorée
+        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
         ctx.fill();
         
-        p.y -= p.speedY; // monte doucement
-        p.x += p.speedX; // léger mouvement horizontal
+        p.y -= p.speedY;
+        p.x += p.speedX;
 
-        // Si la particule sort de l'écran, on la replace en bas
         if(p.y + p.radius < 0) {
             p.y = canvas.height + p.radius;
             p.x = Math.random() * canvas.width;
@@ -260,7 +300,8 @@ function animateParticles(){
     requestAnimationFrame(animateParticles);
 }
 
-animateParticles();
+// Si tu veux, tu peux commenter cette ligne pour que l’animation n’existe qu’en cas de record
+// animateParticles();
 
 // Ajuster le canvas au resize
 window.addEventListener('resize', () => {
