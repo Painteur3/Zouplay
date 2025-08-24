@@ -1,16 +1,20 @@
 Contexte :
 Tu as une liste de personnages au format JSON :
-{ nom: "NomOriginal", img: "chemin/image.jpg" }
+
+{ "nom": "NomOriginal", "img": "chemin/image.jpg" }
+
 
 Travail à effectuer :
 
 Traduction des noms (nom) :
 
-Si un personnage a un nom officiel connu en français, utilise ce nom (ex : "Kuririn" → "Krilin", "Son Gokuu" → "Sangoku", "Mutenroshi" → "Tortue Géniale").
+Si un personnage a un nom officiel connu en français, utilise ce nom.
+(exemple : "Kuririn" → "Krilin", "Son Gokuu" → "Sangoku", "Mutenroshi" → "Tortue Géniale").
 
-Si le personnage n’a pas de traduction officielle, garde son nom japonais simplifié pour être facile à taper.
+Si le personnage n’a pas de traduction officielle, conserve son nom japonais mais simplifié (pour être facile à taper).
 
-Respecte les accents et l’orthographe française (ex : "Yajirobe" → "Yajirobé", "Tao" → "Tao Paï Paï").
+Respecte les accents et l’orthographe française.
+(exemple : "Yajirobe" → "Yajirobé", "Tao" → "Tao Paï Paï").
 
 Ne jamais inventer de traduction.
 
@@ -18,19 +22,21 @@ Filtrage des personnages :
 
 Conserve uniquement les personnages principaux, secondaires intéressants ou récurrents.
 
-Supprime les figurants, soldats anonymes, ou personnages extrêmement obscurs.
+Supprime complètement les figurants, soldats anonymes ou personnages extrêmement obscurs.
 
-L’objectif : garder un niveau de challenge mais éviter des noms que presque personne ne reconnaîtrait.
+L’objectif est de garder un niveau de challenge mais sans personnages que presque personne ne reconnaîtrait.
 
 Format de sortie :
 
 Conserve exactement le format JSON.
 
-Modifie uniquement le champ nom.
+Ne modifie que le champ nom.
 
-Supprime complètement les entrées jugées trop insignifiantes.
+Supprime totalement les entrées jugées insignifiantes.
 
-Exemple de sortie attendue :
+Le résultat final doit être un JSON propre et complet, basé uniquement sur la liste que je t’ai envoyée.
+
+Exemple attendu :
 
 [
   { "nom": "Sangoku", "img": "images/goku.jpg" },
