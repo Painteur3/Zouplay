@@ -260,14 +260,6 @@ function animateParticles(){
             p.y = canvas.height + p.radius;
             p.x = Math.random() * canvas.width;
         }
-
-        if(recordAnimationActive){
-            // change la couleur à chaque frame
-            const r = Math.floor(Math.random()*256);
-            const g = Math.floor(Math.random()*256);
-            const b = Math.floor(Math.random()*256);
-            p.color = `rgba(${r},${g},${b},${p.alpha})`;
-        }
     });
 
     requestAnimationFrame(animateParticles);
@@ -281,12 +273,29 @@ window.addEventListener('resize', () => {
     if(!recordAnimationActive) initParticles();
 });
 
-// 🔹 Animation record
+// 🔹 Animation record avec couleurs de victoire plus douces
 function startRecordAnimation(){
     recordAnimationActive = true;
     initParticles();
+
+    const victoryColors = [
+        "rgba(245,190,72,0.8)", // doré
+        "rgba(255,80,80,0.8)",  // rouge
+        "rgba(80,180,255,0.8)", // bleu
+        "rgba(80,255,120,0.8)", // vert
+        "rgba(180,80,255,0.8)"  // violet
+    ];
+
+    let colorIndex = 0;
+    const colorInterval = setInterval(() => {
+        if(!recordAnimationActive) return;
+        particles.forEach(p => p.color = victoryColors[colorIndex]);
+        colorIndex = (colorIndex + 1) % victoryColors.length;
+    }, 200); // changement toutes les 200ms
+
     setTimeout(() => {
         recordAnimationActive = false;
+        clearInterval(colorInterval);
         initParticles(); // revenir aux particules dorées normales
     }, 5000);
 }
