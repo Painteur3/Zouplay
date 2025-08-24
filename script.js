@@ -119,7 +119,6 @@ function terminerQuiz(lastResult = "") {
     beatRecord = true;
   }
 
-  // Créer ou afficher le bloc de fin
   let finQuiz = document.getElementById("fin-quiz");
   if (!finQuiz) {
     finQuiz = document.createElement("div");
@@ -234,6 +233,7 @@ function initParticles() {
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
           radius: Math.random() * 4 + 2,
+          baseRadius: Math.random() * 4 + 2,
           speedY: Math.random() * 1 + 0.3,
           speedX: (Math.random() - 0.5) * 0.5,
           alpha: Math.random() * 0.5 + 0.3,
@@ -248,16 +248,20 @@ function animateParticles(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     particles.forEach(p => {
+        // petit effet de scintillement/zoom
+        const scale = recordAnimationActive ? (0.9 + Math.random()*0.2) : 1;
+        const r = p.baseRadius * scale;
+
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
         ctx.fill();
         
         p.y -= p.speedY;
         p.x += p.speedX;
 
-        if(p.y + p.radius < 0) {
-            p.y = canvas.height + p.radius;
+        if(p.y + r < 0) {
+            p.y = canvas.height + r;
             p.x = Math.random() * canvas.width;
         }
     });
@@ -273,7 +277,7 @@ window.addEventListener('resize', () => {
     if(!recordAnimationActive) initParticles();
 });
 
-// 🔹 Animation record avec couleurs de victoire plus douces
+// 🔹 Animation record avec couleurs de victoire plus douces et zoom
 function startRecordAnimation(){
     recordAnimationActive = true;
     initParticles();
