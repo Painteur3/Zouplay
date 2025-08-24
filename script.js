@@ -36,6 +36,9 @@ const livesSpan = document.getElementById("lives");
 const bestScoreSpan = document.getElementById("best-score");
 const categoriesContainer = document.getElementById("categories-container");
 
+// 🔹 Effet sonore victoire
+const victorySound = new Audio("sounds/victory.mp3");
+
 // 🔹 Afficher scores initiaux
 scoreSpan.textContent = score;
 livesSpan.textContent = lives;
@@ -144,7 +147,11 @@ function terminerQuiz(lastResult = "") {
   const rejouerBtn = document.getElementById("rejouer");
   rejouerBtn.addEventListener("click", rejouerQuiz);
 
-  if (beatRecord) startRecordAnimation();
+  if (beatRecord) {
+    victorySound.currentTime = 0;
+    victorySound.play();
+    startRecordAnimation();
+  }
 }
 
 // 🔹 Réinitialiser quiz
@@ -248,7 +255,6 @@ function animateParticles(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     particles.forEach(p => {
-        // petit effet de scintillement/zoom
         const scale = recordAnimationActive ? (0.9 + Math.random()*0.2) : 1;
         const r = p.baseRadius * scale;
 
@@ -283,11 +289,11 @@ function startRecordAnimation(){
     initParticles();
 
     const victoryColors = [
-        "rgba(245,190,72,0.8)", // doré
-        "rgba(255,80,80,0.8)",  // rouge
-        "rgba(80,180,255,0.8)", // bleu
-        "rgba(80,255,120,0.8)", // vert
-        "rgba(180,80,255,0.8)"  // violet
+        "rgba(245,190,72,0.8)",
+        "rgba(255,80,80,0.8)",
+        "rgba(80,180,255,0.8)",
+        "rgba(80,255,120,0.8)",
+        "rgba(180,80,255,0.8)"
     ];
 
     let colorIndex = 0;
@@ -295,11 +301,11 @@ function startRecordAnimation(){
         if(!recordAnimationActive) return;
         particles.forEach(p => p.color = victoryColors[colorIndex]);
         colorIndex = (colorIndex + 1) % victoryColors.length;
-    }, 200); // changement toutes les 200ms
+    }, 200);
 
     setTimeout(() => {
         recordAnimationActive = false;
         clearInterval(colorInterval);
-        initParticles(); // revenir aux particules dorées normales
+        initParticles();
     }, 5000);
 }
