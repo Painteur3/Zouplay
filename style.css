@@ -971,7 +971,7 @@ header {
 }
 
 #fun-facts-container {
-  width: 220px; /* beaucoup plus étroit */
+  width: 220px;
   background: linear-gradient(135deg, #fff6e6, #ffe0b3);
   padding: 15px 18px;
   border-radius: 12px;
@@ -979,15 +979,10 @@ header {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 14px;
   color: #333;
-  margin-top: 50px; /* espace sous le header */
-  margin-left: 20px; /* petit décalage depuis le bord */
-  transition: opacity 1.2s ease-in-out;
-  position: sticky; /* reste visible au scroll */
-  top: 20px; /* léger décalage par rapport au header */
-}
 
-#fun-fact-text {
-  line-height: 1.4;
-  opacity: 0;
-  transition: opacity 1.2s ease-in-out;
+  position: fixed; /* reste visible et n'affecte pas le flux */
+  top: 120px;      /* décale sous le header */
+  left: 20px;      /* marge depuis le bord gauche */
+  transition: opacity 1.5s ease-in-out;
+  z-index: 1000;   /* au-dessus du contenu */
 }
