@@ -328,11 +328,10 @@ function showRandomFact() {
   setTimeout(() => {
     funFactText.textContent = funFacts[randomIndex];
     funFactText.style.opacity = 1; // fade-in
-  }, 400); // durée fade-out
+  }, 600); // fade-out légèrement plus long
 }
+// Premier fait après 0.6s
+setTimeout(showRandomFact, 600);
 
-// Afficher un premier fait au chargement après 0.5s
-setTimeout(showRandomFact, 500);
-
-// Changer automatiquement toutes les 8 secondes
-setInterval(showRandomFact, 8000);
+// Changer toutes les 12 secondes
+setInterval(showRandomFact, 12000);
