@@ -311,28 +311,38 @@ function startRecordAnimation(){
 }
 
 // 🔹 Faits amusants automatique
-const funFacts = [
-  "Krillin était initialement censé mourir dans la première saga !",
-  "Akame ga Kill a été publié dans le magazine Gangan Joker.",
-  "Dragon Ball a été inspiré par le roman chinois 'Le Voyage en Occident'.",
-  "Black Clover a failli avoir un autre protagoniste avant Asta.",
-  "Suppaman dans Dragon Ball est un personnage humoristique qui parodie Superman.",
-  "L’auteur de Black Clover a commencé à dessiner dès l’âge de 10 ans."
+const facts = [
+  "Le premier anime japonais date de 1917.",
+  "Au Japon, les animés représentent plus de 30% du marché audiovisuel.",
+  "Les seiyuus sont les doubleurs japonais, très célèbres.",
+  "One Piece est le manga le plus vendu au monde.",
+  "Les animés ont souvent des épisodes fillers pour gagner du temps.",
+  "Studio Ghibli a été fondé par Hayao Miyazaki et Isao Takahata.",
+  "Les opening sont parfois plus populaires que les séries elles-mêmes.",
+  "Le mot 'anime' est la contraction d'animation en japonais."
 ];
 
-const funFactText = document.getElementById("fun-fact-text");
+let index = 0;
+const factText = document.getElementById("fun-fact-text");
 
-function showRandomFact() {
-  const randomIndex = Math.floor(Math.random() * funFacts.length);
-  funFactText.style.opacity = 0; // fade-out
+function showFact() {
+  // Faire disparaître l'ancien
+  factText.style.opacity = 0;
+
   setTimeout(() => {
-    funFactText.textContent = funFacts[randomIndex];
-    funFactText.style.opacity = 1; // fade-in
-  }, 600); // fade-out légèrement plus long
+    // Changer le texte
+    factText.textContent = facts[index];
+    // Faire apparaître le nouveau
+    factText.style.opacity = 1;
+
+    // Passer au suivant
+    index = (index + 1) % facts.length;
+  }, 1200); // fondu de 1.2s
 }
 
-// Premier fait après 0.6s
-setTimeout(showRandomFact, 600);
+// Initialiser
+showFact();
 
-// Changer toutes les 12 secondes
-setInterval(showRandomFact, 12000);
+// Changer toutes les 11 secondes
+setInterval(showFact, 11000);
+
