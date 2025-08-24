@@ -979,7 +979,7 @@ header {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 14px;
   color: #333;
-  margin-top: 50px;
+  margin-top: 15px;
 
   position: fixed; /* reste visible et n'affecte pas le flux */
   top: 120px;      /* décale sous le header */
