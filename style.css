@@ -972,7 +972,7 @@ header {
 
 /* Bloc faits amusants */
 #fun-facts-container {
-  width: 48%; /* moitié de la section accueil */
+  width: 48%;
   min-width: 280px;
   background: linear-gradient(135deg, #fff6e6, #ffe0b3);
   padding: 20px 25px;
@@ -981,8 +981,8 @@ header {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 16px;
   color: #333;
-  margin-top: 30px; /* espace sous le header */
-  transition: opacity 0.8s ease-in-out;
+  margin-top: 50px; /* plus d’espace sous le header */
+  transition: opacity 1.2s ease-in-out; /* fondu plus doux */
 }
 
 #fun-facts-container h3 {
@@ -996,6 +996,7 @@ header {
 #fun-fact-text {
   line-height: 1.5;
   text-align: justify;
-  min-height: 60px; /* pour éviter que le container change de taille */
-  opacity: 0;       /* démarrage invisible pour le fade-in */
+  min-height: 60px;
+  opacity: 0; /* démarrage invisible */
+  transition: opacity 1.2s ease-in-out; /* fondu plus doux */
 }
