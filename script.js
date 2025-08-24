@@ -310,28 +310,28 @@ function startRecordAnimation(){
     }, 5000);
 }
 
-// 🔹 Faits amusants automatique
 const funFacts = [
-  "Krillin était initialement censé mourir dans la première saga !",
-  "Akame ga Kill a été publié dans le magazine Gangan Joker.",
-  "Dragon Ball a été inspiré par le roman chinois 'Le Voyage en Occident'.",
-  "Black Clover a failli avoir un autre protagoniste avant Asta.",
-  "Suppaman dans Dragon Ball est un personnage humoristique qui parodie Superman.",
-  "L’auteur de Black Clover a commencé à dessiner dès l’âge de 10 ans."
+  "Saviez-vous que les corbeaux peuvent se souvenir des visages humains ?",
+  "Le cerveau humain contient environ 86 milliards de neurones.",
+  "Les dauphins dorment avec un œil ouvert.",
+  "Il existe plus de 200 types de fromages en France.",
+  "Les flamants roses ne naissent pas roses, mais gris."
 ];
 
 const funFactText = document.getElementById("fun-fact-text");
 
 function showRandomFact() {
   const randomIndex = Math.floor(Math.random() * funFacts.length);
-  funFactText.style.opacity = 0; // fade-out
+  funFactText.style.opacity = 0;
   setTimeout(() => {
     funFactText.textContent = funFacts[randomIndex];
-    funFactText.style.opacity = 1; // fade-in
-  }, 600); // fade-out légèrement plus long
+    funFactText.style.opacity = 1;
+  }, 600);
 }
-// Premier fait après 0.6s
+
+// Premier fait
 setTimeout(showRandomFact, 600);
 
 // Changer toutes les 12 secondes
 setInterval(showRandomFact, 12000);
+
