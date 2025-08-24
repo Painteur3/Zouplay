@@ -309,3 +309,30 @@ function startRecordAnimation(){
         initParticles();
     }, 5000);
 }
+
+// 🔹 Faits amusants automatique
+const funFacts = [
+  "Krillin était initialement censé mourir dans la première saga !",
+  "Akame ga Kill a été publié dans le magazine Gangan Joker.",
+  "Dragon Ball a été inspiré par le roman chinois 'Le Voyage en Occident'.",
+  "Black Clover a failli avoir un autre protagoniste avant Asta.",
+  "Suppaman dans Dragon Ball est un personnage humoristique qui parodie Superman.",
+  "L’auteur de Black Clover a commencé à dessiner dès l’âge de 10 ans."
+];
+
+const funFactText = document.getElementById("fun-fact-text");
+
+function showRandomFact() {
+  const randomIndex = Math.floor(Math.random() * funFacts.length);
+  funFactText.style.opacity = 0; // fade-out
+  setTimeout(() => {
+    funFactText.textContent = funFacts[randomIndex];
+    funFactText.style.opacity = 1; // fade-in
+  }, 400);
+}
+
+// Afficher un premier fait au chargement
+showRandomFact();
+
+// Changer automatiquement toutes les 8 secondes
+setInterval(showRandomFact, 8000);
