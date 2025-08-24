@@ -147,7 +147,7 @@ function terminerQuiz(lastResult = "") {
   const rejouerBtn = document.getElementById("rejouer");
   rejouerBtn.addEventListener("click", rejouerQuiz);
 
-  // Déclencher confettis uniquement si nouveau record
+  // 🔹 Confettis colorés pour nouveau record
   if (isNewRecord) {
     canvas.style.display = "block";
     let startTime = null;
@@ -161,6 +161,7 @@ function terminerQuiz(lastResult = "") {
       particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        // Couleurs aléatoires à chaque frame
         const r = Math.floor(Math.random() * 256);
         const g = Math.floor(Math.random() * 256);
         const b = Math.floor(Math.random() * 256);
@@ -170,17 +171,17 @@ function terminerQuiz(lastResult = "") {
         p.y -= p.speedY;
         p.x += p.speedX;
 
-        if(p.y + p.radius < 0) {
-            p.y = canvas.height + p.radius;
-            p.x = Math.random() * canvas.width;
+        if (p.y + p.radius < 0) {
+          p.y = canvas.height + p.radius;
+          p.x = Math.random() * canvas.width;
         }
       });
 
       if (elapsed < 5000) {
         requestAnimationFrame(animateParticlesRecord);
       } else {
-        canvas.style.display = "none";
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.display = "none";
       }
     }
 
@@ -268,43 +269,18 @@ const particleCount = 60;
 
 // Création des particules
 for(let i=0; i<particleCount; i++){
-    particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 4 + 2,
-        speedY: Math.random() * 1 + 0.3,
-        speedX: (Math.random() - 0.5) * 0.5,
-        alpha: Math.random() * 0.5 + 0.3
-    });
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    radius: Math.random() * 4 + 2,
+    speedY: Math.random() * 1 + 0.3,
+    speedX: (Math.random() - 0.5) * 0.5,
+    alpha: Math.random() * 0.5 + 0.3
+  });
 }
 
-// Animation continue (optionnelle, si tu veux toujours visible)
-function animateParticles(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245,190,72,${p.alpha})`;
-        ctx.fill();
-        
-        p.y -= p.speedY;
-        p.x += p.speedX;
-
-        if(p.y + p.radius < 0) {
-            p.y = canvas.height + p.radius;
-            p.x = Math.random() * canvas.width;
-        }
-    });
-
-    requestAnimationFrame(animateParticles);
-}
-
-// Si tu veux, tu peux commenter cette ligne pour que l’animation n’existe qu’en cas de record
-// animateParticles();
-
-// Ajuster le canvas au resize
+// 🔹 Ajuster le canvas au resize
 window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 });
