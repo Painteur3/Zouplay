@@ -972,17 +972,20 @@ header {
 
 /* Bloc faits amusants */
 #fun-facts-container {
-  width: 48%; /* moitié de la section accueil */
-  min-width: 280px;
+  width: 220px; /* beaucoup plus étroit */
   background: linear-gradient(135deg, #fff6e6, #ffe0b3);
-  padding: 20px 25px;
-  border-radius: 15px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  padding: 15px 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   color: #333;
-  margin-top: 30px; /* espace sous le header */
-  transition: opacity 0.8s ease-in-out;
+  margin-top: 50px; /* espace sous le header */
+  margin-left: 20px; /* petit décalage depuis le bord */
+  transition: opacity 1.2s ease-in-out;
+  position: sticky; /* reste visible au scroll */
+  top: 20px; /* léger décalage par rapport au header */
+}: opacity 0.8s ease-in-out;
 }
 
 #fun-facts-container h3 {
@@ -994,8 +997,7 @@ header {
 }
 
 #fun-fact-text {
-  line-height: 1.5;
-  text-align: justify;
-  min-height: 60px; /* pour éviter que le container change de taille */
-  opacity: 0;       /* démarrage invisible pour le fade-in */
+  line-height: 1.4;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
 }
