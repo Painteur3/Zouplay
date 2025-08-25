@@ -219,7 +219,7 @@ animeRequestInput.value = "";
 animeRequestBtn.addEventListener("click", () => {
   const animeName = animeRequestInput.value.trim();
   if (!animeName) return alert("Écris un anime avant d'envoyer !");
-  push(ref(database, "requests"), { anime: animeName, date: new Date().toISOString() })
+  push(ref(database, "anime_requests"), { anime: animeName, date: new Date().toISOString() })
     .then(() => {
       animeRequestInput.value = ""; // reset
       alert("✅ Anime bien envoyé ! Il sera ajouté prochainement");
@@ -236,7 +236,7 @@ animeRequestInput2.value = "";
 animeRequestBtn2.addEventListener("click", () => {
   const animeName2 = animeRequestInput2.value.trim();
   if (!animeName2) return alert("Dis moi le soucis avant d'envoyer !");
-  push(ref(database, "requests2"), { anime: animeName2, date: new Date().toISOString() })
+  push(ref(database, "bug_reports"), { anime: animeName2, date: new Date().toISOString() })
     .then(() => {
       animeRequestInput2.value = ""; // reset
       alert("✅ Problème bien envoyé ! Merci !");
