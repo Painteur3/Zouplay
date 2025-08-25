@@ -1003,6 +1003,7 @@ header {
     flex-direction: column;   /* empile les deux boxes verticalement */
     gap: 15px;                /* espace entre les deux boxes */
     z-index: 1000;            /* au-dessus du contenu principal */
+    margin-top: 15px;
 }
 
 /* Boxes individuelles */
