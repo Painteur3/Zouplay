@@ -1078,3 +1078,13 @@ header {
     }
 }
 
+#request-anime {
+    position: fixed;      /* reste à la même position même en scrollant */
+    top: 120px;           /* sous le header, même top que #fun-facts-container */
+    right: 20px;          /* distance depuis le bord droit */
+    display: flex;
+    flex-direction: column; /* empile les deux boxes verticalement */
+    gap: 15px;             /* espace entre les deux boxes */
+    z-index: 1000;         /* au-dessus du contenu principal */
+}
+
