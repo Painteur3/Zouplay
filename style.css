@@ -1016,3 +1016,9 @@ header {
   transition: opacity 1.5s ease-in-out;
   opacity: 0;
 }
+
+.fun-fact-box h4 {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ff6600;
+}
