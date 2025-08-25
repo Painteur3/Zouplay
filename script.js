@@ -82,20 +82,47 @@ function afficherPerso() {
   imgPerso.src = currentPerso.img;
   answerInput.value = "";
 }
+
+function levenshtein(a, b) {
+    const matrix = Array.from({ length: a.length + 1 }, () => []);
+    for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+    for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+
+    for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+            if (a[i - 1] === b[j - 1]) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j] + 1,    // suppression
+                    matrix[i][j - 1] + 1,    // insertion
+                    matrix[i - 1][j - 1] + 1 // substitution
+                );
+            }
+        }
+    }
+    return matrix[a.length][b.length];
+}
+
 function verifierReponse() {
   if (!currentPerso) return;
   const reponse = answerInput.value.trim().toLowerCase();
+  const correct = currentPerso.nom.toLowerCase();
   let lastResult = "";
-  if (reponse === currentPerso.nom.toLowerCase()) {
+
+  // ✅ Accepte jusqu'à 2 fautes de frappe
+  if (reponse === correct || levenshtein(reponse, correct) <= 2) {
     score++;
     lastResult = "✅ Bonne réponse !";
   } else {
     lives--;
     lastResult = `❌ Mauvaise réponse. C'était ${currentPerso.nom}`;
   }
+
   scoreSpan.textContent = score;
   livesSpan.textContent = lives;
   personnages = personnages.filter(p => p !== currentPerso);
+
   if (lives <= 0 || personnages.length === 0) {
     terminerQuiz(lastResult);
   } else {
