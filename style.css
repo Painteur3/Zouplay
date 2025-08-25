@@ -1129,24 +1129,18 @@ header {
 }
 
 #accueil h2 {
-  position: relative;
   font-size: 2em;
   font-weight: bold;
-  color: #ff6600;
-  text-shadow: 0 0 5px #ffcc33;
+  background: linear-gradient(45deg, #ff6600, #ffcc33, #ff6600);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: flame 3s ease-in-out infinite;
+  text-shadow: 0 0 10px rgba(255,100,0,0.7);
 }
 
-/* Étincelles */
-#accueil h2::after {
-  content: "✨";
-  position: absolute;
-  top: -15px;
-  right: -25px;
-  animation: sparkle 2s infinite;
+@keyframes flame {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
-
-@keyframes sparkle {
-  0%, 100% { opacity: 0; transform: scale(0.5); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
