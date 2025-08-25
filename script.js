@@ -236,7 +236,7 @@ animeRequestInput2.value = "";
 animeRequestBtn2.addEventListener("click", () => {
   const animeName2 = animeRequestInput2.value.trim();
   if (!animeName2) return alert("Dis moi le soucis avant d'envoyer !");
-  push(ref(database, "bug_reports"), { bug: bugText,, date: new Date().toISOString() })
+  push(ref(database, "bug_reports"), { bug: bugText, date: new Date().toISOString() })
     .then(() => {
       animeRequestInput2.value = ""; // reset
       alert("✅ Problème bien envoyé ! Merci !");
