@@ -222,7 +222,7 @@ animeRequestBtn.addEventListener("click", () => {
   push(ref(database, "requests"), { anime: animeName, date: new Date().toISOString() })
     .then(() => {
       animeRequestInput.value = ""; // reset
-      alert("✅ Anime envoyé !");
+      alert("✅ Anime bien envoyé ! Il sera ajouté prochainement");
     })
     .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi."); });
 });
@@ -239,9 +239,9 @@ animeRequestBtn2.addEventListener("click", () => {
   push(ref(database, "requests2"), { anime: animeName2, date: new Date().toISOString() })
     .then(() => {
       animeRequestInput2.value = ""; // reset
-      alert("✅ Anime envoyé à request2 !");
+      alert("✅ Problème bien envoyé ! Merci !");
     })
-    .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi à request2."); });
+    .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi"); });
 });
 
 animeRequestInput2.addEventListener("focus", () => {
