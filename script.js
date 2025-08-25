@@ -211,11 +211,17 @@ const database = getDatabase(app);
 const animeRequestInput = document.getElementById("anime-request-input");
 const animeRequestBtn = document.getElementById("anime-request-btn");
 
+// S'assure que la valeur initiale est vide
+animeRequestInput.value = "";
+
 animeRequestBtn.addEventListener("click", () => {
   const animeName = animeRequestInput.value.trim();
   if (!animeName) return alert("Écris un anime avant d'envoyer !");
   push(ref(database, "requests"), { anime: animeName, date: new Date().toISOString() })
-    .then(() => { animeRequestInput.value = ""; alert("✅ Anime envoyé !"); })
+    .then(() => {
+      animeRequestInput.value = ""; // reset
+      alert("✅ Anime envoyé !");
+    })
     .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi."); });
 });
 
@@ -223,10 +229,16 @@ animeRequestBtn.addEventListener("click", () => {
 const animeRequestInput2 = document.getElementById("anime-request-input-2");
 const animeRequestBtn2 = document.getElementById("anime-request-btn-2");
 
+animeRequestInput2.value = "";
+
 animeRequestBtn2.addEventListener("click", () => {
   const animeName2 = animeRequestInput2.value.trim();
   if (!animeName2) return alert("Écris un anime avant d'envoyer !");
   push(ref(database, "requests2"), { anime: animeName2, date: new Date().toISOString() })
-    .then(() => { animeRequestInput2.value = ""; alert("✅ Anime envoyé à request2 !"); })
+    .then(() => {
+      animeRequestInput2.value = ""; // reset
+      alert("✅ Anime envoyé à request2 !");
+    })
     .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi à request2."); });
 });
+
