@@ -1,9 +1,9 @@
 // 🔹 Catégories et personnages
 const categories = { 
-  "Akame ga Kill": [
+  "Test": [
     { "nom": "Chouri", "img": "images/Akame ga Kill/Chouri.jpg" }
   ],
-  "Black Clover": [
+  "Test2": [
     { "nom": "Baro", "img": "images/Black Clover/Baro.jpg" },
     { "nom": "Yagos", "img": "images/Black Clover/Yagos.jpg" },
     { "nom": "Orsi", "img": "images/Black Clover/Orsi.jpg" },
