@@ -2275,6 +2275,36 @@ function showCategorySelection() {
 // Assure que le champ de réponse est vide au départ
 answerInput.value = "";
 
+// 🔹 Fonction utilitaire : distance de Levenshtein
+function levenshtein(a, b) {
+  const matrix = [];
+
+  // initialisation
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  // remplissage
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1,     // insertion
+          matrix[i - 1][j] + 1      // suppression
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
 // 🔹 Quiz
 function afficherPerso() {
   if (!personnages.length) return;
@@ -2282,11 +2312,15 @@ function afficherPerso() {
   imgPerso.src = currentPerso.img;
   answerInput.value = "";
 }
+
 function verifierReponse() {
   if (!currentPerso) return;
   const reponse = answerInput.value.trim().toLowerCase();
+  const bonneReponse = currentPerso.nom.toLowerCase();
+
   let lastResult = "";
-  if (reponse === currentPerso.nom.toLowerCase()) {
+  // 🔹 Vérifie exact OU tolérance 1-2 fautes
+  if (reponse === bonneReponse || levenshtein(reponse, bonneReponse) <= 2) {
     score++;
     lastResult = "✅ Bonne réponse !";
   } else {
@@ -2294,6 +2328,7 @@ function verifierReponse() {
     updateLives();
     lastResult = `❌ Mauvaise réponse. C'était ${currentPerso.nom}`;
   }
+
   scoreSpan.textContent = score;
   personnages = personnages.filter(p => p !== currentPerso);
   if (lives <= 0 || personnages.length === 0) {
@@ -2302,6 +2337,7 @@ function verifierReponse() {
     resultText.textContent = lastResult;
   }
 }
+
 
 // 🔹 Fin / Réinitialisation quiz
 function terminerQuiz(lastResult = "") {
