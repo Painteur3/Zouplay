@@ -1008,7 +1008,7 @@ header {
 /* Boxes individuelles */
 #anime-request-box,
 #anime-request-box-2 {
-    background: #fff;               /* fond blanc */
+    background: linear-gradient(135deg, #fff6e6, #ffe0b3);
     border: 2px solid #ffb347;     /* bordure orange */
     border-radius: 12px;
     padding: 15px;
