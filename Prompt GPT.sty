@@ -1,50 +1,34 @@
-Travail à effectuer :
+Tu es un script de normalisation de noms de personnages d’animés/mangas.
 
-Traduction des noms (champ nom) :
+Règles à appliquer :
 
-Si un personnage a un nom officiel connu en français, utilise ce nom complet officiel.
+1. **Ne jamais modifier le champ "img"** (le chemin de l’image reste tel quel).
+2. **Ne modifier que le champ "nom"**, en appliquant les corrections officielles VF si disponibles.
+3. **Supprimer les personnages insignifiants ou génériques** (ex. Tenkaichi, Paozu, Usagidan, Television, Maître, Élève, Étudiants…).
+4. **Utiliser un dictionnaire d’alias officiels** pour corriger les variantes de noms :
+   - "Bardack", "Baddack" → "Bardock"
+   - "Kuririn", "Krillin" → "Krilin"
+   - "Son Goku", "Gokuu", "Goku" → "Sangoku"
+   - "Muten Roshi", "Roshi", "Kamesennin" → "Tortue Géniale"
+   - "Tao", "Tao Pai Pai" → "Tao Paï Paï"
+   - "Yajirobe" → "Yajirobé"
+   - "Freeza", "Frieza" → "Freezer"
+   - "Tenshinhan" → "Tenshinhan"
+   - (tu peux compléter la liste si nécessaire)
+5. Si un nom ne correspond à aucun alias connu → le laisser tel quel.
+6. À la fin, **trier la liste par ordre alphabétique sur le champ "nom"**.
 
-Exemple : "Kuririn" → "Krilin", "Son Gokuu" → "Sangoku".
+Format attendu en sortie :  
+- Si l’entrée est un tableau → renvoyer un tableau.  
+- Si l’entrée est un objet avec plusieurs séries → renvoyer le même objet, avec chaque tableau nettoyé.  
+- Conserver l’indentation JSON propre (2 espaces).
 
-Si le nom original est incomplet ou partiel, complète-le pour obtenir le nom officiel complet.
+Exemple d’application :  
+Si j’entre  
+```json
+{ "nom": "Bardack", "img": "images/Dragon Ball Z/Baddack.jpg" }
+La sortie doit être
+{ "nom": "Bardock", "img": "images/Dragon Ball Z/Baddack.jpg" }
+Voici mon JSON :
 
-Exemple : "Son" → "Sangoku", "Muten" → "Tortue Géniale".
-
-Si le personnage n’a pas de traduction officielle, conserve son nom japonais complet mais simplifié pour qu’il soit facile à taper, en respectant les accents français.
-
-Exemple : "Yajirobe" → "Yajirobé", "Tao" → "Tao Paï Paï".
-
-Nettoyage :
-
-Supprime totalement les entrées jugées insignifiantes ou génériques (ex. "Télévision", "maitre", "élève").
-
-Ne jamais inventer de traduction si le nom n’existe pas officiellement.
-
-Ordre :
-
-Mets toutes les entrées par ordre alphabétique du champ nom.
-
-Format de sortie :
-
-Conserve exactement le format JSON initial.
-
-Modifie uniquement le champ nom.
-
-Exemple attendu :
-
-[
-  { "nom": "Krilin", "img": "images/krilin.jpg" },
-  { "nom": "Sangoku", "img": "images/goku.jpg" },
-  { "nom": "Tortue Géniale", "img": "images/mutenroshi.jpg" },
-  { "nom": "Vegeta", "img": "images/vegeta.jpg" }
-]
-
-
-
-A FAIRE PLUS TARD
-
-ENREGISTRER DERNIER CHOIX CATEGORIE
-POSSIBLE 1 A 2 faute de frappe
-REPORT PB PERSONNAGE
-DEMANDE ANIME
-
+(COLLER ICI TON JSON)
