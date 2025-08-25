@@ -244,3 +244,7 @@ animeRequestBtn2.addEventListener("click", () => {
     .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi à request2."); });
 });
 
+animeRequestInput2.addEventListener("focus", () => {
+  animeRequestInput2.value = "";
+});
+
