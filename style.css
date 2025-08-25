@@ -37,13 +37,13 @@ header h1 {
 
 /* Colonnes pub */
 aside.pub {
-    background-color: #ffeaa7;
+    /* background-color: #ffeaa7;*/
     width: 150px;
     min-width: 120px;
     padding: 10px;
     text-align: center;
-    border: 2px dashed #f39c12;
-    border-radius: 10px;
+   /*  border: 2px dashed #f39c12;*/
+   /*  border-radius: 10px;*/
     height: fit-content;
 }
 
