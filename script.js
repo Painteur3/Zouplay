@@ -77,6 +77,8 @@ function showCategorySelection() {
   if (leaderboard) leaderboard.style.display = "block";
 }
 
+// Assure que le champ de réponse est vide au départ
+answerInput.value = "";
 // 🔹 Quiz
 function afficherPerso() {
   if (!personnages.length) return;
