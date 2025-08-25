@@ -993,3 +993,26 @@ header {
   opacity: 0;
   transition: opacity 1s ease-in-out; /* fondu */
 }
+
+#fun-facts-right {
+  position: fixed;
+  top: 120px;       /* décale sous le header */
+  right: 20px;      /* marge depuis le bord droit */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;        /* espace entre les deux rectangles */
+  z-index: 1000;
+}
+
+.fun-fact-box {
+  width: 220px;
+  background: linear-gradient(135deg, #fff6e6, #ffe0b3);
+  padding: 15px 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  color: #333;
+  transition: opacity 1.5s ease-in-out;
+  opacity: 0;
+}
