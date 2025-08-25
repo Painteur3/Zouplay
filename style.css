@@ -994,23 +994,30 @@ header {
   transition: opacity 1s ease-in-out; /* fondu */
 }
 
-#anime-request-box textarea,
-#anime-request-box-2 textarea {
-    width: 100%;
-    height: 60px; /* environ 3 lignes de texte */
-    padding: 8px 10px;
-    border: 2px solid #ffb347;
-    border-radius: 8px;
-    font-size: 0.9em;
-    resize: none; /* empêche de redimensionner */
-    outline: none;
-    transition: border 0.3s, box-shadow 0.3s;
+/* Conteneur principal des requests anime */
+#request-anime {
+    position: fixed;          /* reste visible en scroll */
+    top: 120px;               /* sous le header */
+    right: 20px;              /* distance du bord droit */
+    display: flex;
+    flex-direction: column;   /* empile les deux boxes verticalement */
+    gap: 15px;                /* espace entre les deux boxes */
+    z-index: 1000;            /* au-dessus du contenu principal */
 }
 
-#anime-request-box textarea:focus,
-#anime-request-box-2 textarea:focus {
-    border-color: #ff6600;
-    box-shadow: 0 0 6px rgba(255,102,0,0.3);
+/* Boxes individuelles */
+#anime-request-box,
+#anime-request-box-2 {
+    background: #fff;               /* fond blanc */
+    border: 2px solid #ffb347;     /* bordure orange */
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;         /* empile éléments verticalement */
+    align-items: center;            /* centre horizontalement */
+    gap: 10px;                      /* espace entre éléments */
+    width: 250px;                   /* largeur fixe, ajustable */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 /* Titres */
@@ -1022,9 +1029,30 @@ header {
     text-align: center;
 }
 
-/* Input */
+/* Textarea */
+#anime-request-box textarea,
+#anime-request-box-2 textarea {
+    width: 100%;
+    height: 60px;
+    padding: 8px 10px;
+    border: 2px solid #ffb347;
+    border-radius: 8px;
+    font-size: 0.9em;
+    resize: none;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+#anime-request-box textarea:focus,
+#anime-request-box-2 textarea:focus {
+    border-color: #ff6600;
+    box-shadow: 0 0 6px rgba(255,102,0,0.3);
+}
+
+/* Input (optionnel) */
 #anime-request-box input,
 #anime-request-box-2 input {
+    width: 100%;
     padding: 8px 10px;
     border: 2px solid #ffb347;
     border-radius: 8px;
@@ -1039,7 +1067,7 @@ header {
     box-shadow: 0 0 6px rgba(255,102,0,0.3);
 }
 
-/* Bouton */
+/* Boutons */
 #anime-request-box button,
 #anime-request-box-2 button {
     padding: 8px 12px;
@@ -1050,6 +1078,7 @@ header {
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.3s;
+    align-self: center;   /* centre le bouton */
 }
 
 #anime-request-box button:hover,
@@ -1058,11 +1087,26 @@ header {
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Responsive pour petits écrans */
+/* Notes sous les boutons */
+.anime-request-note {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* Responsive petits écrans */
 @media screen and (max-width: 480px) {
+    #request-anime {
+        right: 10px;
+        gap: 10px;
+    }
+
     #anime-request-box,
     #anime-request-box-2 {
         width: 180px;
+        padding: 12px;
+        gap: 8px;
     }
 
     #anime-request-box h3,
@@ -1070,6 +1114,8 @@ header {
         font-size: 13px;
     }
 
+    #anime-request-box textarea,
+    #anime-request-box-2 textarea,
     #anime-request-box input,
     #anime-request-box-2 input {
         font-size: 0.85em;
@@ -1078,22 +1124,6 @@ header {
     #anime-request-box button,
     #anime-request-box-2 button {
         font-size: 0.85em;
+        padding: 6px 10px;
     }
-}
-
-#request-anime {
-    position: fixed;      /* reste à la même position même en scrollant */
-    top: 120px;           /* sous le header, même top que #fun-facts-container */
-    right: 20px;          /* distance depuis le bord droit */
-    display: flex;
-    flex-direction: column; /* empile les deux boxes verticalement */
-    gap: 15px;             /* espace entre les deux boxes */
-    z-index: 1000;         /* au-dessus du contenu principal */
-}
-
-.anime-request-note {
-    font-size: 12px;
-    color: #555;
-    text-align: center;
-    margin-top: 5px;
 }
