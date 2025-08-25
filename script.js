@@ -585,7 +585,7 @@ const categories = {
 
 "Dragon Ball": [
   
-Yajiro     { "nom": "Akkuman", "img": "images/Dragon Ball/Akkuman.jpg" },
+  { "nom": "Akkuman", "img": "images/Dragon Ball/Akkuman.jpg" },
   { "nom": "Akane", "img": "images/Dragon Ball/Akane.jpg" },
   { "nom": "Annin", "img": "images/Dragon Ball/Annin.jpg" },
   { "nom": "Arale", "img": "images/Dragon Ball/Arale.jpg" },
