@@ -146,6 +146,12 @@ function rejouerQuiz() {
   const finQuiz = document.getElementById("fin-quiz"); if(finQuiz) finQuiz.classList.add("hidden");
   accueil.classList.remove("hidden"); quiz.classList.add("hidden");
   showCategorySelection();
+
+    // 🔹 Restaurer les dernières catégories sélectionnées
+  const lastCategories = JSON.parse(localStorage.getItem("lastCategories") || "[]");
+  document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb => {
+    cb.checked = lastCategories.includes(cb.value);
+  });
 }
 
 // 🔹 Événements
