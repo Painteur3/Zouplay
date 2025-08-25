@@ -665,7 +665,7 @@ header {
 .header-center h1 {
     font-size: 2.5em;
     font-weight: bold;
-    background: linear-gradient(90deg, #000000, #353433, #615f5f); /* 90° au lieu de 270° */
+    background: linear-gradient(270deg, #000000, #353433, #615f5f); /* 90° au lieu de 270° */
     background-clip: text;          /* standard */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
