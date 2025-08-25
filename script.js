@@ -207,6 +207,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
+// -- Première demande (request1) --
 const animeRequestInput = document.getElementById("anime-request-input");
 const animeRequestBtn = document.getElementById("anime-request-btn");
 
@@ -216,4 +217,16 @@ animeRequestBtn.addEventListener("click", () => {
   push(ref(database, "requests"), { anime: animeName, date: new Date().toISOString() })
     .then(() => { animeRequestInput.value = ""; alert("✅ Anime envoyé !"); })
     .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi."); });
+});
+
+// -- Deuxième demande (request2) --
+const animeRequestInput2 = document.getElementById("anime-request-input2");
+const animeRequestBtn2 = document.getElementById("anime-request-btn2");
+
+animeRequestBtn2.addEventListener("click", () => {
+  const animeName2 = animeRequestInput2.value.trim();
+  if (!animeName2) return alert("Écris un anime avant d'envoyer !");
+  push(ref(database, "requests2"), { anime: animeName2, date: new Date().toISOString() })
+    .then(() => { animeRequestInput2.value = ""; alert("✅ Anime envoyé à request2 !"); })
+    .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi à request2."); });
 });
