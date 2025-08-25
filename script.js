@@ -220,8 +220,8 @@ animeRequestBtn.addEventListener("click", () => {
 });
 
 // -- Deuxième demande (request2) --
-const animeRequestInput2 = document.getElementById("anime-request-input2");
-const animeRequestBtn2 = document.getElementById("anime-request-btn2");
+const animeRequestInput2 = document.getElementById("anime-request-input-2");
+const animeRequestBtn2 = document.getElementById("anime-request-btn-2");
 
 animeRequestBtn2.addEventListener("click", () => {
   const animeName2 = animeRequestInput2.value.trim();
