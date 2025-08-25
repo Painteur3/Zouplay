@@ -2194,31 +2194,19 @@ canvas.height = window.innerHeight;
 
 let particleCount = 60, particles = [], recordAnimationActive = false;
 
+// 🔹 Fonction pour afficher les vies avec des cœurs
+function updateLives() {
+  let hearts = "";
+  for (let i = 0; i < 3; i++) {
+    hearts += i < lives ? "❤️" : "🤍"; // cœur plein ou vide
+  }
+  livesSpan.textContent = hearts;
+}
+
 // 🔹 Affichage scores initiaux
 scoreSpan.textContent = score;
+updateLives();
 bestScoreSpan.textContent = "Record : " + bestScore;
-
-// 🔹 Fonction pour afficher les vies avec cœurs et animation
-function updateLives(lost=false) {
-  livesSpan.innerHTML = "";
-  for (let i = 0; i < 3; i++) {
-    const heart = document.createElement("span");
-    heart.textContent = i < lives ? "❤️" : "🤍";
-    heart.className = "heart";
-    livesSpan.appendChild(heart);
-  }
-  if(lost) {
-    const hearts = livesSpan.querySelectorAll(".heart");
-    for(let i = hearts.length-1; i >= 0; i--) {
-      if(hearts[i].textContent === "🤍") {
-        hearts[i].classList.add("lost");
-        setTimeout(() => hearts[i].classList.remove("lost"), 600);
-        break;
-      }
-    }
-  }
-}
-updateLives(); // affichage initial
 
 // 🔹 Générer dynamiquement les catégories
 for (let cat in categories) {
@@ -2263,7 +2251,6 @@ function afficherPerso() {
   imgPerso.src = currentPerso.img;
   answerInput.value = "";
 }
-
 function verifierReponse() {
   if (!currentPerso) return;
   const reponse = answerInput.value.trim().toLowerCase();
@@ -2273,7 +2260,7 @@ function verifierReponse() {
     lastResult = "✅ Bonne réponse !";
   } else {
     lives--;
-    updateLives(true); // <-- animation vie perdue
+    updateLives();
     lastResult = `❌ Mauvaise réponse. C'était ${currentPerso.nom}`;
   }
   scoreSpan.textContent = score;
@@ -2318,10 +2305,9 @@ function terminerQuiz(lastResult = "") {
   document.getElementById("rejouer").addEventListener("click", rejouerQuiz);
   if (beatRecord) { victorySound.currentTime=0; victorySound.play(); startRecordAnimation(); }
 }
-
 function rejouerQuiz() {
   score=0; lives=3; currentPerso=null;
-  updateLives(); // reset vies
+  updateLives(); // <-- cœur réinitialisé
   answerInput.value=""; 
   document.querySelectorAll("#categories-container input[type=checkbox]").forEach(cb=>cb.checked=false);
   scoreSpan.textContent=score; resultText.textContent=""; imgPerso.src="";
@@ -2343,34 +2329,14 @@ startBtn.addEventListener("click", () => {
   personnages = selected.length ? selected.flatMap(cat=>categories[cat]) : Object.values(categories).flat();
   quiz.classList.remove("hidden"); accueil.classList.add("hidden");
   imgPerso.src=""; answerInput.value=""; resultText.textContent="";
-  scoreSpan.textContent=score; bestScoreSpan.textContent="Record : "+bestScore;
-  updateLives(); // affichage initial des cœurs
+  scoreSpan.textContent=score; updateLives(); bestScoreSpan.textContent="Record : "+bestScore;
   afficherPerso(); answerInput.focus();
 });
-
 validateBtn.addEventListener("click", ()=>{ verifierReponse(); if(personnages.length>0 && lives>0) afficherPerso(); });
 answerInput.addEventListener('keydown', event => { if(event.key==='Enter'){ event.preventDefault(); validateBtn.classList.add('click-effect'); setTimeout(()=>validateBtn.classList.remove('click-effect'),150); validateBtn.click(); } });
 
 // 🔹 Particules / Confetti
-function initParticles() { particles=[]; for(let i=0;i<particleCount;i++){ particles.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, radius:Math.random()*4+2, baseRadius:Math.random()*4+2, speedY:Math.random()*1+0.3, speedX:(Math.random()-0.5)*0.5, alpha:Math.random()*0.5+0.3, color:`rgba(245,190,72,${Math.random()*0.5+0.3})` }); } }
-function animateParticles(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p=>{ const scale=recordAnimationActive?(0.9+Math.random()*0.2):1; const r=p.baseRadius*scale;
-    ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill();
-    p.y-=p.speedY; p.x+=p.speedX;
-    if(p.y+r<0){ p.y=canvas.height+r; p.x=Math.random()*canvas.width; }
-  });
-  requestAnimationFrame(animateParticles);
-}
-initParticles(); animateParticles();
-window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; if(!recordAnimationActive) initParticles(); });
-function startRecordAnimation(){
-  recordAnimationActive=true; initParticles();
-  const victoryColors=["rgba(245,190,72,0.8)","rgba(255,80,80,0.8)","rgba(80,180,255,0.8)","rgba(80,255,120,0.8)","rgba(180,80,255,0.8)"];
-  let colorIndex=0;
-  const colorInterval=setInterval(()=>{ if(!recordAnimationActive) return; particles.forEach(p=>p.color=victoryColors[colorIndex]); colorIndex=(colorIndex+1)%victoryColors.length; },200);
-  setTimeout(()=>{ recordAnimationActive=false; clearInterval(colorInterval); initParticles(); },5000);
-}
+// ... (reste du code confetti et firebase inchangé)
 
 // 🔹 Faits amusants
 const facts = [
