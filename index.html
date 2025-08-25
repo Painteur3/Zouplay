@@ -107,9 +107,19 @@
 
       <!-- Réponse -->
       <div class="answer-container">
-        <input type="text" id="answer" placeholder="Tape le nom..." autocorrect="off" autocapitalize="off" spellcheck="false">
-        <button id="validate" class="btn btn-validate">Valider</button>
-      </div>
+    <!-- Champ fantôme pour bloquer les suggestions Chrome -->
+    <input type="text" style="display:none" autocomplete="username">
+
+    <!-- Champ réel du quiz -->
+    <input type="text" id="quiz_answer_unique" name="quiz_answer_unique"
+           placeholder="Tape le nom..."
+           autocomplete="off"
+           autocorrect="off"
+           autocapitalize="off"
+           spellcheck="false">
+
+    <button id="validate" class="btn btn-validate">Valider</button>
+</div>
 
       <p id="result"></p>
     </section>
