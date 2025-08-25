@@ -209,42 +209,70 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// -- Première demande (request1) --
+// -- Première demande (anime_requests) --
 const animeRequestInput = document.getElementById("anime-request-input");
 const animeRequestBtn = document.getElementById("anime-request-btn");
-
-// S'assure que la valeur initiale est vide
 animeRequestInput.value = "";
 
+let lastAnimeRequest = 0; // timestamp du dernier envoi
+
 animeRequestBtn.addEventListener("click", () => {
+  const now = Date.now();
+  if (now - lastAnimeRequest < 20000) { // 20 secondes = 20000 ms
+    return alert("⏳ Attends 20 secondes avant d'envoyer une nouvelle demande !");
+  }
+  lastAnimeRequest = now;
+
   const animeName = animeRequestInput.value.trim();
   if (!animeName) return alert("Écris un anime avant d'envoyer !");
-  push(ref(database, "anime_requests"), { anime: animeName, date: new Date().toISOString() })
-    .then(() => {
-      animeRequestInput.value = ""; // reset
-      alert("✅ Anime bien envoyé ! Il sera ajouté prochainement");
-    })
-    .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi"); });
+  
+  push(ref(database, "anime_requests"), {
+    anime: animeName,
+    date: new Date().toISOString()
+  })
+  .then(() => {
+    animeRequestInput.value = "";
+    alert("✅ Anime bien envoyé ! Il sera ajouté prochainement");
+  })
+  .catch(err => {
+    console.error(err);
+    alert("❌ Erreur lors de l'envoi");
+  });
 });
 
-// -- Deuxième demande (request2) --
+// -- Deuxième demande (bug_reports) --
 const animeRequestInput2 = document.getElementById("anime-request-input-2");
 const animeRequestBtn2 = document.getElementById("anime-request-btn-2");
-
 animeRequestInput2.value = "";
 
+let lastBugReport = 0; // timestamp du dernier envoi
+
 animeRequestBtn2.addEventListener("click", () => {
-  const animeName2 = animeRequestInput2.value.trim();
-  if (!animeName2) return alert("Dis moi le soucis avant d'envoyer !");
-  push(ref(database, "bug_reports"), { anime: animeName2, date: new Date().toISOString() })
-    .then(() => {
-      animeRequestInput2.value = ""; // reset
-      alert("✅ Problème bien envoyé ! Merci !");
-    })
-    .catch(err => { console.error(err); alert("❌ Erreur lors de l'envoi"); });
+  const now = Date.now();
+  if (now - lastBugReport < 20000) { // 20 secondes = 20000 ms
+    return alert("⏳ Attends 20 secondes avant d'envoyer un nouveau rapport !");
+  }
+  lastBugReport = now;
+
+  const bugText = animeRequestInput2.value.trim();
+  if (!bugText) return alert("Dis moi le soucis avant d'envoyer !");
+  
+  push(ref(database, "bug_reports"), {
+    bug: bugText,
+    date: new Date().toISOString()
+  })
+  .then(() => {
+    animeRequestInput2.value = "";
+    alert("✅ Problème bien envoyé ! Merci !");
+  })
+  .catch(err => {
+    console.error(err);
+    alert("❌ Erreur lors de l'envoi");
+  });
 });
 
-animeRequestInput2.addEventListener("focus", () => {
-  animeRequestInput2.value = "";
-});
+// -- Effacer champ à la focus
+animeRequestInput.addEventListener("focus", () => { animeRequestInput.value = ""; });
+animeRequestInput2.addEventListener("focus", () => { animeRequestInput2.value = ""; });
+
 
