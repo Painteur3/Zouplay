@@ -195,7 +195,7 @@ function startRecordAnimation(){
 }
 
 // 🔹 Faits amusants
-const facts=[ /* tes faits ici */ ];
+const facts=[  "Le premier anime japonais date de 1917.", ];
 let index=0;
 function showFact(){ factText.style.opacity=0; setTimeout(()=>{ factText.textContent=facts[index]; factText.style.opacity=1; index=(index+1)%facts.length; },1200); }
 showFact(); setInterval(showFact,11000);
