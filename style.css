@@ -1137,7 +1137,9 @@ header {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: flame 3s ease-in-out infinite;
-  text-shadow: 0 0 10px rgba(255,100,0,0.7);
+  
+  /* Glow réduit */
+  text-shadow: 0 0 4px rgba(255,100,0,0.4);
 }
 
 @keyframes flame {
